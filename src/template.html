@@ -9,14 +9,15 @@
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* 布局：手机竖屏单列。顶部圆按钮+关卡信息，规则条，方块棋盘（格子之间留缝），底部三个圆形道具按钮 */
-  --bg: #FFF7EC;          /* 爆米花奶油底 */
+  /* 布局：手机竖屏单列。顶部圆按钮+关卡信息，状态条（心、罐头、还差哪些颜色），留白分隔的圆角方块棋盘，底部圆形道具按钮 */
+  --bg: #FFF8EF;
   --card: #FFFFFF;
-  --ink: #4A3428;         /* 焦糖棕文字 */
+  --ink: #4A3428;
   --ink-soft: #9A8170;
-  --caramel: #E39B35;     /* 焦糖色强调 */
+  --caramel: #E39B35;
   --heart: #E5596C;
-  --shadow: 0 3px 10px rgba(122, 82, 46, .12);
+  --hard: #C8546A;
+  --shadow: 0 3px 10px rgba(122, 82, 46, .11);
   --font-display: "ZCOOL KuaiLe", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   --font-body: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color-scheme: light;
@@ -30,50 +31,60 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
 .hidden { display: none !important; }
 .round { width: 48px; height: 48px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; padding: 0; flex: none; }
 .round svg { width: 24px; height: 24px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.pill svg { width: 22px; height: 22px; }
 
 /* ---------- 选关页 ---------- */
 .brand { display: flex; align-items: center; gap: 12px; padding: 6px 4px 0; }
 .brand svg { width: 60px; height: 60px; flex: none; }
 .brand h1 { font-family: var(--font-display); font-weight: 400; font-size: 34px; margin: 0; line-height: 1.1; letter-spacing: 1px; }
 .brand p { margin: 2px 0 0; color: var(--ink-soft); font-size: 13px; }
-.panel { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 12px 12px 14px; }
-.progress { display: flex; justify-content: space-between; align-items: center; font-size: 14px; color: var(--ink-soft); }
-.progress b { color: var(--ink); font-variant-numeric: tabular-nums; }
-.rounds { display: flex; flex-direction: column; gap: 8px; }
-.roundrow { display: grid; grid-template-columns: 52px repeat(4, 1fr); gap: 8px; align-items: center; }
-.roundrow.tut { grid-template-columns: 52px repeat(3, 1fr) 1fr; }
-.roundrow > span { font-size: 12px; color: var(--ink-soft); }
-.lv { height: 54px; border-radius: 14px; background: #FFF1DD; font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; line-height: 1.15; }
+.homebar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.homebar .grow { flex: 1; }
+.panel { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 12px; }
+.blocks { display: flex; flex-direction: column; gap: 10px; }
+.block h2 { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
+.levels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.lv { height: 50px; border-radius: 13px; background: #FFF1DD; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; line-height: 1.15; }
 .lv small { font-size: 10px; font-weight: 400; color: var(--ink-soft); }
+.lv.hard { background: #FBE0E5; }
+.lv.hard small { color: var(--hard); }
 .lv.done { background: var(--caramel); color: #fff; }
 .lv.done small { color: #FFF1DD; }
-.settings { display: flex; gap: 8px; flex-wrap: wrap; }
-.chip { background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 7px 14px; font-size: 13px; }
-.chip[aria-pressed="true"] { background: #FFE7C2; }
+.lv.hard.done { background: var(--hard); }
 .note { font-size: 12px; color: var(--ink-soft); margin: 0; }
 
 /* ---------- 游戏页 ---------- */
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .lvinfo { text-align: center; line-height: 1.2; }
 .lvinfo b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 26px; }
+.lvinfo b em { font-style: normal; font-family: var(--font-body); font-size: 12px; font-weight: 600; color: #fff; background: var(--hard); border-radius: 6px; padding: 1px 6px; vertical-align: middle; margin-left: 6px; }
 .lvinfo span { font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-.statusrow { display: flex; justify-content: center; }
-.hearts { display: flex; gap: 6px; background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 6px 14px; }
-.hearts svg { width: 24px; height: 24px; }
+.status { display: flex; justify-content: center; gap: 8px; }
+.hearts { display: flex; gap: 4px; }
+.hearts svg { width: 22px; height: 22px; }
+.left { background: var(--card); box-shadow: var(--shadow); border-radius: 16px; padding: 8px 10px; }
+.left p { margin: 0 0 6px; font-size: 12px; color: var(--ink-soft); text-align: center; }
+.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.chip { width: 26px; height: 26px; border-radius: 9px; position: relative; display: grid; place-items: center; transition: opacity .3s, transform .3s; }
+.chip svg { width: 70%; height: 70%; color: rgba(74,52,40,.28); }
+.chips.small { gap: 4px; }
+.chips.small .chip { width: 22px; height: 22px; border-radius: 7px; }
+.chip.done { opacity: .28; transform: scale(.82); }
+.chip.done::after { content: ""; position: absolute; width: 9px; height: 5px; border-left: 2.5px solid var(--ink); border-bottom: 2.5px solid var(--ink); transform: rotate(-45deg) translate(1px, -1px); }
 .rulebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.rule { background: var(--card); border-radius: 12px; box-shadow: var(--shadow); padding: 7px 4px 6px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11.5px; color: var(--ink-soft); text-align: center; line-height: 1.25; }
-.rule svg { width: 30px; height: 30px; }
+.rule { background: var(--card); border-radius: 12px; box-shadow: var(--shadow); padding: 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--ink-soft); text-align: center; line-height: 1.25; }
+.rule svg { width: 26px; height: 26px; }
 .tip { background: #FFF1DD; border-radius: 14px; padding: 10px 12px; font-size: 14px; }
 .tip b { color: #A0621A; }
-.boardcard { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 8px; }
-.board { --n: 6; --gap: 4px; width: 100%; aspect-ratio: 1; display: grid; gap: var(--gap); grid-template-columns: repeat(var(--n), 1fr); grid-template-rows: repeat(var(--n), 1fr); touch-action: none; user-select: none; -webkit-user-select: none; }
-.cell { position: relative; border-radius: 22%; display: grid; place-items: center; overflow: hidden; }
-.cell .pat { position: absolute; width: 56%; height: 56%; left: 22%; top: 22%; color: rgba(74, 52, 40, .2); pointer-events: none; }
-.cell .x { position: relative; width: 52%; height: 52%; pointer-events: none; }
+.boardcard { background: var(--card); border-radius: 20px; box-shadow: var(--shadow); padding: 10px; }
+.board { --n: 7; --gap: 6px; width: 100%; aspect-ratio: 1; display: grid; gap: var(--gap); grid-template-columns: repeat(var(--n), 1fr); grid-template-rows: repeat(var(--n), 1fr); touch-action: none; user-select: none; -webkit-user-select: none; }
+.cell { position: relative; border-radius: 24%; display: grid; place-items: center; overflow: hidden; }
+.cell .pat { position: absolute; width: 54%; height: 54%; left: 23%; top: 23%; color: rgba(74, 52, 40, .2); pointer-events: none; }
+.cell .x { position: relative; width: 50%; height: 50%; pointer-events: none; }
 .cell.bad .x line { stroke: var(--heart); }
-.cell svg.cat { position: relative; width: 86%; height: 86%; pointer-events: none; }
-.cell.marked .pat, .cell.cat .pat { opacity: .35; }
-.cell .seat { position: absolute; left: 50%; bottom: 3%; transform: translateX(-50%); font-size: 9px; line-height: 1; padding: 2px 4px; border-radius: 4px; background: rgba(74,52,40,.75); color: #fff; pointer-events: none; white-space: nowrap; }
+.cell svg.cat { position: relative; width: 88%; height: 88%; pointer-events: none; }
+.cell.marked .pat, .cell.cat .pat { opacity: .3; }
 .cell.pop svg.cat { animation: pop .28s ease-out; }
 .cell.shake { animation: shake .35s; }
 .cell.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.7); animation: fade .6s forwards; pointer-events: none; }
@@ -81,57 +92,85 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
 @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 @keyframes fade { from { opacity: 1; } to { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .cell.pop svg.cat, .cell.shake, .cell.flash::after, .cell.hint::after { animation: none; } }
-.tools { display: flex; justify-content: center; gap: 28px; padding-top: 6px; }
-.tool { position: relative; width: 72px; height: 72px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-size: 12px; padding: 0; }
-.tool svg { width: 28px; height: 28px; }
+@media (prefers-reduced-motion: reduce) { .cell.pop svg.cat, .cell.shake, .cell.flash::after, .cell.hint::after, .chip { animation: none; transition: none; } }
+.tools { display: flex; justify-content: center; gap: 26px; padding-top: 4px; }
+.tool { position: relative; width: 70px; height: 70px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-size: 12px; padding: 0; }
+.tool svg { width: 27px; height: 27px; }
 .badge { position: absolute; top: -4px; right: -6px; min-width: 24px; height: 24px; border-radius: 12px; background: var(--heart); color: #fff; font-size: 13px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
 .badge.ad { background: var(--caramel); font-size: 11px; }
 .howto { text-align: center; }
 
+/* ---------- 排行榜 ---------- */
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #FFF1DD; border-radius: 14px; padding: 4px; }
+.tabs button { border-radius: 11px; padding: 8px; font-size: 15px; background: transparent; }
+.tabs button[aria-selected="true"] { background: var(--card); box-shadow: var(--shadow); font-weight: 600; }
+.rank { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
+.rank td { padding: 10px 6px; border-bottom: 1px solid #F3E6D6; }
+.rank td:last-child { text-align: right; font-weight: 600; }
+.rank tr.me td { background: #FFF6E6; }
+.empty { text-align: center; color: var(--ink-soft); font-size: 14px; padding: 8px 0; }
+
 /* ---------- 弹窗 ---------- */
 .overlay { position: fixed; inset: 0; background: rgba(74,52,40,.45); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 5; }
-.dialog { background: var(--card); border-radius: 22px; padding: 22px 20px 18px; width: min(100%, 340px); text-align: center; display: flex; flex-direction: column; gap: 12px; }
+.dialog { background: var(--card); border-radius: 22px; padding: 22px 20px 18px; width: min(100%, 340px); text-align: center; display: flex; flex-direction: column; gap: 12px; max-height: 92vh; overflow-y: auto; }
 .dialog h3 { font-family: var(--font-display); font-weight: 400; font-size: 27px; margin: 0; }
 .dialog p { margin: 0; color: var(--ink-soft); font-size: 14px; }
-.dialog svg.big { width: 88px; height: 88px; margin: 0 auto; }
-.stats { display: flex; justify-content: center; gap: 18px; font-size: 14px; color: var(--ink-soft); }
+.dialog svg.big { width: 84px; height: 84px; margin: 0 auto; }
+.stats { display: flex; justify-content: center; gap: 18px; font-size: 13px; color: var(--ink-soft); }
 .stats b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.reward { background: #FFF1DD; border-radius: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; }
+.reward svg { width: 30px; height: 30px; }
+.reward b { font-size: 22px; color: #A0621A; font-variant-numeric: tabular-nums; }
+.reward small { display: block; font-size: 12px; color: var(--ink-soft); }
 .btn { border-radius: 14px; padding: 12px; font-size: 16px; font-weight: 600; background: var(--caramel); color: #fff; }
 .btn.alt { background: #FFF1DD; color: #8A5A1E; }
-.btn.ad { background: #4A3428; color: #fff; }
-.setrow { display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 15px; padding: 4px 2px; }
-.setrow button { background: #FFF1DD; border-radius: 999px; padding: 6px 14px; font-size: 14px; min-width: 64px; }
+.btn.dark { background: #4A3428; color: #fff; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.setrow { display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 15px; padding: 4px 2px; gap: 10px; }
+.setrow small { display: block; font-size: 11px; color: var(--ink-soft); }
+.setrow button { background: #FFF1DD; border-radius: 999px; padding: 6px 14px; font-size: 14px; min-width: 64px; flex: none; }
 .setrow button[aria-pressed="true"] { background: var(--caramel); color: #fff; }
+.copybox { width: 100%; font: inherit; font-size: 13px; border: 1.5px solid #F0DEC6; border-radius: 10px; padding: 8px; color: var(--ink); background: #FFFBF5; resize: none; }
 </style>
 </head>
 <body>
 
+<!-- 选关页 -->
 <section class="screen" id="home">
   <div class="brand">
     <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#cat"/></svg>
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v0.3 · 画面里的猫以后换成爆米花</p>
+      <p>原型 v0.4 · 画面里的猫以后换成爆米花</p>
     </div>
   </div>
-  <div class="panel progress"><span>已通关 <b id="doneCount">0</b> / <b id="totalCount">51</b></span><span>本版所有关卡都开放</span></div>
-  <div class="panel"><div class="rounds" id="rounds"></div></div>
-  <div class="settings">
-    <button class="chip" id="optSound" aria-pressed="true">音效：开</button>
-    <button class="chip" id="optAuto" aria-pressed="false">自动标×：关</button>
-    <button class="chip" id="optReset">清空进度</button>
+  <div class="homebar">
+    <span class="pill" title="猫罐头"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg><b id="homeCans">0</b></span>
+    <span class="pill">连胜 <b id="homeStreak">0</b></span>
+    <span class="grow"></span>
+    <button class="round" id="rankBtn" aria-label="排行榜"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-rank"/></svg></button>
+    <button class="round" id="shareHome" aria-label="分享游戏"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-share"/></svg></button>
+    <button class="round" id="setHome" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
   </div>
-  <p class="note">每一轮是 6×6、7×7、8×8、9×9 四关，难度一轮比一轮慢慢升。前30关开局会先坐好1只爆米花。复活和提示在正式版要看广告，这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
+  <div class="panel"><div class="blocks" id="blocks"></div></div>
+  <p class="note">每组11关：7×7到11×11各两关，第11关是12×12困难关（罐头翻倍）。前30关的普通关开局先坐好1只爆米花。复活和提示在正式版要看广告，这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
 </section>
 
+<!-- 游戏页 -->
 <section class="screen hidden" id="game">
   <div class="topbar">
     <button class="round" id="backBtn" aria-label="返回选关"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="#4A3428" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <div class="lvinfo"><b id="lvName">第1关</b><span id="lvSub">6×6 · 0:00</span></div>
-    <button class="round" id="setBtn" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="#4A3428" stroke-width="2.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M5.5 18.5l2.1-2.1M16.4 7.6l2.1-2.1" stroke="#4A3428" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+    <div class="lvinfo"><b id="lvName">第1关</b><span id="lvSub">7×7 · 0:00</span></div>
+    <button class="round" id="setBtn" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
   </div>
-  <div class="statusrow"><div class="hearts" id="hearts" aria-label="剩余的心"></div></div>
+  <div class="status">
+    <span class="pill"><span class="hearts" id="hearts" aria-label="剩余的心"></span></span>
+    <span class="pill" title="猫罐头"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg><b id="gameCans">0</b></span>
+  </div>
+  <div class="left" aria-live="polite">
+    <p id="leftText">还有 7 种颜色等着爆米花</p>
+    <div class="chips" id="chips"></div>
+  </div>
   <div class="rulebar" id="rulebar" aria-label="规则">
     <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-row"/></svg>每行1只</div>
     <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-col"/></svg>每列1只</div>
@@ -148,7 +187,22 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
   <p class="note howto">点一下标×，再点一下放爆米花；按住拖动可以连续标×，从×上开始拖可以擦掉</p>
 </section>
 
-<div class="overlay hidden" id="overlay"><div class="dialog" id="dialog"></div></div>
+<!-- 排行榜 -->
+<section class="screen hidden" id="rank">
+  <div class="topbar">
+    <button class="round" id="rankBack" aria-label="返回"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="#4A3428" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="lvinfo"><b>排行榜</b><span>好友排名等微信版接入</span></div>
+    <button class="round" id="rankShare" aria-label="分享"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-share"/></svg></button>
+  </div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabCans" aria-selected="true">猫罐头</button>
+    <button role="tab" id="tabTime" aria-selected="false">最快通关</button>
+  </div>
+  <div class="panel" id="rankBody"></div>
+  <p class="note">现在这个网页版没有服务器，只能记你在这台手机上的成绩。做成微信小游戏后，这里会换成微信好友排行，和朋友比罐头、比速度。</p>
+</section>
+
+<div class="overlay hidden" id="overlay"><div class="dialog" id="dialog" role="dialog" aria-modal="true"></div></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
@@ -179,61 +233,57 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
     <symbol id="heart" viewBox="0 0 24 24">
       <path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z"/>
     </symbol>
-    <!-- 规则小图：一个 3×3 小棋盘，爆米花用圆点，排除用浅色 -->
-    <symbol id="r-row" viewBox="0 0 30 30">
-      <rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/>
-      <rect x="3" y="11" width="24" height="8" rx="3" fill="#F7D08A"/>
-      <circle cx="15" cy="15" r="3" fill="#7A5634"/>
-      <path d="M5 13 l4 4 m0 -4 l-4 4 M21 13 l4 4 m0 -4 l-4 4" stroke="#B08A6E" stroke-width="1.4" stroke-linecap="round"/>
+    <symbol id="can" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="7" rx="8" ry="3" fill="#F2C46B" stroke="#7A5634" stroke-width="1.4"/>
+      <path d="M4 7 V17 A8 3 0 0 0 20 17 V7" fill="#E39B35" stroke="#7A5634" stroke-width="1.4"/>
+      <path d="M4 11 A8 3 0 0 0 20 11 V14 A8 3 0 0 1 4 14 Z" fill="#FFF1DD"/>
+      <circle cx="10" cy="13" r="1" fill="#7A5634"/><circle cx="12.4" cy="12.3" r="1" fill="#7A5634"/><circle cx="14.6" cy="13.2" r="1" fill="#7A5634"/>
+      <ellipse cx="12.3" cy="15.2" rx="1.8" ry="1.3" fill="#7A5634"/>
     </symbol>
-    <symbol id="r-col" viewBox="0 0 30 30">
-      <rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/>
-      <rect x="11" y="3" width="8" height="24" rx="3" fill="#A8D8C8"/>
-      <circle cx="15" cy="15" r="3" fill="#7A5634"/>
-      <path d="M13 5 l4 4 m0 -4 l-4 4 M13 21 l4 4 m0 -4 l-4 4" stroke="#6C9A8B" stroke-width="1.4" stroke-linecap="round"/>
-    </symbol>
-    <symbol id="r-reg" viewBox="0 0 30 30">
-      <rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/>
-      <path d="M4 4 H18 V12 H26 V26 H12 V18 H4 Z" fill="#CDB4E8"/>
-      <circle cx="21" cy="19" r="3" fill="#7A5634"/>
-      <path d="M7 7 l3.5 3.5 m0 -3.5 l-3.5 3.5" stroke="#8E76AE" stroke-width="1.4" stroke-linecap="round"/>
-    </symbol>
-    <symbol id="r-adj" viewBox="0 0 30 30">
-      <rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/>
-      <rect x="6" y="6" width="18" height="18" rx="4" fill="#F6C1C9"/>
-      <circle cx="15" cy="15" r="3" fill="#7A5634"/>
-      <path d="M7.5 7.5 l3 3 m0 -3 l-3 3 M19.5 7.5 l3 3 m0 -3 l-3 3 M7.5 19.5 l3 3 m0 -3 l-3 3 M19.5 19.5 l3 3 m0 -3 l-3 3" stroke="#B9707C" stroke-width="1.3" stroke-linecap="round"/>
-    </symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="#4A3428" stroke-width="2.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M5.5 18.5l2.1-2.1M16.4 7.6l2.1-2.1" stroke="#4A3428" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3 V15 M7.5 7.5 L12 3 L16.5 7.5" fill="none" stroke="#4A3428" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11 H5 V21 H19 V11 H18" fill="none" stroke="#4A3428" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-rank" viewBox="0 0 24 24"><rect x="3" y="12" width="5" height="9" rx="1.5" fill="#F2C46B" stroke="#4A3428" stroke-width="1.8"/><rect x="9.5" y="6" width="5" height="15" rx="1.5" fill="#E39B35" stroke="#4A3428" stroke-width="1.8"/><rect x="16" y="15" width="5" height="6" rx="1.5" fill="#F7D9A8" stroke="#4A3428" stroke-width="1.8"/></symbol>
+    <!-- 规则小图 -->
+    <symbol id="r-row" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><rect x="3" y="11" width="24" height="8" rx="3" fill="#F3DB86"/><circle cx="15" cy="15" r="3" fill="#7A5634"/><path d="M5 13 l4 4 m0 -4 l-4 4 M21 13 l4 4 m0 -4 l-4 4" stroke="#B08A6E" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="r-col" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><rect x="11" y="3" width="8" height="24" rx="3" fill="#A6DDC4"/><circle cx="15" cy="15" r="3" fill="#7A5634"/><path d="M13 5 l4 4 m0 -4 l-4 4 M13 21 l4 4 m0 -4 l-4 4" stroke="#6C9A8B" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="r-reg" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><path d="M4 4 H18 V12 H26 V26 H12 V18 H4 Z" fill="#D4B5EA"/><circle cx="21" cy="19" r="3" fill="#7A5634"/><path d="M7 7 l3.5 3.5 m0 -3.5 l-3.5 3.5" stroke="#8E76AE" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="r-adj" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><rect x="6" y="6" width="18" height="18" rx="4" fill="#F3B4C2"/><circle cx="15" cy="15" r="3" fill="#7A5634"/><path d="M7.5 7.5 l3 3 m0 -3 l-3 3 M19.5 7.5 l3 3 m0 -3 l-3 3 M7.5 19.5 l3 3 m0 -3 l-3 3 M19.5 19.5 l3 3 m0 -3 l-3 3" stroke="#B9707C" stroke-width="1.3" stroke-linecap="round"/></symbol>
     <!-- 颜色区花纹：每个区一个，色弱也能分清 -->
     <symbol id="p0" viewBox="0 0 24 24"><circle cx="8" cy="9" r="3.4" fill="currentColor"/><circle cx="12.5" cy="6.8" r="3.6" fill="currentColor"/><circle cx="16.5" cy="9.5" r="3.2" fill="currentColor"/><path d="M6 12 H18 L16.3 21 H7.7 Z" fill="currentColor"/></symbol>
     <symbol id="p1" viewBox="0 0 24 24"><path d="M3 8.5 L12 4 L21 8.5 V17 L12 21 L3 17 Z M3 8.5 L12 13 L21 8.5 M12 13 V21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></symbol>
     <symbol id="p2" viewBox="0 0 24 24"><path d="M2.5 11 H21.5 A9.5 8 0 0 1 2.5 11 Z" fill="currentColor"/><rect x="8" y="18.5" width="8" height="2.5" rx="1.2" fill="currentColor"/></symbol>
     <symbol id="p3" viewBox="0 0 24 24"><path d="M19.5 3 C10 4 5 10 5 18 L4 21 M5 18 C13 18 18.5 11.5 19.5 3 M8 14.5 L12 13.5 M10 10.5 L14.5 9.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="p4" viewBox="0 0 24 24"><path d="M15.5 3 A9 9 0 1 0 21 15.5 A7 7 0 0 1 15.5 3 Z" fill="currentColor"/></symbol>
-    <symbol id="p5" viewBox="0 0 24 24"><circle cx="12" cy="6" r="3.6" fill="currentColor"/><circle cx="17.7" cy="10.2" r="3.6" fill="currentColor"/><circle cx="15.5" cy="17" r="3.6" fill="currentColor"/><circle cx="8.5" cy="17" r="3.6" fill="currentColor"/><circle cx="6.3" cy="10.2" r="3.6" fill="currentColor"/><circle cx="12" cy="12" r="2.6" fill="#fff" fill-opacity=".5"/></symbol>
+    <symbol id="p5" viewBox="0 0 24 24"><circle cx="12" cy="6" r="3.6" fill="currentColor"/><circle cx="17.7" cy="10.2" r="3.6" fill="currentColor"/><circle cx="15.5" cy="17" r="3.6" fill="currentColor"/><circle cx="8.5" cy="17" r="3.6" fill="currentColor"/><circle cx="6.3" cy="10.2" r="3.6" fill="currentColor"/></symbol>
     <symbol id="p6" viewBox="0 0 24 24"><path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z" fill="currentColor"/></symbol>
     <symbol id="p7" viewBox="0 0 24 24"><path d="M12 2.5 C12 2.5 5 10.5 5 15 A7 7 0 0 0 19 15 C19 10.5 12 2.5 12 2.5 Z" fill="currentColor"/></symbol>
     <symbol id="p8" viewBox="0 0 24 24"><circle cx="8" cy="14" r="4.5" fill="currentColor"/><circle cx="13" cy="10" r="5.5" fill="currentColor"/><circle cx="17.5" cy="14.5" r="4" fill="currentColor"/><rect x="5" y="14" width="14" height="4.5" rx="2.2" fill="currentColor"/></symbol>
+    <symbol id="p9" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5 V5.5 M12 18.5 V21.5 M2.5 12 H5.5 M18.5 12 H21.5 M5.3 5.3 L7.4 7.4 M16.6 16.6 L18.7 18.7 M5.3 18.7 L7.4 16.6 M16.6 7.4 L18.7 5.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="p10" viewBox="0 0 24 24"><path d="M9 18 V5 L19 3 V16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.5" cy="18" rx="3.2" ry="2.6" fill="currentColor"/><ellipse cx="16.5" cy="16" rx="3.2" ry="2.6" fill="currentColor"/></symbol>
+    <symbol id="p11" viewBox="0 0 24 24"><path d="M12 2.5 L20.5 12 L12 21.5 L3.5 12 Z" fill="currentColor"/></symbol>
   </defs>
 </svg>
 
 <script>
 const LEVELS = /*LEVELS*/[];
+const SHARE_URL = "https://northlo.github.io/popcorn-seat/";
 const TIPS = {
   1: "<b>规则1</b>：每一行、每一列都要正好放1只爆米花。棋盘上已经坐好了1只，它所在的那一行、那一列就不能再放了，点一下格子标上×。确定某格是座位，就再点一下放上去。",
-  2: "<b>规则2</b>：每种颜色也只能有1只爆米花。先找格子最少的那种颜色下手。",
+  2: "<b>规则2</b>：每种颜色也只能有1只爆米花。看上面的颜色提示，先找格子最少的那种颜色下手。",
   3: "<b>规则3</b>：爆米花不喜欢挤，两只不能挨着，斜着挨也不行。从下一关开始，放错会扣一颗心。"
 };
-const REGION_COLORS = ["#F6C1C9", "#A8D8C8", "#F7D08A", "#B9C8F0", "#F4B183", "#CDB4E8", "#BFE3A5", "#9FD3E8", "#E8C6A8"];
+/* 12 种柔和颜色：小棋盘用到的前 7 种色相完全不同；更大的棋盘再加颜色，同时靠花纹区分 */
+const REGION_COLORS = ["#F3B4C2", "#A8DCC0", "#F5DA7E", "#A9BEF2", "#F7B98A", "#CDB0EA", "#CDE69A", "#EE9E95", "#9FD4F0", "#EDB0DA", "#DCC9B2", "#7FC7BE"];
 const FREE_HINTS = 3;
+const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 22, 12: 30 };
 
 /* 存档：只存在这个浏览器里，读不到也能正常玩 */
-const SAVE_KEY = "popcorn-proto-v3";
-let save = { best: {}, autoX: false, sound: true };
+const SAVE_KEY = "popcorn-proto-v4";
+let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: true, vibrate: true, rules: true };
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (s) save = Object.assign(save, s); } catch (e) {}
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 
-/* 音效：用浏览器合成，不需要文件 */
+/* 音效：浏览器合成 */
 let audio = null;
 function tone(freqs, dur = 0.12, type = "sine", vol = 0.12) {
   if (!save.sound) return;
@@ -252,92 +302,84 @@ function tone(freqs, dur = 0.12, type = "sine", vol = 0.12) {
     });
   } catch (e) {}
 }
-const sfx = {
-  mark: () => tone([520], 0.05, "triangle", 0.06),
-  good: () => tone([660, 990], 0.11, "sine", 0.12),
-  bad: () => tone([180, 140], 0.16, "square", 0.05),
+/* 震动：安卓浏览器支持；iPhone 的浏览器不支持，微信小游戏里两边都能震 */
+const canVibrate = typeof navigator.vibrate === "function";
+function buzz(pattern) { if (save.vibrate && canVibrate) try { navigator.vibrate(pattern); } catch (e) {} }
+const fx = {
+  mark: () => { tone([520], 0.05, "triangle", 0.06); buzz(8); },
+  good: () => { tone([660, 990], 0.11, "sine", 0.12); buzz(20); },
+  bad: () => { tone([180, 140], 0.16, "square", 0.05); buzz([60, 40, 60]); },
   region: () => tone([1180], 0.09, "sine", 0.08),
-  win: () => tone([523, 659, 784, 1046], 0.16, "triangle", 0.12)
+  win: () => { tone([523, 659, 784, 1046], 0.16, "triangle", 0.12); buzz([30, 50, 30, 50, 80]); }
 };
 
 const $ = id => document.getElementById(id);
 const catSvg = (sym = "cat") => `<svg class="cat" viewBox="0 0 40 40" aria-hidden="true"><use href="#${sym}"/></svg>`;
 const X_SVG = '<svg class="x" viewBox="0 0 20 20" aria-hidden="true"><line x1="4" y1="4" x2="16" y2="16" stroke="#5B4234" stroke-width="2.8" stroke-linecap="round"/><line x1="16" y1="4" x2="4" y2="16" stroke="#5B4234" stroke-width="2.8" stroke-linecap="round"/></svg>';
+const CAN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg>';
 function fmt(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+function show(id) { for (const s of ["home", "game", "rank"]) $(s).classList.toggle("hidden", s !== id); window.scrollTo(0, 0); }
 
 /* ---------- 选关页 ---------- */
 function renderHome() {
-  $("totalCount").textContent = LEVELS.length;
-  $("doneCount").textContent = Object.keys(save.best).filter(k => +k <= LEVELS.length).length;
-  const btn = id => {
-    const best = save.best[id], n = LEVELS[id - 1].n;
-    return `<button class="lv${best ? " done" : ""}" data-id="${id}" aria-label="第${id}关，${n}×${n}${best ? "，已通关" : ""}">${id}<small>${best ? fmt(best) : n + "×" + n}</small></button>`;
-  };
-  const rows = [`<div class="roundrow tut"><span>教学</span>${[1, 2, 3].map(btn).join("")}<span></span></div>`];
-  for (let r = 0; 4 + r * 4 <= LEVELS.length; r++) {
-    const ids = [4, 5, 6, 7].map(k => k + r * 4).filter(id => id <= LEVELS.length);
-    rows.push(`<div class="roundrow"><span>第${r + 1}轮</span>${ids.map(btn).join("")}</div>`);
+  $("homeCans").textContent = save.cans;
+  $("homeStreak").textContent = save.streak;
+  const html = [];
+  for (let b = 0; b * 11 < LEVELS.length; b++) {
+    const ids = [];
+    for (let id = b * 11 + 1; id <= Math.min(LEVELS.length, b * 11 + 11); id++) ids.push(id);
+    const btns = ids.map(id => {
+      const L = LEVELS[id - 1], best = save.best[id];
+      const cls = ["lv", L.hard ? "hard" : "", best ? "done" : ""].join(" ");
+      const sub = best ? fmt(best) : L.hard ? "困难" : L.n + "×" + L.n;
+      return `<button class="${cls}" data-id="${id}" aria-label="第${id}关，${L.n}×${L.n}${L.hard ? "，困难" : ""}${best ? "，已通关" : ""}">${id}<small>${sub}</small></button>`;
+    }).join("");
+    html.push(`<div class="block"><h2>第${b + 1}组 · 第${b * 11 + 1}–${b * 11 + ids.length}关</h2><div class="levels">${btns}</div></div>`);
   }
-  $("rounds").innerHTML = rows.join("");
-  $("optAuto").textContent = "自动标×：" + (save.autoX ? "开" : "关");
-  $("optAuto").setAttribute("aria-pressed", save.autoX);
-  $("optSound").textContent = "音效：" + (save.sound ? "开" : "关");
-  $("optSound").setAttribute("aria-pressed", save.sound);
+  $("blocks").innerHTML = html.join("");
 }
-$("rounds").addEventListener("click", e => { const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id); });
-$("optAuto").onclick = () => { save.autoX = !save.autoX; persist(); renderHome(); };
-$("optSound").onclick = () => { save.sound = !save.sound; persist(); renderHome(); };
-$("optReset").onclick = () => {
-  showDialog(`<h3>清空进度？</h3><p>所有通关记录会被删除。</p>
-    <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">算了</button>`);
-  $("dYes").onclick = () => { save.best = {}; persist(); hideDialog(); renderHome(); };
-  $("dNo").onclick = hideDialog;
-};
+$("blocks").addEventListener("click", e => { const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id); });
 
-/* ---------- 游戏状态 ---------- */
-let G = null;
-let timerId = null;
+/* ---------- 游戏 ---------- */
+let G = null, timerId = null;
 
 function startLevel(id) {
   const L = LEVELS[id - 1], n = L.n;
   G = {
-    id, n,
+    id, n, hard: !!L.hard,
     reg: L.reg.split(",").map(Number),
     sol: L.sol.split(",").map(Number),
     st: new Array(n * n).fill(0),        // 0 空，1 标×，2 爆米花
-    auto: new Array(n * n).fill(false),  // 是不是自动标的×
-    bad: new Array(n * n).fill(false),   // 放错过的格子
-    given: new Set(L.given || []),       // 开局就坐好的爆米花
-    hearts: 3, tutorial: id <= 3, hints: FREE_HINTS,
+    auto: new Array(n * n).fill(false),
+    bad: new Array(n * n).fill(false),
+    given: new Set(L.given || []),
+    hearts: 3, mistakes: 0, tutorial: id <= 3, hints: FREE_HINTS,
     undo: [], startT: Date.now(), elapsed: 0, over: false
   };
   for (const i of G.given) G.st[i] = 2;
-  $("home").classList.add("hidden");
-  $("game").classList.remove("hidden");
-  $("lvName").textContent = `第${id}关`;
+  show("game");
+  $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}`;
   if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
   else $("tip").classList.add("hidden");
-  buildBoard();
-  renderHearts();
-  renderHint();
-  clearInterval(timerId);
-  timerId = setInterval(tick, 500); tick();
-  window.scrollTo(0, 0);
+  $("rulebar").classList.toggle("hidden", !save.rules);
+  $("gameCans").textContent = save.cans;
+  buildBoard(); renderHearts(); renderHint(); renderChips();
+  clearInterval(timerId); timerId = setInterval(tick, 500); tick();
 }
 function tick() {
   if (!G) return;
   if (!G.over) G.elapsed = Math.floor((Date.now() - G.startT) / 1000);
   $("lvSub").textContent = `${G.n}×${G.n}${G.tutorial ? " · 教学" : ""} · ${fmt(G.elapsed)}`;
 }
-
+function colorOf(g) { return REGION_COLORS[g % REGION_COLORS.length]; }
 function buildBoard() {
   const { n, reg } = G, b = $("board");
   b.style.setProperty("--n", n);
-  b.style.setProperty("--gap", n >= 9 ? "3px" : "4px");
+  b.style.setProperty("--gap", n <= 8 ? "6px" : n <= 10 ? "5px" : "4px");
   let html = "";
   for (let i = 0; i < n * n; i++) {
-    const g = reg[i] % REGION_COLORS.length;
-    html += `<div class="cell" data-i="${i}" role="gridcell" style="background:${REGION_COLORS[g]}"><svg class="pat" viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g}"/></svg><span class="fg"></span></div>`;
+    const g = reg[i];
+    html += `<div class="cell" data-i="${i}" role="gridcell" style="background:${colorOf(g)}"><svg class="pat" viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 12}"/></svg><span class="fg" style="display:contents"></span></div>`;
   }
   b.innerHTML = html;
   for (let i = 0; i < n * n; i++) drawCell(i);
@@ -348,8 +390,7 @@ function drawCell(i, anim) {
   el.classList.toggle("bad", G.bad[i]);
   el.classList.toggle("marked", s === 1);
   el.classList.toggle("cat", s === 2);
-  el.querySelector(".fg").outerHTML = `<span class="fg" style="display:contents">${
-    s === 2 ? catSvg() + (G.given.has(i) ? '<span class="seat">开局</span>' : "") : s === 1 ? X_SVG : ""}</span>`;
+  el.querySelector(".fg").innerHTML = s === 2 ? catSvg() : s === 1 ? X_SVG : "";
   const r = Math.floor(i / G.n) + 1, c = i % G.n + 1;
   el.setAttribute("aria-label", `第${r}行第${c}列，${s === 2 ? "爆米花" : s === 1 ? "已标×" : "空"}`);
   if (anim) { el.classList.remove(anim); void el.offsetWidth; el.classList.add(anim); }
@@ -368,8 +409,20 @@ function renderHint() {
   if (G.hints > 0) { b.textContent = G.hints; b.classList.remove("ad"); }
   else { b.textContent = "广告"; b.classList.add("ad"); }
 }
+/* 顶部：还差哪些颜色 */
+function renderChips() {
+  const done = new Set();
+  for (let i = 0; i < G.n * G.n; i++) if (G.st[i] === 2) done.add(G.reg[i]);
+  const html = [];
+  for (let g = 0; g < G.n; g++) {
+    html.push(`<span class="chip${done.has(g) ? " done" : ""}" style="background:${colorOf(g)}" aria-label="${done.has(g) ? "已坐好" : "还没坐"}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 12}"/></svg></span>`);
+  }
+  $("chips").innerHTML = html.join("");
+  $("chips").classList.toggle("small", G.n >= 11);
+  const left = G.n - done.size;
+  $("leftText").textContent = left ? `还有 ${left} 种颜色等着爆米花` : "全部坐好啦";
+}
 
-/* ---------- 规则判断 ---------- */
 const isAnswer = i => G.sol[Math.floor(i / G.n)] === i % G.n;
 function neighborsOf(i) {
   const { n, reg } = G, r = Math.floor(i / n), c = i % n, out = [];
@@ -381,7 +434,6 @@ function neighborsOf(i) {
   return out;
 }
 const conflictsWithCat = i => neighborsOf(i).some(j => G.st[j] === 2);
-
 function setMark(i, val, batch) {
   if (G.st[i] === 2 || G.bad[i]) return false;
   const want = val ? 1 : 0;
@@ -395,23 +447,23 @@ function flashTip(text) { $("tip").innerHTML = text; $("tip").classList.remove("
 
 function tryPlace(i) {
   if (G.over || G.st[i] === 2 || G.bad[i]) return;
-  // 和已经坐好的爆米花明显冲突：只提醒，不扣心
   if (conflictsWithCat(i)) {
-    drawCell(i, "shake"); sfx.bad();
+    drawCell(i, "shake"); fx.bad();
     flashTip("这一格和已经坐好的爆米花冲突（同行、同列、同色或挨着），不扣心，换一格吧。");
     return;
   }
   if (isAnswer(i)) {
     G.st[i] = 2; G.auto[i] = false;
-    drawCell(i, "pop"); sfx.good();
+    drawCell(i, "pop"); fx.good();
     if (save.autoX) for (const j of neighborsOf(i)) if (G.st[j] === 0) { G.st[j] = 1; G.auto[j] = true; drawCell(j); }
     const g = G.reg[i];
-    setTimeout(() => { for (let j = 0; j < G.n * G.n; j++) if (G.reg[j] === g) drawCell(j, "flash"); sfx.region(); }, 180);
+    setTimeout(() => { for (let j = 0; j < G.n * G.n; j++) if (G.reg[j] === g) drawCell(j, "flash"); fx.region(); }, 180);
+    renderChips();
     G.undo = [];
     checkWin();
   } else {
-    G.bad[i] = true; G.st[i] = 1; G.auto[i] = false;
-    drawCell(i, "shake"); sfx.bad();
+    G.bad[i] = true; G.st[i] = 1; G.auto[i] = false; G.mistakes++;
+    drawCell(i, "shake"); fx.bad();
     if (!G.tutorial) {
       G.hearts--; renderHearts();
       if (G.hearts <= 0) return fail();
@@ -421,49 +473,77 @@ function tryPlace(i) {
   }
 }
 
+/* 通关奖励：按尺寸给罐头，困难关翻倍，零失误加 20%，连胜每多一关加 10%（最多加 50%）；重玩已通过的关只给两成 */
+function rewardFor() {
+  const base = (BASE_CANS[G.n] || G.n * 2) * (G.hard ? 2 : 1);
+  const streakBonus = Math.min(0.5, Math.max(0, save.streak - 1) * 0.1);
+  const perfect = G.mistakes === 0 ? 0.2 : 0;
+  const first = !save.best[G.id];
+  let total = Math.round(base * (1 + streakBonus + perfect));
+  if (!first) total = Math.max(1, Math.round(total * 0.2));
+  return { total, base, streakBonus, perfect, first };
+}
 function checkWin() {
   if (G.st.filter(v => v === 2).length < G.n) return;
   G.over = true; clearInterval(timerId); tick();
+  save.streak++;
+  save.bestStreak = Math.max(save.bestStreak, save.streak);
+  const rw = rewardFor();
+  save.cans += rw.total;
   const prev = save.best[G.id];
   if (!prev || G.elapsed < prev) save.best[G.id] = Math.max(1, G.elapsed);
   persist();
+  $("gameCans").textContent = save.cans;
+  const notes = [];
+  if (!rw.first) notes.push("重玩只给两成");
+  if (G.hard) notes.push("困难关翻倍");
+  if (rw.streakBonus) notes.push(`连胜${save.streak}关 +${Math.round(rw.streakBonus * 100)}%`);
+  if (rw.perfect) notes.push("零失误 +20%");
   setTimeout(() => {
-    sfx.win();
+    fx.win();
     const next = G.id < LEVELS.length;
     showDialog(`<svg class="big" viewBox="0 0 40 40" aria-hidden="true"><use href="#cat"/></svg>
       <h3>都找到座位啦！</h3>
-      <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>剩余的心<b>${G.tutorial ? "—" : G.hearts}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div></div>
+      <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div><div>连胜<b>${save.streak}</b></div></div>
+      <div class="reward">${CAN_SVG}<div>猫罐头 <b>+${rw.total}</b><small>${notes.join(" · ") || "继续连胜有加成"}</small></div></div>
       ${next ? '<button class="btn" id="dNext">下一关</button>' : "<p>已经是最后一关了，厉害！</p>"}
-      <button class="btn alt" id="dHome">回到选关</button>`);
+      <div class="row2"><button class="btn alt" id="dShare">分享成绩</button><button class="btn alt" id="dHome">回到选关</button></div>`);
     if (next) $("dNext").onclick = () => { hideDialog(); startLevel(G.id + 1); };
     $("dHome").onclick = () => { hideDialog(); goHome(); };
+    $("dShare").onclick = () => share(`我在《爆米花找座位》第${G.id}关只用了${fmt(G.elapsed)}，已经攒了${save.cans}个猫罐头！你也来帮爆米花找座位吧`);
   }, 650);
 }
-
+function breakStreak() { if (save.streak) { save.streak = 0; persist(); } }
 function fail() {
   G.over = true; clearInterval(timerId);
   setTimeout(() => {
     showDialog(`<svg class="big" viewBox="0 0 40 40" aria-hidden="true"><use href="#sadcat"/></svg>
-      <h3>心用完了</h3><p>爆米花们还挤在一起。看个广告就能拿回1颗心接着玩。</p>
-      <button class="btn ad" id="dRevive">看广告复活（原型直接复活）</button>
+      <h3>心用完了</h3><p>看个广告就能拿回1颗心接着玩，连胜也保住。重新开始的话连胜会清零。</p>
+      <button class="btn dark" id="dRevive">看广告复活（原型直接复活）</button>
       <button class="btn alt" id="dRetry">重新开始本关</button>
       <button class="btn alt" id="dHome">回到选关</button>`);
     $("dRevive").onclick = () => {
       hideDialog(); G.hearts = 1; G.over = false; renderHearts();
       G.startT = Date.now() - G.elapsed * 1000; timerId = setInterval(tick, 500);
     };
-    $("dRetry").onclick = () => { hideDialog(); startLevel(G.id); };
-    $("dHome").onclick = () => { hideDialog(); goHome(); };
+    $("dRetry").onclick = () => { hideDialog(); breakStreak(); startLevel(G.id); };
+    $("dHome").onclick = () => { hideDialog(); breakStreak(); goHome(); };
   }, 400);
 }
-
 function goHome() {
   clearInterval(timerId); G = null;
-  $("game").classList.add("hidden"); $("home").classList.remove("hidden");
-  renderHome(); window.scrollTo(0, 0);
+  renderHome(); show("home");
 }
-$("backBtn").onclick = goHome;
-$("restartBtn").onclick = () => G && startLevel(G.id);
+/* 没通关就离开或重来，连胜清零（先问一下） */
+function leaveGuard(action) {
+  if (!G || G.over || save.streak === 0) return action();
+  showDialog(`<h3>确定离开？</h3><p>这一关还没通过，离开或重来会让 ${save.streak} 连胜清零。</p>
+    <button class="btn" id="dStay">继续玩</button><button class="btn alt" id="dLeave">确定</button>`);
+  $("dStay").onclick = hideDialog;
+  $("dLeave").onclick = () => { hideDialog(); breakStreak(); action(); };
+}
+$("backBtn").onclick = () => leaveGuard(goHome);
+$("restartBtn").onclick = () => leaveGuard(() => startLevel(G.id));
 $("undoBtn").onclick = () => {
   if (!G || G.over || !G.undo.length) return;
   const batch = G.undo.pop();
@@ -471,7 +551,6 @@ $("undoBtn").onclick = () => {
 };
 $("hintBtn").onclick = () => {
   if (!G || G.over) return;
-  // 找空格最少、还没坐爆米花的颜色区，把它的座位告诉玩家
   let best = -1, bestCount = 1e9;
   for (let r = 0; r < G.n; r++) {
     const i = r * G.n + G.sol[r];
@@ -481,25 +560,86 @@ $("hintBtn").onclick = () => {
     if (cnt < bestCount) { bestCount = cnt; best = i; }
   }
   if (best < 0) return;
-  if (G.hints > 0) G.hints--; // 用完以后正式版要看广告，原型直接给
+  if (G.hints > 0) G.hints--;
   renderHint();
-  G.bad[best] = false;
   if (G.st[best] === 1) G.st[best] = 0;
   drawCell(best, "hint");
   tryPlace(best);
 };
-$("setBtn").onclick = () => {
-  const row = (id, label, on) => `<div class="setrow"><span>${label}</span><button id="${id}" aria-pressed="${on}">${on ? "开" : "关"}</button></div>`;
+
+/* ---------- 设置 ---------- */
+function openSettings() {
+  const row = (id, label, on, sub) => `<div class="setrow"><span>${label}${sub ? `<small>${sub}</small>` : ""}</span><button id="${id}" aria-pressed="${on}">${on ? "开" : "关"}</button></div>`;
   showDialog(`<h3>设置</h3>
     ${row("sSound", "音效", save.sound)}
+    ${row("sVib", "震动反馈", save.vibrate, canVibrate ? "放对、放错、通关时震一下" : "这台手机的浏览器不支持震动，微信版里才有")}
     ${row("sAuto", "放下爆米花后自动标×", save.autoX)}
-    ${row("sRules", "显示规则卡片", !$("rulebar").classList.contains("hidden"))}
-    <button class="btn alt" id="sClose">好的</button>`);
-  $("sSound").onclick = () => { save.sound = !save.sound; persist(); $("setBtn").onclick(); };
-  $("sAuto").onclick = () => { save.autoX = !save.autoX; persist(); $("setBtn").onclick(); };
-  $("sRules").onclick = () => { $("rulebar").classList.toggle("hidden"); $("setBtn").onclick(); };
+    ${row("sRules", "显示规则卡片", save.rules)}
+    <button class="btn alt" id="sReset">清空进度</button>
+    <button class="btn" id="sClose">好的</button>`);
+  const flip = key => () => { save[key] = !save[key]; persist(); if (key === "rules" && G) $("rulebar").classList.toggle("hidden", !save.rules); if (key === "vibrate" && save.vibrate) buzz(30); openSettings(); };
+  $("sSound").onclick = flip("sound");
+  $("sVib").onclick = flip("vibrate");
+  $("sAuto").onclick = flip("autoX");
+  $("sRules").onclick = flip("rules");
+  $("sReset").onclick = () => {
+    showDialog(`<h3>清空进度？</h3><p>通关记录、猫罐头和连胜都会清零。</p>
+      <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">算了</button>`);
+    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0 }); persist(); hideDialog(); goHome(); };
+    $("dNo").onclick = openSettings;
+  };
   $("sClose").onclick = hideDialog;
-};
+}
+$("setBtn").onclick = openSettings;
+$("setHome").onclick = openSettings;
+
+/* ---------- 分享 ---------- */
+async function share(text) {
+  const data = { title: "爆米花找座位", text, url: SHARE_URL };
+  if (navigator.share) {
+    try { await navigator.share(data); return; } catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  const full = `${text} ${SHARE_URL}`;
+  let copied = false;
+  try { await navigator.clipboard.writeText(full); copied = true; } catch (e) {}
+  showDialog(`<h3>分享给朋友</h3>
+    <p>${copied ? "已经复制好了，去微信里粘贴发给朋友就行。" : "长按下面的文字全选复制，发给朋友。"}</p>
+    <textarea class="copybox" rows="4" readonly>${full}</textarea>
+    <button class="btn" id="dOk">好的</button>`);
+  $("dOk").onclick = hideDialog;
+}
+$("shareHome").onclick = () => share(`我在玩《爆米花找座位》，帮猫咪找座位的逻辑小游戏，已经攒了${save.cans}个猫罐头，你也来试试`);
+$("rankShare").onclick = () => share(`我在《爆米花找座位》攒了${save.cans}个猫罐头，最高连胜${save.bestStreak}关，来比比？`);
+
+/* ---------- 排行榜（现在只有本机成绩） ---------- */
+let rankTab = "cans";
+function renderRank() {
+  $("tabCans").setAttribute("aria-selected", rankTab === "cans");
+  $("tabTime").setAttribute("aria-selected", rankTab === "time");
+  if (rankTab === "cans") {
+    $("rankBody").innerHTML = `<table class="rank"><tbody>
+      <tr class="me"><td>我</td><td>猫罐头</td><td>${save.cans}</td></tr>
+      <tr><td></td><td>当前连胜</td><td>${save.streak}</td></tr>
+      <tr><td></td><td>最高连胜</td><td>${save.bestStreak}</td></tr>
+      <tr><td></td><td>已通关</td><td>${Object.keys(save.best).length} / ${LEVELS.length}</td></tr>
+      </tbody></table>`;
+  } else {
+    const bySize = {};
+    for (const [id, t] of Object.entries(save.best)) {
+      const L = LEVELS[id - 1]; if (!L) continue;
+      const key = L.hard ? "12×12 困难" : `${L.n}×${L.n}`;
+      if (!bySize[key] || t < bySize[key].t) bySize[key] = { t, id };
+    }
+    const keys = ["7×7", "8×8", "9×9", "10×10", "11×11", "12×12 困难"].filter(k => bySize[k]);
+    $("rankBody").innerHTML = keys.length
+      ? `<table class="rank"><tbody>${keys.map(k => `<tr class="me"><td>${k}</td><td>第${bySize[k].id}关</td><td>${fmt(bySize[k].t)}</td></tr>`).join("")}</tbody></table>`
+      : `<p class="empty">还没有通关记录，先去玩一关吧。</p>`;
+  }
+}
+$("rankBtn").onclick = () => { renderRank(); show("rank"); };
+$("rankBack").onclick = goHome;
+$("tabCans").onclick = () => { rankTab = "cans"; renderRank(); };
+$("tabTime").onclick = () => { rankTab = "time"; renderRank(); };
 
 /* ---------- 点击和拖动 ---------- */
 (function bindBoard() {
@@ -523,14 +663,14 @@ $("setBtn").onclick = () => {
     if (i < 0 || down.visited.has(i)) return;
     if (!down.moved) { down.moved = true; setMark(down.i, down.mode === "mark", down.batch); }
     down.visited.add(i);
-    if (setMark(i, down.mode === "mark", down.batch)) sfx.mark();
+    if (setMark(i, down.mode === "mark", down.batch)) fx.mark();
   });
   b.addEventListener("pointerup", () => {
     if (!down) return;
     const d = down; down = null;
     if (d.moved) { if (d.batch.length) G.undo.push(d.batch); return; }
     const i = d.i;
-    if (G.st[i] === 0) { const batch = []; setMark(i, true, batch); G.undo.push(batch); sfx.mark(); }
+    if (G.st[i] === 0) { const batch = []; setMark(i, true, batch); G.undo.push(batch); fx.mark(); }
     else if (G.st[i] === 1 && !G.bad[i]) tryPlace(i);
   });
   b.addEventListener("pointercancel", () => { if (down && down.batch.length) G.undo.push(down.batch); down = null; });
@@ -540,12 +680,12 @@ $("setBtn").onclick = () => {
 function showDialog(html) { $("dialog").innerHTML = html; $("overlay").classList.remove("hidden"); }
 function hideDialog() { $("overlay").classList.add("hidden"); }
 
-/* 防止双击、双指把页面放大（iPhone 的 Safari 会无视 user-scalable=no） */
+/* 防止双击、双指把页面放大 */
 document.addEventListener("dblclick", e => e.preventDefault(), { passive: false });
 document.addEventListener("gesturestart", e => e.preventDefault(), { passive: false });
 let lastTouchEnd = 0;
 document.addEventListener("touchend", e => {
-  if (e.target.closest && e.target.closest("button")) return; // 按钮不拦，连点按钮不会被吞
+  if (e.target.closest && e.target.closest("button, textarea")) return;
   const now = Date.now();
   if (now - lastTouchEnd < 350) e.preventDefault();
   lastTouchEnd = now;

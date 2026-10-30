@@ -74,48 +74,73 @@ function genRegions(n, sol, r) {
   return reg;
 }
 
-// 数解的个数（最多数到 cap）
-function countSolutions(n, reg, cap = 2) {
-  let count = 0;
-  const usedC = new Array(n).fill(false);
-  const usedR = new Array(n).fill(false);
-  function bt(row, prev) {
-    if (count >= cap) return;
-    if (row === n) { count++; return; }
-    for (let c = 0; c < n; c++) {
-      if (usedC[c]) continue;
-      if (prev >= 0 && Math.abs(prev - c) <= 1) continue;
-      const g = reg[row * n + c];
-      if (usedR[g]) continue;
-      usedC[c] = usedR[g] = true;
-      bt(row + 1, c);
-      usedC[c] = usedR[g] = false;
+// ---------- 快速求解器：每次挑候选最少的行/列/区来试 ----------
+// 返回最多 limit 个解（每个解是 sol[row] = col）
+function solveAll(n, reg, limit, skipSol) {
+  const N = n * n;
+  const groups = [];
+  for (let k = 0; k < n; k++) {
+    groups.push([...Array(n).keys()].map(c => k * n + c));
+    groups.push([...Array(n).keys()].map(r => r * n + k));
+  }
+  for (let g = 0; g < n; g++) groups.push([...Array(N).keys()].filter(i => reg[i] === g));
+  // 每个格子会排除掉哪些格子
+  const kills = [];
+  for (let i = 0; i < N; i++) {
+    const r = Math.floor(i / n), c = i % n, out = [];
+    for (let j = 0; j < N; j++) {
+      if (j === i) continue;
+      const rj = Math.floor(j / n), cj = j % n;
+      if (rj === r || cj === c || reg[j] === reg[i] || (Math.abs(rj - r) <= 1 && Math.abs(cj - c) <= 1)) out.push(j);
+    }
+    kills.push(out);
+  }
+  const sols = [];
+  const cats = [];
+  function rec(avail, done) {
+    if (sols.length >= limit) return;
+    // 挑一个还没完成、候选最少的组
+    let best = null, bestCnt = 1e9;
+    for (let gi = 0; gi < groups.length; gi++) {
+      if (done[gi]) continue;
+      let cnt = 0;
+      for (const i of groups[gi]) if (avail[i]) cnt++;
+      if (cnt === 0) return;          // 某组无处可放，死路
+      if (cnt < bestCnt) { bestCnt = cnt; best = gi; }
+    }
+    if (best === null) {
+      const sol = new Array(n);
+      for (const i of cats) sol[Math.floor(i / n)] = i % n;
+      if (!skipSol || sol.some((c, r) => c !== skipSol[r])) sols.push(sol);
+      return;
+    }
+    for (const i of groups[best]) {
+      if (!avail[i]) continue;
+      const a2 = avail.slice();
+      a2[i] = 0;
+      for (const j of kills[i]) a2[j] = 0;
+      const d2 = done.slice();
+      const r = Math.floor(i / n), c = i % n;
+      d2[r * 2] = 1; d2[c * 2 + 1] = 1; d2[2 * n + reg[i]] = 1;
+      cats.push(i);
+      rec(a2, d2);
+      cats.pop();
+      if (sols.length >= limit) return;
     }
   }
-  bt(0, -1);
-  return count;
+  rec(new Uint8Array(N).fill(1), new Uint8Array(groups.length));
+  return sols;
+}
+
+// 数解的个数（最多数到 cap）
+function countSolutions(n, reg, cap = 2) {
+  return solveAll(n, reg, cap).length;
 }
 
 // 找一个和标准答案不同的解（没有就返回 null）
 function findAlt(n, reg, sol) {
-  const usedC = new Array(n).fill(false), usedR = new Array(n).fill(false);
-  const cur = [];
-  let found = null;
-  function bt(row, prev) {
-    if (found) return;
-    if (row === n) { if (cur.some((c, r) => c !== sol[r])) found = cur.slice(); return; }
-    for (let c = 0; c < n; c++) {
-      if (usedC[c] || (prev >= 0 && Math.abs(prev - c) <= 1)) continue;
-      const g = reg[row * n + c];
-      if (usedR[g]) continue;
-      usedC[c] = usedR[g] = true; cur[row] = c;
-      bt(row + 1, c);
-      usedC[c] = usedR[g] = false;
-      if (found) return;
-    }
-  }
-  bt(0, -1);
-  return found;
+  const s = solveAll(n, reg, 1, sol);
+  return s.length ? s[0] : null;
 }
 
 // 去掉格子 i 后，它原来的区是否仍然连成一片
@@ -328,62 +353,70 @@ module.exports = { makeLevel, pickLevels, sawtooth, countSolutions, logicSolve }
 
 if (require.main === module) {
   const t0 = Date.now();
-  const CYCLES = 12;            // 6×6 → 7×7 → 8×8 → 9×9 为一轮，共 12 轮
-  const SIZES = [6, 7, 8, 9];
+  const fs = require('fs');
+  // 结构：每 11 关一组，前 10 关是 7→8→9→10→11 循环两次，第 11 关是 12×12 困难关，一共 5 组 55 关
+  const BLOCKS = 5;
+  const NORMAL = [7, 8, 9, 10, 11, 7, 8, 9, 10, 11];
   const isSimple = lv => lv.used.T_lookahead === 0 && lv.used.T_confineK === 0;
-  // 难度分三段，越往后允许的推理技巧越多
-  const allowed = (lv, c) =>
-    c < 4 ? isSimple(lv) :
-    c < 8 ? lv.used.T_lookahead === 0 && lv.used.T_confineK <= 1 :
-            lv.used.T_lookahead <= 1 && lv.used.T_confineK <= 2;
+  const normalOk = (lv, b) => b < 3 ? isSimple(lv) : lv.used.T_lookahead === 0 && lv.used.T_confineK <= 1;
+  const hardOk = lv => lv.used.T_confineK >= 1 || lv.used.T_lookahead >= 1;
   const shapeOk = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
-    return sz.filter(x => x === 1).length <= 1 && Math.max(...sz) <= lv.n * lv.n * 0.35;
+    return sz.filter(x => x === 1).length <= 1 && Math.max(...sz) <= lv.n * lv.n * 0.3;
   };
-
-  // 教学关：3 关 5×5，只用最简单的推理
-  const tutorial = pickLevels(5, 3, 2000, 60, isSimple);
-
-  // 每种尺寸先生成一大批候选，再按轮次挑
+  const need = { 7: 10, 8: 10, 9: 10, 10: 10, 11: 10 };
   const pools = {};
-  for (const n of SIZES) {
+  for (const n of [7, 8, 9, 10, 11]) {
     const pool = [];
-    for (let s = 0; pool.length < 260 && s < 6000; s++) {
-      const lv = makeLevel(n, 100000 * n + s);
-      if (lv && shapeOk(lv)) pool.push(lv);
+    let simple = 0;
+    // 一直生成，直到“简单题”够用（留余量），或者达到上限
+    for (let s = 0; s < 4000 && (simple < need[n] * 2.5 || pool.length < 40); s++) {
+      const lv = makeLevel(n, 300000 * n + s);
+      if (!lv || !shapeOk(lv)) continue;
+      pool.push(lv);
+      if (isSimple(lv)) simple++;
     }
     pool.sort((a, b) => a.score - b.score);
     pools[n] = pool;
-    console.log('pool', n, pool.length, 'simple', pool.filter(isSimple).length);
+    console.log('pool', n, pool.length, 'simple', simple, Math.round((Date.now() - t0) / 1000) + 's');
   }
-  const used = new Set();
-  const cycleLevels = [];
-  for (let c = 0; c < CYCLES; c++) {
-    for (const n of SIZES) {
-      const cands = pools[n].filter(lv => allowed(lv, c) && !used.has(lv));
-      // 每段内部从易到难慢慢往上挑
-      const seg = c < 4 ? c / 3 : c < 8 ? (c - 4) / 3 : (c - 8) / 3;
-      const q = 0.05 + 0.6 * seg;
-      const lv = cands[Math.min(cands.length - 1, Math.floor(q * cands.length))];
-      used.add(lv);
-      cycleLevels.push(lv);
-    }
+  const hardPool = [];
+  for (let s = 0; s < 400 && hardPool.length < 12; s++) {
+    const lv = makeLevel(12, 900000 + s);
+    if (lv && shapeOk(lv) && hardOk(lv)) hardPool.push(lv);
   }
-  const all = [...tutorial, ...cycleLevels];
+  hardPool.sort((a, b) => a.score - b.score);
+  console.log('hard pool', hardPool.length, Math.round((Date.now() - t0) / 1000) + 's');
 
-  // 前 30 关开局送 1 只爆米花，放在最大的颜色区里
-  const GIVEN_UNTIL = 30;
+  const used = new Set();
+  const seen = { 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
+  const all = [];
+  for (let b = 0; b < BLOCKS; b++) {
+    for (const n of NORMAL) {
+      const k = seen[n]++;
+      const cands = pools[n].filter(lv => normalOk(lv, b) && !used.has(lv));
+      const q = 0.05 + 0.5 * k / 9;
+      const lv = cands[Math.min(cands.length - 1, Math.floor(q * cands.length))];
+      used.add(lv); all.push({ lv, hard: false });
+    }
+    const hq = 0.15 + 0.6 * b / (BLOCKS - 1);
+    const hc = hardPool.filter(lv => !used.has(lv));
+    const hl = hc[Math.min(hc.length - 1, Math.floor(hq * hc.length))];
+    used.add(hl); all.push({ lv: hl, hard: true });
+  }
+
+  // 前 30 关里的普通关，开局送 1 只爆米花，放在最大的颜色区里
   const givenOf = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
     let best = 0;
     for (let r = 1; r < lv.n; r++) if (sz[lv.reg[r * lv.n + lv.sol[r]]] > sz[lv.reg[best * lv.n + lv.sol[best]]]) best = r;
     return best * lv.n + lv.sol[best];
   };
-  const levels = all.map((lv, i) => ({
-    id: i + 1, n: lv.n, reg: lv.reg.join(','), sol: lv.sol.join(','), score: lv.score,
-    tech: lv.used, given: i < GIVEN_UNTIL ? [givenOf(lv)] : []
+  const levels = all.map(({ lv, hard }, i) => ({
+    id: i + 1, n: lv.n, hard, reg: lv.reg.join(','), sol: lv.sol.join(','), score: lv.score,
+    tech: lv.used, given: (!hard && i < 30) ? [givenOf(lv)] : []
   }));
-  require('fs').writeFileSync(__dirname + '/levels.json', JSON.stringify(levels));
-  console.log('levels', levels.length, 'time', Date.now() - t0, 'ms');
-  console.log(levels.map(l => `${l.id}:${l.n}:${l.score}${l.tech.T_confineK ? 'K' : ''}${l.tech.T_lookahead ? 'L' : ''}`).join(' '));
+  fs.writeFileSync(__dirname + '/levels.json', JSON.stringify(levels));
+  console.log('levels', levels.length, 'time', Math.round((Date.now() - t0) / 1000) + 's');
+  console.log(levels.map(l => `${l.id}:${l.n}${l.hard ? 'H' : ''}:${l.score}${l.tech.T_confineK ? 'K' : ''}${l.tech.T_lookahead ? 'L' : ''}`).join(' '));
 }
