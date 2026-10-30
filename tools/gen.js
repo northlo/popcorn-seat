@@ -328,10 +328,8 @@ module.exports = { makeLevel, pickLevels, sawtooth, countSolutions, logicSolve }
 
 if (require.main === module) {
   const t0 = Date.now();
-  const tutorial = [
-    ...pickLevels(4, 1, 1000, 30),
-    ...pickLevels(5, 2, 2000, 40, lv => lv.used.T_lookahead === 0 && lv.used.T_confineK === 0),
-  ];
+  // 教学关：3 关 5×5，只用简单推理就能解
+  const tutorial = pickLevels(5, 3, 2000, 60, lv => lv.used.T_lookahead === 0 && lv.used.T_confineK === 0);
   // 正式关：最多 1 个单格区，最大的区不超过棋盘的 35%
   const shapeOk = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
@@ -342,7 +340,18 @@ if (require.main === module) {
   const ch3 = sawtooth(pickLevels(7, 15, 15000, 150, shapeOk));
   const ch4 = sawtooth(pickLevels(8, 5, 21000, 60, shapeOk));
   const all = [...tutorial, ...ch1, ...ch2, ...ch3, ...ch4];
-  const levels = all.map((lv, i) => ({ id: i + 1, n: lv.n, reg: lv.reg.join(''), sol: lv.sol.join(''), score: lv.score }));
+  // 前期关卡（教学 + 第1、2章）开局送 1 只爆米花，放在最大的颜色区里，尽量不让题目变得太简单
+  const GIVEN_UNTIL = tutorial.length + ch1.length + ch2.length;
+  const givenOf = lv => {
+    const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
+    let best = 0;
+    for (let r = 1; r < lv.n; r++) if (sz[lv.reg[r * lv.n + lv.sol[r]]] > sz[lv.reg[best * lv.n + lv.sol[best]]]) best = r;
+    return best * lv.n + lv.sol[best];
+  };
+  const levels = all.map((lv, i) => ({
+    id: i + 1, n: lv.n, reg: lv.reg.join(''), sol: lv.sol.join(''), score: lv.score,
+    given: i < GIVEN_UNTIL ? [givenOf(lv)] : []
+  }));
   require('fs').writeFileSync(__dirname + '/levels.json', JSON.stringify(levels));
   console.log('levels', levels.length, 'time', Date.now() - t0, 'ms');
   console.log(levels.map(l => `${l.id}:${l.n}x${l.n}:${l.score}`).join('  '));

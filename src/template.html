@@ -24,7 +24,7 @@
   color-scheme: light;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; margin: 0; }
+html, body { height: 100%; margin: 0; touch-action: manipulation; }
 body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
 button { font-family: inherit; color: inherit; cursor: pointer; }
 button:focus-visible { outline: 3px solid var(--butter); outline-offset: 2px; }
@@ -72,6 +72,7 @@ button:focus-visible { outline: 3px solid var(--butter); outline-offset: 2px; }
 .cell .x { font-size: calc(min(100vw, 448px) / var(--n) * .38); color: rgba(43,37,64,.55); line-height: 1; font-weight: 300; pointer-events: none; }
 .cell.bad .x { color: var(--danger); font-weight: 600; }
 .cell svg.cat { width: 82%; height: 82%; pointer-events: none; }
+.cell .seat { position: absolute; left: 2px; bottom: 2px; font-size: 9px; line-height: 1; padding: 2px 3px; border-radius: 4px; background: rgba(43,37,64,.72); color: #fff; pointer-events: none; }
 .cell.pop svg.cat { animation: pop .28s ease-out; }
 .cell.shake { animation: shake .35s; }
 .cell.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.65); animation: fade .6s forwards; pointer-events: none; }
@@ -107,17 +108,17 @@ button:focus-visible { outline: 3px solid var(--butter); outline-offset: 2px; }
     <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#cat"/></svg>
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v0.1 · 先试手感，画面以后换成爆米花</p>
+      <p>原型 v0.2 · 先试手感，画面以后换成爆米花</p>
     </div>
   </div>
   <div class="progress"><span>已通关 <b id="doneCount">0</b> / <b id="totalCount">50</b></span><span>本版所有关卡都开放</span></div>
   <div id="chapters" style="display:flex;flex-direction:column;gap:12px"></div>
   <div class="settings">
-    <button class="chip" id="optAuto" aria-pressed="true">自动标×：开</button>
+    <button class="chip" id="optAuto" aria-pressed="false">自动标×：关</button>
     <button class="chip" id="optSound" aria-pressed="true">音效：开</button>
     <button class="chip" id="optReset" aria-pressed="false">清空进度</button>
   </div>
-  <p class="note">原型说明：复活和提示在正式版里要看广告，这一版点了直接生效。进度只保存在这台手机的浏览器里。</p>
+  <p class="note">原型说明：前30关开局会先坐好1只爆米花，后面的关卡不送。复活和提示在正式版里要看广告，这一版点了直接生效。进度只保存在这台手机的浏览器里。</p>
 </section>
 
 <section class="screen hidden" id="game">
@@ -184,7 +185,7 @@ const CHAPTERS = [
   { name: "加试 半夜跑酷", note: "8×8，挑战一下", from: 46, to: 50 }
 ];
 const TIPS = {
-  1: "<b>规则1</b>：每一行、每一列都要正好放1只爆米花。点一下格子标×（这里没有猫），再点一下就放爆米花。",
+  1: "<b>规则1</b>：每一行、每一列都要正好放1只爆米花。棋盘上已经坐好了1只，它所在的那一行、那一列就不能再放了，把那些格子点一下标上×。确定某格是爆米花的座位，就再点一下放上去。",
   2: "<b>规则2</b>：每个颜色区也只能有1只爆米花。先找格子最少的颜色区下手。",
   3: "<b>规则3</b>：爆米花不喜欢挤，两只不能挨着，斜着挨也不行。正式关卡放错会扣一颗心。"
 };
@@ -192,7 +193,7 @@ const REGION_COLORS = ["#FBD0D4", "#FDE3AE", "#CBEBBE", "#C5DCF7", "#E2D0F5", "#
 
 /* 存档：只存在这个浏览器里，读不到也能正常玩 */
 const SAVE_KEY = "popcorn-proto-v1";
-let save = { best: {}, auto: true, sound: true };
+let save = { best: {}, autoX: false, sound: true };
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (s) save = Object.assign(save, s); } catch (e) {}
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
 
@@ -238,15 +239,15 @@ function renderHome() {
     }
     return `<div class="chapter"><h2>${ch.name}<span>${ch.note}</span></h2><div class="levels">${btns.join("")}</div></div>`;
   }).join("");
-  $("optAuto").textContent = "自动标×：" + (save.auto ? "开" : "关");
-  $("optAuto").setAttribute("aria-pressed", save.auto);
+  $("optAuto").textContent = "自动标×：" + (save.autoX ? "开" : "关");
+  $("optAuto").setAttribute("aria-pressed", save.autoX);
   $("optSound").textContent = "音效：" + (save.sound ? "开" : "关");
   $("optSound").setAttribute("aria-pressed", save.sound);
 }
 $("chapters").addEventListener("click", e => {
   const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id);
 });
-$("optAuto").onclick = () => { save.auto = !save.auto; persist(); renderHome(); };
+$("optAuto").onclick = () => { save.autoX = !save.autoX; persist(); renderHome(); };
 $("optSound").onclick = () => { save.sound = !save.sound; persist(); renderHome(); };
 $("optReset").onclick = () => {
   showDialog(`<h3>清空进度？</h3><p>所有通关记录会被删除。</p>
@@ -269,6 +270,7 @@ function startLevel(id) {
     st: new Array(n * n).fill(0), // 0 空，1 标×，2 爆米花
     auto: new Array(n * n).fill(false), // 是不是自动标的×
     bad: new Array(n * n).fill(false), // 放错过的格子
+    given: new Set(L.given || []), // 开局就坐好的爆米花
     hearts: 3, tutorial: id <= 3,
     undo: [], startT: Date.now(), elapsed: 0, over: false
   };
@@ -278,6 +280,7 @@ function startLevel(id) {
   $("lvSub").textContent = `${n}×${n}` + (G.tutorial ? " · 教学" : "");
   if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
   else $("tip").classList.add("hidden");
+  for (const i of G.given) G.st[i] = 2;
   buildBoard();
   renderHearts();
   clearInterval(timerId);
@@ -309,7 +312,7 @@ function cellEl(i) { return $("board").children[i]; }
 function drawCell(i, anim) {
   const el = cellEl(i), s = G.st[i];
   el.classList.toggle("bad", G.bad[i]);
-  el.innerHTML = s === 2 ? catSvg() : s === 1 ? '<span class="x">×</span>' : "";
+  el.innerHTML = s === 2 ? catSvg() + (G.given.has(i) ? '<span class="seat">开局</span>' : "") : s === 1 ? '<span class="x">×</span>' : "";
   const r = Math.floor(i / G.n) + 1, c = i % G.n + 1;
   el.setAttribute("aria-label", `第${r}行第${c}列，${s === 2 ? "爆米花" : s === 1 ? "已标×" : "空"}`);
   if (anim) { el.classList.remove(anim); void el.offsetWidth; el.classList.add(anim); }
@@ -361,7 +364,7 @@ function tryPlace(i) {
     G.st[i] = 2; G.auto[i] = false;
     drawCell(i, "pop");
     sfx.good();
-    if (save.auto) {
+    if (save.autoX) {
       for (const j of neighborsOf(i)) if (G.st[j] === 0) { G.st[j] = 1; G.auto[j] = true; drawCell(j); }
     }
     // 某个颜色区完成就亮一下
@@ -492,6 +495,18 @@ $("hintBtn").onclick = () => {
 /* ---------- 弹窗 ---------- */
 function showDialog(html) { $("dialog").innerHTML = html; $("overlay").classList.remove("hidden"); const f = $("dialog").querySelector("button"); if (f) f.focus(); }
 function hideDialog() { $("overlay").classList.add("hidden"); }
+
+/* 防止双击、双指把页面放大（iPhone 的 Safari 会无视 user-scalable=no） */
+document.addEventListener("dblclick", e => e.preventDefault(), { passive: false });
+document.addEventListener("gesturestart", e => e.preventDefault(), { passive: false });
+let lastTouchEnd = 0;
+document.addEventListener("touchend", e => {
+  // 按钮不拦，保证连续点按钮不会被吞掉；其它地方连点两下不触发放大
+  if (e.target.closest && e.target.closest("button")) return;
+  const now = Date.now();
+  if (now - lastTouchEnd < 350) e.preventDefault();
+  lastTouchEnd = now;
+}, { passive: false });
 
 renderHome();
 </script>
