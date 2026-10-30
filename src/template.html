@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>爆米花找座位</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* 布局：手机竖屏单列，上方状态条，中间正方形棋盘，下方三个大按钮 */
+  --bg: #F4F1FA;
+  --panel: #FFFFFF;
+  --ink: #2B2540;
+  --ink-soft: #6E6785;
+  --accent: #5B3F8C;
+  --butter: #F2B63C;
+  --danger: #D9534F;
+  --line: #CFC8DE;
+  --edge: #3A3150;
+  --font-display: "ZCOOL KuaiLe", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --font-body: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+button { font-family: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--butter); outline-offset: 2px; }
+.screen { max-width: 480px; margin: 0 auto; padding: 16px 16px 24px; min-height: 100%; display: flex; flex-direction: column; gap: 14px; }
+.hidden { display: none !important; }
+
+/* 选关页 */
+.brand { display: flex; align-items: center; gap: 12px; padding-top: 8px; }
+.brand svg { width: 56px; height: 56px; flex: none; }
+.brand h1 { font-family: var(--font-display); font-weight: 400; font-size: 32px; margin: 0; line-height: 1.1; letter-spacing: 1px; }
+.brand p { margin: 2px 0 0; color: var(--ink-soft); font-size: 13px; }
+.progress { display: flex; justify-content: space-between; align-items: center; background: var(--panel); border-radius: 14px; padding: 10px 14px; font-size: 14px; color: var(--ink-soft); }
+.progress b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.chapter { background: var(--panel); border-radius: 16px; padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.chapter h2 { margin: 0; font-size: 16px; display: flex; justify-content: space-between; align-items: baseline; }
+.chapter h2 span { font-weight: 400; font-size: 12px; color: var(--ink-soft); }
+.levels { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.lv { aspect-ratio: 1; border: 1.5px solid var(--line); background: #FBFAFE; border-radius: 12px; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 0; }
+.lv small { font-size: 10px; font-weight: 400; color: var(--ink-soft); }
+.lv.done { background: #FFF4D9; border-color: var(--butter); }
+.lv.done small { color: #8A6512; }
+.settings { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { border: 1.5px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 13px; }
+.chip[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); background: #EEE8F8; }
+.note { font-size: 12px; color: var(--ink-soft); margin: 0; }
+
+/* 游戏页 */
+.topbar { display: flex; align-items: center; gap: 10px; }
+.iconbtn { width: 40px; height: 40px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--panel); display: grid; place-items: center; font-size: 20px; padding: 0; flex: none; }
+.lvtitle { flex: 1; min-width: 0; }
+.lvtitle b { display: block; font-size: 17px; }
+.lvtitle span { font-size: 12px; color: var(--ink-soft); }
+.hearts { display: flex; gap: 3px; }
+.hearts svg { width: 22px; height: 22px; }
+.timer { font-variant-numeric: tabular-nums; font-size: 14px; color: var(--ink-soft); min-width: 44px; text-align: right; }
+.tip { background: #FFF4D9; border: 1.5px solid #F4D58A; border-radius: 14px; padding: 10px 12px; font-size: 14px; }
+.tip b { color: #8A6512; }
+.boardwrap { display: flex; justify-content: center; }
+.board { --n: 5; width: min(100%, 448px); aspect-ratio: 1; display: grid; grid-template-columns: repeat(var(--n), 1fr); grid-template-rows: repeat(var(--n), 1fr); border: 3px solid var(--edge); border-radius: 10px; overflow: hidden; touch-action: none; user-select: none; -webkit-user-select: none; background: var(--edge); }
+.cell { position: relative; border: 0 solid rgba(58,49,80,.22); border-top-width: 1px; border-left-width: 1px; display: grid; place-items: center; }
+.cell.r0 { border-top-width: 0; }
+.cell.c0 { border-left-width: 0; }
+.cell.tT { border-top: 3px solid var(--edge); }
+.cell.tL { border-left: 3px solid var(--edge); }
+.cell .x { font-size: calc(min(100vw, 448px) / var(--n) * .38); color: rgba(43,37,64,.55); line-height: 1; font-weight: 300; pointer-events: none; }
+.cell.bad .x { color: var(--danger); font-weight: 600; }
+.cell svg.cat { width: 82%; height: 82%; pointer-events: none; }
+.cell.pop svg.cat { animation: pop .28s ease-out; }
+.cell.shake { animation: shake .35s; }
+.cell.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.65); animation: fade .6s forwards; pointer-events: none; }
+.cell.hint::after { content: ""; position: absolute; inset: 3px; border: 3px solid var(--butter); border-radius: 8px; animation: fade 1.6s forwards; pointer-events: none; }
+@keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@keyframes fade { from { opacity: 1; } to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .cell.pop svg.cat, .cell.shake, .cell.flash::after, .cell.hint::after { animation: none; } }
+.tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tool { border: 1.5px solid var(--line); background: var(--panel); border-radius: 14px; padding: 10px 4px; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tool small { font-size: 11px; color: var(--ink-soft); }
+.rules { font-size: 13px; color: var(--ink-soft); margin: 0; text-align: center; }
+
+/* 弹窗 */
+.overlay { position: fixed; inset: 0; background: rgba(43,37,64,.45); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 5; }
+.dialog { background: var(--panel); border-radius: 20px; padding: 22px 20px 18px; width: min(100%, 340px); text-align: center; display: flex; flex-direction: column; gap: 12px; }
+.dialog h3 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin: 0; }
+.dialog p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+.dialog svg.big { width: 84px; height: 84px; margin: 0 auto; }
+.stats { display: flex; justify-content: center; gap: 18px; font-size: 14px; }
+.stats b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.btn { border: 0; border-radius: 14px; padding: 12px; font-size: 16px; font-weight: 600; background: var(--accent); color: #fff; }
+.btn.alt { background: #EEE8F8; color: var(--accent); }
+.btn.ad { background: var(--butter); color: #3D2B00; }
+#app { position: relative; min-height: 100%; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<section class="screen" id="home">
+  <div class="brand">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#cat"/></svg>
+    <div>
+      <h1>爆米花找座位</h1>
+      <p>原型 v0.1 · 先试手感，画面以后换成爆米花</p>
+    </div>
+  </div>
+  <div class="progress"><span>已通关 <b id="doneCount">0</b> / <b id="totalCount">50</b></span><span>本版所有关卡都开放</span></div>
+  <div id="chapters" style="display:flex;flex-direction:column;gap:12px"></div>
+  <div class="settings">
+    <button class="chip" id="optAuto" aria-pressed="true">自动标×：开</button>
+    <button class="chip" id="optSound" aria-pressed="true">音效：开</button>
+    <button class="chip" id="optReset" aria-pressed="false">清空进度</button>
+  </div>
+  <p class="note">原型说明：复活和提示在正式版里要看广告，这一版点了直接生效。进度只保存在这台手机的浏览器里。</p>
+</section>
+
+<section class="screen hidden" id="game">
+  <div class="topbar">
+    <button class="iconbtn" id="backBtn" aria-label="返回选关">‹</button>
+    <div class="lvtitle"><b id="lvName">第1关</b><span id="lvSub">4×4</span></div>
+    <div class="hearts" id="hearts" aria-label="剩余的心"></div>
+    <div class="timer" id="timer">0:00</div>
+  </div>
+  <div class="tip hidden" id="tip"></div>
+  <div class="boardwrap"><div class="board" id="board" role="grid" aria-label="棋盘"></div></div>
+  <p class="rules">每行、每列、每个颜色区各1只爆米花，两只不能挨着（斜着也不行）</p>
+  <div class="tools">
+    <button class="tool" id="undoBtn">撤回<small>只撤回标×</small></button>
+    <button class="tool" id="hintBtn">提示<small>正式版看广告</small></button>
+    <button class="tool" id="restartBtn">重来<small>本关重新开始</small></button>
+  </div>
+  <p class="note" style="text-align:center">点一下标×，再点一下放爆米花；按住拖动可以连续标×，从×上开始拖可以擦掉</p>
+</section>
+
+<div class="overlay hidden" id="overlay"><div class="dialog" id="dialog"></div></div>
+
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="cat" viewBox="0 0 40 40">
+      <path d="M7 15 L9 3 L17 10 Z" fill="#F6E7CF" stroke="#7A5634" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M33 15 L31 3 L23 10 Z" fill="#F6E7CF" stroke="#7A5634" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M10 12 L10.5 6.5 L14.5 10 Z" fill="#F4B6B0"/>
+      <path d="M30 12 L29.5 6.5 L25.5 10 Z" fill="#F4B6B0"/>
+      <ellipse cx="20" cy="22" rx="15" ry="13" fill="#F6E7CF" stroke="#7A5634" stroke-width="1.6"/>
+      <path d="M13 13 Q20 9 27 13 Q24 16 20 15 Q16 16 13 13 Z" fill="#E7B677"/>
+      <ellipse cx="14.5" cy="21.5" rx="2" ry="2.6" fill="#2B2540"/>
+      <ellipse cx="25.5" cy="21.5" rx="2" ry="2.6" fill="#2B2540"/>
+      <circle cx="15.2" cy="20.6" r=".7" fill="#fff"/>
+      <circle cx="26.2" cy="20.6" r=".7" fill="#fff"/>
+      <path d="M18.6 25.4 L21.4 25.4 L20 27 Z" fill="#E98A86"/>
+      <path d="M20 27 Q18.5 29 17 28.2 M20 27 Q21.5 29 23 28.2" fill="none" stroke="#7A5634" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M8 24 L13 25 M8 27.5 L13 26.6 M32 24 L27 25 M32 27.5 L27 26.6" stroke="#7A5634" stroke-width=".9" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="sadcat" viewBox="0 0 40 40">
+      <path d="M7 15 L9 3 L17 10 Z" fill="#F6E7CF" stroke="#7A5634" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M33 15 L31 3 L23 10 Z" fill="#F6E7CF" stroke="#7A5634" stroke-width="1.6" stroke-linejoin="round"/>
+      <ellipse cx="20" cy="22" rx="15" ry="13" fill="#F6E7CF" stroke="#7A5634" stroke-width="1.6"/>
+      <path d="M13 13 Q20 9 27 13 Q24 16 20 15 Q16 16 13 13 Z" fill="#E7B677"/>
+      <path d="M12 21 Q14.5 23 17 21 M23 21 Q25.5 23 28 21" fill="none" stroke="#2B2540" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M18.6 25.4 L21.4 25.4 L20 27 Z" fill="#E98A86"/>
+      <path d="M17 29.5 Q20 27.5 23 29.5" fill="none" stroke="#7A5634" stroke-width="1.1" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="heart" viewBox="0 0 24 24">
+      <path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<script>
+const LEVELS = /*LEVELS*/[];
+const CHAPTERS = [
+  { name: "教学关", note: "学会三条规则，不扣心", from: 1, to: 3 },
+  { name: "第1章 早上醒来", note: "5×5", from: 4, to: 15 },
+  { name: "第2章 抢沙发", note: "6×6", from: 16, to: 30 },
+  { name: "第3章 零食时间", note: "7×7", from: 31, to: 45 },
+  { name: "加试 半夜跑酷", note: "8×8，挑战一下", from: 46, to: 50 }
+];
+const TIPS = {
+  1: "<b>规则1</b>：每一行、每一列都要正好放1只爆米花。点一下格子标×（这里没有猫），再点一下就放爆米花。",
+  2: "<b>规则2</b>：每个颜色区也只能有1只爆米花。先找格子最少的颜色区下手。",
+  3: "<b>规则3</b>：爆米花不喜欢挤，两只不能挨着，斜着挨也不行。正式关卡放错会扣一颗心。"
+};
+const REGION_COLORS = ["#FBD0D4", "#FDE3AE", "#CBEBBE", "#C5DCF7", "#E2D0F5", "#F9C9A3", "#BDE6E2", "#ECE4C4", "#D6D2E6"];
+
+/* 存档：只存在这个浏览器里，读不到也能正常玩 */
+const SAVE_KEY = "popcorn-proto-v1";
+let save = { best: {}, auto: true, sound: true };
+try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (s) save = Object.assign(save, s); } catch (e) {}
+function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
+
+/* 音效：用浏览器合成，不需要文件 */
+let audio = null;
+function tone(freqs, dur = 0.12, type = "sine", vol = 0.12) {
+  if (!save.sound) return;
+  try {
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const t0 = audio.currentTime;
+    freqs.forEach((f, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = type; o.frequency.value = f;
+      const s = t0 + i * dur * 0.8;
+      g.gain.setValueAtTime(0, s);
+      g.gain.linearRampToValueAtTime(vol, s + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, s + dur);
+      o.connect(g); g.connect(audio.destination);
+      o.start(s); o.stop(s + dur + 0.02);
+    });
+  } catch (e) {}
+}
+const sfx = {
+  mark: () => tone([520], 0.05, "triangle", 0.06),
+  good: () => tone([660, 990], 0.11, "sine", 0.12),
+  bad: () => tone([180, 140], 0.16, "square", 0.05),
+  region: () => tone([1180], 0.09, "sine", 0.08),
+  win: () => tone([523, 659, 784, 1046], 0.16, "triangle", 0.12)
+};
+
+const $ = id => document.getElementById(id);
+const catSvg = (sym = "cat") => `<svg class="cat" viewBox="0 0 40 40" aria-hidden="true"><use href="#${sym}"/></svg>`;
+
+/* ---------- 选关页 ---------- */
+function renderHome() {
+  $("totalCount").textContent = LEVELS.length;
+  $("doneCount").textContent = Object.keys(save.best).length;
+  $("chapters").innerHTML = CHAPTERS.map(ch => {
+    const btns = [];
+    for (let id = ch.from; id <= ch.to; id++) {
+      const best = save.best[id];
+      btns.push(`<button class="lv${best ? " done" : ""}" data-id="${id}" aria-label="第${id}关${best ? "，已通关" : ""}">${id}<small>${best ? fmt(best) : LEVELS[id - 1].n + "×" + LEVELS[id - 1].n}</small></button>`);
+    }
+    return `<div class="chapter"><h2>${ch.name}<span>${ch.note}</span></h2><div class="levels">${btns.join("")}</div></div>`;
+  }).join("");
+  $("optAuto").textContent = "自动标×：" + (save.auto ? "开" : "关");
+  $("optAuto").setAttribute("aria-pressed", save.auto);
+  $("optSound").textContent = "音效：" + (save.sound ? "开" : "关");
+  $("optSound").setAttribute("aria-pressed", save.sound);
+}
+$("chapters").addEventListener("click", e => {
+  const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id);
+});
+$("optAuto").onclick = () => { save.auto = !save.auto; persist(); renderHome(); };
+$("optSound").onclick = () => { save.sound = !save.sound; persist(); renderHome(); };
+$("optReset").onclick = () => {
+  showDialog(`<h3>清空进度？</h3><p>所有通关记录会被删除。</p>
+    <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">算了</button>`);
+  $("dYes").onclick = () => { save.best = {}; persist(); hideDialog(); renderHome(); };
+  $("dNo").onclick = hideDialog;
+};
+
+/* ---------- 游戏状态 ---------- */
+let G = null; // 当前关卡
+let timerId = null;
+
+function startLevel(id) {
+  const L = LEVELS[id - 1];
+  const n = L.n;
+  G = {
+    id, n,
+    reg: L.reg.split("").map(Number),
+    sol: L.sol.split("").map(Number),
+    st: new Array(n * n).fill(0), // 0 空，1 标×，2 爆米花
+    auto: new Array(n * n).fill(false), // 是不是自动标的×
+    bad: new Array(n * n).fill(false), // 放错过的格子
+    hearts: 3, tutorial: id <= 3,
+    undo: [], startT: Date.now(), elapsed: 0, over: false
+  };
+  $("home").classList.add("hidden");
+  $("game").classList.remove("hidden");
+  $("lvName").textContent = `第${id}关`;
+  $("lvSub").textContent = `${n}×${n}` + (G.tutorial ? " · 教学" : "");
+  if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
+  else $("tip").classList.add("hidden");
+  buildBoard();
+  renderHearts();
+  clearInterval(timerId);
+  timerId = setInterval(tick, 500); tick();
+  window.scrollTo(0, 0);
+}
+function tick() {
+  if (!G || G.over) return;
+  G.elapsed = Math.floor((Date.now() - G.startT) / 1000);
+  $("timer").textContent = fmt(G.elapsed);
+}
+function fmt(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+
+function buildBoard() {
+  const { n, reg } = G, b = $("board");
+  b.style.setProperty("--n", n);
+  let html = "";
+  for (let i = 0; i < n * n; i++) {
+    const r = Math.floor(i / n), c = i % n;
+    const cls = ["cell"];
+    if (r === 0) cls.push("r0"); else if (reg[i] !== reg[i - n]) cls.push("tT");
+    if (c === 0) cls.push("c0"); else if (reg[i] !== reg[i - 1]) cls.push("tL");
+    html += `<div class="${cls.join(" ")}" data-i="${i}" role="gridcell" style="background:${REGION_COLORS[reg[i] % REGION_COLORS.length]}"></div>`;
+  }
+  b.innerHTML = html;
+  for (let i = 0; i < n * n; i++) drawCell(i);
+}
+function cellEl(i) { return $("board").children[i]; }
+function drawCell(i, anim) {
+  const el = cellEl(i), s = G.st[i];
+  el.classList.toggle("bad", G.bad[i]);
+  el.innerHTML = s === 2 ? catSvg() : s === 1 ? '<span class="x">×</span>' : "";
+  const r = Math.floor(i / G.n) + 1, c = i % G.n + 1;
+  el.setAttribute("aria-label", `第${r}行第${c}列，${s === 2 ? "爆米花" : s === 1 ? "已标×" : "空"}`);
+  if (anim) { el.classList.remove(anim); void el.offsetWidth; el.classList.add(anim); }
+}
+function renderHearts() {
+  const h = [];
+  for (let k = 0; k < 3; k++) {
+    const on = k < G.hearts;
+    h.push(`<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${on ? "#E05A6D" : "#D8D2E3"}"><use href="#heart"/></svg>`);
+  }
+  $("hearts").innerHTML = h.join("");
+  $("hearts").setAttribute("aria-label", G.tutorial ? "教学关不扣心" : `剩余 ${G.hearts} 颗心`);
+}
+
+/* ---------- 规则判断 ---------- */
+const isAnswer = i => G.sol[Math.floor(i / G.n)] === i % G.n;
+function neighborsOf(i) {
+  const { n, reg } = G, r = Math.floor(i / n), c = i % n, out = [];
+  for (let j = 0; j < n * n; j++) {
+    if (j === i) continue;
+    const rj = Math.floor(j / n), cj = j % n;
+    if (rj === r || cj === c || reg[j] === reg[i] || (Math.abs(rj - r) <= 1 && Math.abs(cj - c) <= 1)) out.push(j);
+  }
+  return out;
+}
+
+function setMark(i, val, batch) {
+  if (G.st[i] === 2 || G.bad[i]) return false;
+  const want = val ? 1 : 0;
+  if (G.st[i] === want) return false;
+  batch.push([i, G.st[i], G.auto[i]]);
+  G.st[i] = want; G.auto[i] = false;
+  drawCell(i);
+  return true;
+}
+
+function conflictsWithCat(i) {
+  return neighborsOf(i).some(j => G.st[j] === 2);
+}
+function tryPlace(i) {
+  if (G.over || G.st[i] === 2 || G.bad[i]) return;
+  // 和已经放好的爆米花明显冲突：只提醒，不扣心
+  if (conflictsWithCat(i)) {
+    drawCell(i, "shake"); sfx.bad();
+    flashTip("这一格和已经坐好的爆米花冲突（同行、同列、同色区或挨着），不用扣心，换一格吧。");
+    return;
+  }
+  if (isAnswer(i)) {
+    G.st[i] = 2; G.auto[i] = false;
+    drawCell(i, "pop");
+    sfx.good();
+    if (save.auto) {
+      for (const j of neighborsOf(i)) if (G.st[j] === 0) { G.st[j] = 1; G.auto[j] = true; drawCell(j); }
+    }
+    // 某个颜色区完成就亮一下
+    const g = G.reg[i];
+    setTimeout(() => { for (let j = 0; j < G.n * G.n; j++) if (G.reg[j] === g) drawCell(j, "flash"); sfx.region(); }, 180);
+    // 放下的猫不能撤回，清掉之前的撤回记录，免得撤回时和猫冲突
+    G.undo = [];
+    checkWin();
+  } else {
+    G.bad[i] = true; G.st[i] = 1; G.auto[i] = false;
+    drawCell(i, "shake");
+    sfx.bad();
+    if (!G.tutorial) {
+      G.hearts--; renderHearts();
+      if (G.hearts <= 0) return fail();
+    } else {
+      flashTip("这里放不了：想想同一行、同一列、同一个颜色区，还有周围一圈。教学关不扣心。");
+    }
+  }
+}
+function flashTip(text) {
+  $("tip").innerHTML = text; $("tip").classList.remove("hidden");
+}
+
+function checkWin() {
+  const cats = G.st.filter(v => v === 2).length;
+  if (cats < G.n) return;
+  G.over = true; clearInterval(timerId); tick();
+  const prev = save.best[G.id];
+  if (!prev || G.elapsed < prev) save.best[G.id] = Math.max(1, G.elapsed);
+  persist();
+  setTimeout(() => {
+    sfx.win();
+    const next = G.id < LEVELS.length;
+    showDialog(`<svg class="big" viewBox="0 0 40 40" aria-hidden="true"><use href="#cat"/></svg>
+      <h3>都找到座位啦！</h3>
+      <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>剩余的心<b>${G.tutorial ? "—" : G.hearts}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div></div>
+      ${next ? '<button class="btn" id="dNext">下一关</button>' : "<p>已经是最后一关了，厉害！</p>"}
+      <button class="btn alt" id="dHome">回到选关</button>`);
+    if (next) $("dNext").onclick = () => { hideDialog(); startLevel(G.id + 1); };
+    $("dHome").onclick = () => { hideDialog(); goHome(); };
+  }, 650);
+}
+
+function fail() {
+  G.over = true; clearInterval(timerId);
+  setTimeout(() => {
+    showDialog(`<svg class="big" viewBox="0 0 40 40" aria-hidden="true"><use href="#sadcat"/></svg>
+      <h3>心用完了</h3><p>爆米花们还挤在一起。看个广告就能拿回1颗心接着玩。</p>
+      <button class="btn ad" id="dRevive">看广告复活（原型直接复活）</button>
+      <button class="btn alt" id="dRetry">重新开始本关</button>
+      <button class="btn alt" id="dHome">回到选关</button>`);
+    $("dRevive").onclick = () => {
+      hideDialog(); G.hearts = 1; G.over = false; renderHearts();
+      G.startT = Date.now() - G.elapsed * 1000; timerId = setInterval(tick, 500);
+    };
+    $("dRetry").onclick = () => { hideDialog(); startLevel(G.id); };
+    $("dHome").onclick = () => { hideDialog(); goHome(); };
+  }, 400);
+}
+
+function goHome() {
+  clearInterval(timerId); G = null;
+  $("game").classList.add("hidden"); $("home").classList.remove("hidden");
+  renderHome(); window.scrollTo(0, 0);
+}
+$("backBtn").onclick = goHome;
+$("restartBtn").onclick = () => G && startLevel(G.id);
+$("undoBtn").onclick = () => {
+  if (!G || G.over || !G.undo.length) return;
+  const batch = G.undo.pop();
+  for (let k = batch.length - 1; k >= 0; k--) { const [i, st, au] = batch[k]; G.st[i] = st; G.auto[i] = au; drawCell(i); }
+};
+$("hintBtn").onclick = () => {
+  if (!G || G.over) return;
+  // 找候选格最少、还没放猫的颜色区，把它的答案格告诉玩家
+  let best = -1, bestCount = 1e9;
+  for (let r = 0; r < G.n; r++) {
+    const i = r * G.n + G.sol[r];
+    if (G.st[i] === 2) continue;
+    const g = G.reg[i];
+    let cnt = 0;
+    for (let j = 0; j < G.n * G.n; j++) if (G.reg[j] === g && G.st[j] === 0) cnt++;
+    if (cnt < bestCount) { bestCount = cnt; best = i; }
+  }
+  if (best < 0) return;
+  drawCell(best, "hint");
+  tryPlace(best);
+};
+
+/* ---------- 点击和拖动 ---------- */
+(function bindBoard() {
+  const b = $("board");
+  let down = null; // {i, moved, mode, batch, visited}
+  const idxAt = (x, y) => {
+    const el = document.elementFromPoint(x, y);
+    const c = el && el.closest ? el.closest(".cell") : null;
+    return c && b.contains(c) ? +c.dataset.i : -1;
+  };
+  b.addEventListener("pointerdown", e => {
+    if (!G || G.over) return;
+    const i = idxAt(e.clientX, e.clientY); if (i < 0) return;
+    e.preventDefault();
+    try { b.setPointerCapture(e.pointerId); } catch (err) {}
+    down = { i, moved: false, mode: G.st[i] === 0 ? "mark" : (G.st[i] === 1 && !G.bad[i] ? "erase" : null), batch: [], visited: new Set([i]) };
+  });
+  b.addEventListener("pointermove", e => {
+    if (!down || !down.mode) return;
+    const i = idxAt(e.clientX, e.clientY);
+    if (i < 0 || down.visited.has(i)) return;
+    if (!down.moved) { down.moved = true; setMark(down.i, down.mode === "mark", down.batch); }
+    down.visited.add(i);
+    if (setMark(i, down.mode === "mark", down.batch)) sfx.mark();
+  });
+  const end = () => {
+    if (!down) return;
+    const d = down; down = null;
+    if (d.moved) { if (d.batch.length) G.undo.push(d.batch); return; }
+    // 单击：空→×，×→放爆米花
+    const i = d.i;
+    if (G.st[i] === 0) { const batch = []; setMark(i, true, batch); G.undo.push(batch); sfx.mark(); }
+    else if (G.st[i] === 1 && !G.bad[i]) tryPlace(i);
+  };
+  b.addEventListener("pointerup", end);
+  b.addEventListener("pointercancel", () => { if (down && down.batch.length) G.undo.push(down.batch); down = null; });
+})();
+
+/* ---------- 弹窗 ---------- */
+function showDialog(html) { $("dialog").innerHTML = html; $("overlay").classList.remove("hidden"); const f = $("dialog").querySelector("button"); if (f) f.focus(); }
+function hideDialog() { $("overlay").classList.add("hidden"); }
+
+renderHome();
+</script>
+</body>
+</html>
