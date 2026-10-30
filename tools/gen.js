@@ -328,20 +328,51 @@ module.exports = { makeLevel, pickLevels, sawtooth, countSolutions, logicSolve }
 
 if (require.main === module) {
   const t0 = Date.now();
-  // 教学关：3 关 5×5，只用简单推理就能解
-  const tutorial = pickLevels(5, 3, 2000, 60, lv => lv.used.T_lookahead === 0 && lv.used.T_confineK === 0);
-  // 正式关：最多 1 个单格区，最大的区不超过棋盘的 35%
+  const CYCLES = 12;            // 6×6 → 7×7 → 8×8 → 9×9 为一轮，共 12 轮
+  const SIZES = [6, 7, 8, 9];
+  const isSimple = lv => lv.used.T_lookahead === 0 && lv.used.T_confineK === 0;
+  // 难度分三段，越往后允许的推理技巧越多
+  const allowed = (lv, c) =>
+    c < 4 ? isSimple(lv) :
+    c < 8 ? lv.used.T_lookahead === 0 && lv.used.T_confineK <= 1 :
+            lv.used.T_lookahead <= 1 && lv.used.T_confineK <= 2;
   const shapeOk = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
     return sz.filter(x => x === 1).length <= 1 && Math.max(...sz) <= lv.n * lv.n * 0.35;
   };
-  const ch1 = sawtooth(pickLevels(5, 12, 5000, 150, shapeOk));
-  const ch2 = sawtooth(pickLevels(6, 15, 9000, 150, shapeOk));
-  const ch3 = sawtooth(pickLevels(7, 15, 15000, 150, shapeOk));
-  const ch4 = sawtooth(pickLevels(8, 5, 21000, 60, shapeOk));
-  const all = [...tutorial, ...ch1, ...ch2, ...ch3, ...ch4];
-  // 前期关卡（教学 + 第1、2章）开局送 1 只爆米花，放在最大的颜色区里，尽量不让题目变得太简单
-  const GIVEN_UNTIL = tutorial.length + ch1.length + ch2.length;
+
+  // 教学关：3 关 5×5，只用最简单的推理
+  const tutorial = pickLevels(5, 3, 2000, 60, isSimple);
+
+  // 每种尺寸先生成一大批候选，再按轮次挑
+  const pools = {};
+  for (const n of SIZES) {
+    const pool = [];
+    for (let s = 0; pool.length < 260 && s < 6000; s++) {
+      const lv = makeLevel(n, 100000 * n + s);
+      if (lv && shapeOk(lv)) pool.push(lv);
+    }
+    pool.sort((a, b) => a.score - b.score);
+    pools[n] = pool;
+    console.log('pool', n, pool.length, 'simple', pool.filter(isSimple).length);
+  }
+  const used = new Set();
+  const cycleLevels = [];
+  for (let c = 0; c < CYCLES; c++) {
+    for (const n of SIZES) {
+      const cands = pools[n].filter(lv => allowed(lv, c) && !used.has(lv));
+      // 每段内部从易到难慢慢往上挑
+      const seg = c < 4 ? c / 3 : c < 8 ? (c - 4) / 3 : (c - 8) / 3;
+      const q = 0.05 + 0.6 * seg;
+      const lv = cands[Math.min(cands.length - 1, Math.floor(q * cands.length))];
+      used.add(lv);
+      cycleLevels.push(lv);
+    }
+  }
+  const all = [...tutorial, ...cycleLevels];
+
+  // 前 30 关开局送 1 只爆米花，放在最大的颜色区里
+  const GIVEN_UNTIL = 30;
   const givenOf = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
     let best = 0;
@@ -349,10 +380,10 @@ if (require.main === module) {
     return best * lv.n + lv.sol[best];
   };
   const levels = all.map((lv, i) => ({
-    id: i + 1, n: lv.n, reg: lv.reg.join(''), sol: lv.sol.join(''), score: lv.score,
-    given: i < GIVEN_UNTIL ? [givenOf(lv)] : []
+    id: i + 1, n: lv.n, reg: lv.reg.join(','), sol: lv.sol.join(','), score: lv.score,
+    tech: lv.used, given: i < GIVEN_UNTIL ? [givenOf(lv)] : []
   }));
   require('fs').writeFileSync(__dirname + '/levels.json', JSON.stringify(levels));
   console.log('levels', levels.length, 'time', Date.now() - t0, 'ms');
-  console.log(levels.map(l => `${l.id}:${l.n}x${l.n}:${l.score}`).join('  '));
+  console.log(levels.map(l => `${l.id}:${l.n}:${l.score}${l.tech.T_confineK ? 'K' : ''}${l.tech.T_lookahead ? 'L' : ''}`).join(' '));
 }

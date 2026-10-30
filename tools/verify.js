@@ -1,7 +1,7 @@
 const L = require('./levels.json');
 let bad = 0;
 for (const l of L) {
-  const n = l.n, reg = l.reg.split('').map(Number), sol = l.sol.split('').map(Number);
+  const n = l.n, reg = l.reg.split(',').map(Number), sol = l.sol.split(',').map(Number);
   // brute force all permutations count
   let cnt = 0;
   const perm = [], used = Array(n).fill(false);
