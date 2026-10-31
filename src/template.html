@@ -121,7 +121,9 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .tool span.ic { width: 56px; height: 56px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; }
 .tool svg { width: 25px; height: 25px; }
 .badge { position: absolute; top: -3px; right: 0; min-width: 22px; height: 22px; border-radius: 11px; background: var(--heart); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
-.badge.ad { background: var(--accent); font-size: 10px; }
+.badge.ad { background: var(--ink); font-size: 10px; }
+.badge.free { background: var(--green); font-size: 10px; }
+.badge:not(.ad):not(.free) { background: var(--accent); font-size: 10px; }
 .howto { text-align: center; }
 
 /* 排行榜 */
@@ -160,6 +162,51 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.2); transition: transform .2s; }
 .switch[aria-checked="true"] { background: var(--accent); }
 .switch[aria-checked="true"]::after { transform: translateX(20px); }
+/* 每日挑战卡片 */
+.daily { display: flex; flex-direction: column; gap: 10px; }
+.daily .top { display: flex; align-items: center; gap: 12px; }
+.calbox { width: 52px; height: 56px; border-radius: 12px; background: var(--bg); flex: none; overflow: hidden; display: flex; flex-direction: column; text-align: center; }
+.calbox i { font-style: normal; display: block; background: var(--heart); color: #fff; font-size: 11px; font-weight: 600; padding: 2px 0; }
+.calbox b { font-size: 24px; font-weight: 800; line-height: 1.5; font-variant-numeric: tabular-nums; }
+.daily .ttl { flex: 1; min-width: 0; }
+.daily .ttl b { display: block; font-size: 18px; font-weight: 700; }
+.daily .ttl span { font-size: 12px; color: var(--ink-soft); }
+.daily .go { padding: 10px 18px; border-radius: 12px; font-size: 15px; font-weight: 600; background: var(--accent); color: #fff; flex: none; }
+.daily .go.done { background: var(--fill); color: var(--ink); font-variant-numeric: tabular-nums; }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.week span { text-align: center; font-size: 11px; color: var(--ink-soft); border-radius: 8px; padding: 4px 0 3px; background: var(--bg); }
+.week span i { display: block; width: 8px; height: 8px; border-radius: 50%; margin: 3px auto 0; background: #E3DBD3; }
+.week span.ok i { background: var(--green); }
+.week span.today { box-shadow: inset 0 0 0 1.5px var(--accent); color: var(--ink); font-weight: 600; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tile { position: relative; background: var(--card); box-shadow: var(--shadow); border-radius: 16px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; text-align: left; }
+.tile svg { width: 34px; height: 34px; flex: none; }
+.tile b { display: block; font-size: 15px; font-weight: 700; }
+.tile span { font-size: 11px; color: var(--ink-soft); }
+.dot { position: absolute; top: 8px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: var(--heart); }
+/* 签到 */
+.signgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.sday { position: relative; background: var(--bg); border-radius: 12px; padding: 6px 2px 5px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--ink-soft); }
+.sday svg { width: 28px; height: 28px; }
+.sday b { font-size: 12px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sday.s7 { grid-column: span 2; flex-direction: row; justify-content: center; gap: 6px; }
+.sday.s7 .gifts { display: flex; gap: 2px; }
+.sday.today { background: #FFF1DC; box-shadow: inset 0 0 0 2px var(--accent); }
+.sday.got { opacity: .45; }
+.sday.got::after { content: "✓"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 26px; font-weight: 800; color: var(--green); }
+/* 商店 */
+.bag { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.shoplist { background: var(--bg); border-radius: 14px; text-align: left; }
+.shoprow { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-bottom: .5px solid #E5E5EA; }
+.shoprow:last-child { border-bottom: 0; }
+.shoprow > svg { width: 30px; height: 30px; flex: none; }
+.shoprow div { flex: 1; font-size: 15px; font-weight: 600; }
+.shoprow small { display: block; font-size: 11px; font-weight: 400; color: var(--ink-soft); }
+.buy { display: inline-flex; align-items: center; gap: 3px; border-radius: 10px; padding: 7px 10px; font-size: 14px; font-weight: 700; background: var(--accent); color: #fff; font-variant-numeric: tabular-nums; flex: none; }
+.buy svg { width: 16px; height: 16px; }
+.buy.ad { background: var(--ink); }
+.buy:disabled { background: #E3DBD3; color: #fff; cursor: default; }
+.cardimg { width: 100%; border-radius: 14px; display: block; box-shadow: 0 0 0 1px var(--line); -webkit-touch-callout: default; user-select: auto; }
 .copybox { width: 100%; font: inherit; font-size: 13px; border: 0; border-radius: 10px; padding: 10px; color: var(--ink); background: var(--bg); resize: none; }
 </style>
 </head>
@@ -171,19 +218,24 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
     <img id="brandImg" alt="爆米花">
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v1.0 · 哑光新皮肤</p>
+      <p>原型 v1.1 · 每日挑战和签到</p>
     </div>
   </div>
   <div class="homebar">
-    <span class="pill" title="猫罐头"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg><b id="homeCans">0</b></span>
+    <button class="pill" id="cansPill" title="猫罐头商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg><b id="homeCans">0</b></button>
     <span class="pill">连胜 <b id="homeStreak">0</b></span>
     <span class="grow"></span>
     <button class="round" id="rankBtn" aria-label="排行榜"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-rank"/></svg></button>
     <button class="round" id="shareHome" aria-label="分享游戏"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-share"/></svg></button>
     <button class="round" id="setHome" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
   </div>
+  <div class="panel daily" id="dailyCard"></div>
+  <div class="tiles">
+    <button class="tile" id="signTile"><svg viewBox="0 0 36 36" aria-hidden="true"><use href="#i-gift"/></svg><div><b>每日签到</b><span id="signSub">第1天</span></div><i class="dot hidden" id="signDot"></i></button>
+    <button class="tile" id="shopTile"><svg viewBox="0 0 36 36" aria-hidden="true"><use href="#i-shop"/></svg><div><b>罐头商店</b><span id="bagSub">提示卡 0 · 复活心 0</span></div></button>
+  </div>
   <div class="panel"><div class="blocks" id="blocks"></div></div>
-  <p class="note">每组11关：棋盘从7×7开始，每10关大一号，最后到11×11；每组第1关是大一号的困难关（罐头翻倍）。前30关和所有困难关，开局先坐好1只爆米花。复活和提示在正式版要看广告，这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
+  <p class="note">每组11关：棋盘从7×7开始，每10关大一号，最后到11×11；每组第1关是大一号的困难关（罐头翻倍）。前30关和所有困难关，开局先坐好1只爆米花。每关1次免费提示，之后用提示卡，没卡了看广告。正式版的广告这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
 </section>
 
 <!-- 游戏页 -->
@@ -291,6 +343,10 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
     <symbol id="i-gear" viewBox="0 0 24 24"><path d="M4 7 H20 M4 17 H20" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="2.6" fill="#fff" stroke="#1C1C1E" stroke-width="2"/><circle cx="15" cy="17" r="2.6" fill="#fff" stroke="#1C1C1E" stroke-width="2"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3 V15 M7.5 7.5 L12 3 L16.5 7.5" fill="none" stroke="#1C1C1E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11 H5 V21 H19 V11 H18" fill="none" stroke="#1C1C1E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-rank" viewBox="0 0 24 24"><rect x="3" y="12" width="5" height="9" rx="1.5" fill="#F2C46B" stroke="#1C1C1E" stroke-width="1.8"/><rect x="9.5" y="6" width="5" height="15" rx="1.5" fill="#E39B35" stroke="#1C1C1E" stroke-width="1.8"/><rect x="16" y="15" width="5" height="6" rx="1.5" fill="#F7D9A8" stroke="#1C1C1E" stroke-width="1.8"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 36 36"><rect x="5" y="14" width="26" height="18" rx="4" fill="#F0A96C"/><rect x="3" y="9" width="30" height="7" rx="3" fill="#E8963A"/><rect x="15.5" y="9" width="5" height="23" fill="#FFF1DC"/><path d="M18 9 C14 3 8 4 10 8 C11 10 15 9.5 18 9 Z M18 9 C22 3 28 4 26 8 C25 10 21 9.5 18 9 Z" fill="#E0625F"/></symbol>
+    <symbol id="i-shop" viewBox="0 0 36 36"><path d="M6 13 H30 L28 31 A2 2 0 0 1 26 33 H10 A2 2 0 0 1 8 31 Z" fill="#9B84D8"/><path d="M12 13 V10 a6 6 0 0 1 12 0 V13" fill="none" stroke="#6B57A8" stroke-width="2.4" stroke-linecap="round"/><g transform="translate(9 16) scale(.75)"><use href="#can"/></g></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="#FFF1C4"/><path d="M12 5 a5 5 0 0 1 2.9 9.1 V16 H9.1 V14.1 A5 5 0 0 1 12 5 Z" fill="#FFD36B" stroke="#3B302B" stroke-width="1.5" stroke-linejoin="round"/><path d="M9.8 18.3 H14.2" stroke="#3B302B" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-revive" viewBox="0 0 24 24"><path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z" fill="#E0625F"/><path d="M12 8.5 V15 M8.75 11.75 H15.25" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></symbol>
     <!-- 规则小图：浅灰底小棋盘，一排或一列上色，中间一只（圆点），其余打叉 -->
     <symbol id="r-row" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><rect x="3" y="11" width="24" height="8" rx="3" fill="#FFE07A"/><circle cx="15" cy="15" r="2.8" fill="#1C1C1E"/><path d="M5.5 13.5 l3 3 m0 -3 l-3 3 M21.5 13.5 l3 3 m0 -3 l-3 3" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></symbol>
     <symbol id="r-col" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><rect x="11" y="3" width="8" height="24" rx="3" fill="#8EE3C8"/><circle cx="15" cy="15" r="2.8" fill="#1C1C1E"/><path d="M13.5 5.5 l3 3 m0 -3 l-3 3 M13.5 21.5 l3 3 m0 -3 l-3 3" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></symbol>
@@ -358,14 +414,54 @@ function assignColors(id, n, reg) {
   }
   return best;
 }
-const FREE_HINTS = 3;
+const FREE_HINTS = 1;          // 每关 1 次免费提示，之后用提示卡，没卡了看广告
 const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 24 };
+const DAILY_CANS = { 8: 25, 9: 30, 10: 40 };
+const PRICE = { hint1: 50, hint3: 135, revive: 80 };
+const AD_HINTS_PER_DAY = 3;
+/* 7 天签到：断签不清零，接着往下领；第 7 天是大礼包，领完从第 1 天重新开始 */
+const SIGN_REWARDS = [{ cans: 20 }, { hint: 1 }, { cans: 30 }, { revive: 1 }, { cans: 40 }, { hint: 2 }, { cans: 80, hint: 2, revive: 1 }];
 
 /* 存档：只存在这个浏览器里，读不到也能正常玩 */
 const SAVE_KEY = "popcorn-proto-v4";
-let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: true, vibrate: true, rules: true, patterns: false };
+let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: true, vibrate: true, rules: true, patterns: false,
+  hintCards: 3, revives: 1,                         // 新玩家送 3 张提示卡、1 个复活心
+  sign: { last: "", count: 0 },                     // 上次签到日期、本轮已领几天
+  daily: { done: {}, streak: 0, last: "", best: 0 },// 每日挑战：每天成绩、连续打卡
+  adHint: { day: "", n: 0 } };
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (s) save = Object.assign(save, s); } catch (e) {}
 function persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} }
+
+/* ---------- 日期 ---------- */
+const pad2 = v => String(v).padStart(2, "0");
+const keyOf = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const todayKey = () => keyOf(new Date());
+const dayNum = key => { const [y, m, d] = key.split("-").map(Number); return Math.round(Date.UTC(y, m - 1, d) / 864e5); };
+const WD = ["一", "二", "三", "四", "五", "六", "日"];
+const wdOf = key => ((dayNum(key) - 4) % 7 + 7) % 7;   // 0 = 周一（1970-01-01 是周四）
+
+/* ---------- 每日挑战：所有人同一天玩同一题 ---------- */
+const DAILY = /*DAILY*/{};
+const DAILY_SIZE = [8, 8, 9, 9, 9, 10, 10];             // 周一到周日，周末难一点
+const DAILY_SLOT = { 8: [2, 0], 9: [3, 2], 10: [2, 5] }; // 每周几题、从周几开始
+function dailyPuzzle(key) {
+  const d = dayNum(key), wd = wdOf(key), week = Math.floor((d - wd) / 7);
+  const n = DAILY_SIZE[wd], [per, first] = DAILY_SLOT[n];
+  const list = DAILY[n], idx = week * per + (wd - first);
+  const k = ((idx % list.length) + list.length) % list.length, cycle = Math.floor(idx / list.length);
+  const t = ((cycle % 8) + 8) % 8;                      // 题库用完一轮后，换个旋转/翻转方向再出
+  const [regS, solS, given] = list[k];
+  const map = (r, c) => { for (let s = 0; s < t % 4; s++) [r, c] = [c, n - 1 - r]; if (t >= 4) c = n - 1 - c; return [r, c]; };
+  const reg = new Array(n * n), sol = new Array(n);
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) { const [r2, c2] = map(r, c); reg[r2 * n + c2] = parseInt(regS[r * n + c], 36); }
+  for (let r = 0; r < n; r++) { const [r2, c2] = map(r, parseInt(solS[r], 36)); sol[r2] = c2; }
+  const [gr, gc] = map(Math.floor(given / n), given % n);
+  return { n, hard: false, reg, sol, given: [gr * n + gc], daily: key, seed: 100000 + d };
+}
+function dailyStreakNow() {
+  const D = save.daily, t = dayNum(todayKey());
+  return D.last && t - dayNum(D.last) <= 1 ? D.streak : 0;
+}
 
 /* 音效：浏览器合成 */
 let audio = null;
@@ -511,30 +607,61 @@ function renderHome() {
     html.push(`<div class="block"><h2>第${b + 1}组 · 第${b * 11 + 1}–${b * 11 + ids.length}关</h2><div class="levels">${btns}</div></div>`);
   }
   $("blocks").innerHTML = html.join("");
+  renderDailyCard();
+  const today = todayKey(), canSign = save.sign.last !== today;
+  $("signDot").classList.toggle("hidden", !canSign);
+  $("signSub").textContent = canSign ? `第${save.sign.count % 7 + 1}天的礼物可以领` : "今天已领，明天再来";
+  $("bagSub").textContent = `提示卡 ${save.hintCards} · 复活心 ${save.revives}`;
 }
 $("blocks").addEventListener("click", e => { const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id); });
+
+function renderDailyCard() {
+  const key = todayKey(), [y, m, d] = key.split("-").map(Number), P = dailyPuzzle(key), rec = save.daily.done[key];
+  const streak = dailyStreakNow();
+  // 这一周（周一到周日）哪几天打过卡
+  const mon = dayNum(key) - wdOf(key);
+  const week = WD.map((w, k) => {
+    const dt = new Date((mon + k) * 864e5), dk = `${dt.getUTCFullYear()}-${pad2(dt.getUTCMonth() + 1)}-${pad2(dt.getUTCDate())}`;
+    return `<span class="${save.daily.done[dk] ? "ok" : ""}${dk === key ? " today" : ""}">${w}<i></i></span>`;
+  }).join("");
+  $("dailyCard").innerHTML = `<div class="top">
+      <div class="calbox" aria-hidden="true"><i>${m}月</i><b>${d}</b></div>
+      <div class="ttl"><b>每日挑战</b><span>周${WD[wdOf(key)]} · ${P.n}×${P.n} · 所有人同一题</span><span style="display:block;color:${streak ? "var(--accent-ink)" : "var(--ink-soft)"}">${streak ? `已连续打卡 ${streak} 天` : "今天开始连续打卡"}</span></div>
+      <button class="go${rec ? " done" : ""}" id="dailyGo">${rec ? fmt(rec.t) : "开始"}</button>
+    </div>
+    <div class="week" aria-label="本周打卡">${week}</div>`;
+  $("dailyGo").onclick = () => rec ? showDailyResult(key) : startDaily(key);
+}
 
 /* ---------- 游戏 ---------- */
 let G = null, timerId = null;
 
 function startLevel(id) {
-  const L = LEVELS[id - 1], n = L.n;
+  const L = LEVELS[id - 1];
+  startGame(id, { n: L.n, hard: !!L.hard, reg: L.reg.split(",").map(Number), sol: L.sol.split(",").map(Number), given: L.given || [], seed: id });
+}
+/* 每日挑战：重来不清零计时和失误，不然就能先试一遍再刷成绩 */
+function startDaily(key, carry) {
+  startGame("daily", dailyPuzzle(key), carry);
+}
+function startGame(id, L, carry) {
+  const n = L.n;
   G = {
-    id, n, hard: !!L.hard,
-    reg: L.reg.split(",").map(Number),
-    sol: L.sol.split(",").map(Number),
+    id, n, hard: !!L.hard, daily: L.daily || null,
+    reg: L.reg, sol: L.sol,
     st: new Array(n * n).fill(0),        // 0 空，1 标×，2 爆米花
     auto: new Array(n * n).fill(false),
     bad: new Array(n * n).fill(false),
     given: new Set(L.given || []),
     colors: null,
-    hearts: 3, mistakes: 0, combo: 0, tutorial: id <= 3, hints: FREE_HINTS,
-    undo: [], startT: Date.now(), elapsed: 0, over: false
+    hearts: 3, mistakes: carry ? carry.mistakes : 0, combo: 0, tutorial: typeof id === "number" && id <= 3, hints: FREE_HINTS,
+    undo: [], startT: Date.now() - (carry ? carry.elapsed * 1000 : 0), elapsed: carry ? carry.elapsed : 0, over: false
   };
   for (const i of G.given) G.st[i] = 2;
-  G.colors = assignColors(id, n, G.reg);
+  G.colors = assignColors(L.seed, n, G.reg);
   show("game");
-  $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}`;
+  if (G.daily) { const [, m, d] = G.daily.split("-").map(Number); $("lvName").innerHTML = `每日挑战 · ${m}月${d}日`; }
+  else $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}`;
   if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
   else $("tip").classList.add("hidden");
   $("rulebar").classList.toggle("hidden", !save.rules);
@@ -582,8 +709,9 @@ function renderHearts() {
 }
 function renderHint() {
   const b = $("hintBadge");
-  if (G.hints > 0) { b.textContent = G.hints; b.classList.remove("ad"); }
-  else { b.textContent = "广告"; b.classList.add("ad"); }
+  b.classList.toggle("ad", G.hints <= 0 && save.hintCards <= 0);
+  b.textContent = G.hints > 0 ? "免费" : save.hintCards > 0 ? "卡×" + save.hintCards : "广告";
+  b.classList.toggle("free", G.hints > 0);
 }
 /* 顶部：还差哪些颜色 */
 function renderChips() {
@@ -673,6 +801,7 @@ function rewardFor() {
 function checkWin() {
   if (G.st.filter(v => v === 2).length < G.n) return;
   G.over = true; clearInterval(timerId); tick();
+  if (G.daily) return dailyWin();
   save.streak++;
   save.bestStreak = Math.max(save.bestStreak, save.streak);
   const rw = rewardFor();
@@ -713,21 +842,213 @@ function checkWin() {
       el.textContent = "+" + Math.round(rw.total * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(roll); })(t0);
   }, 300 + cats.length * 110 + 350);
 }
+/* ---------- 每日挑战通关 ---------- */
+function celebrateCats(after) {
+  const cats = [];
+  for (let j = 0; j < G.n * G.n; j++) if (G.st[j] === 2) cats.push(j);
+  cats.forEach((j, k) => setTimeout(() => { if (!G) return; const el = cellEl(j); el.classList.remove("dance"); void el.offsetWidth; el.classList.add("dance");
+    const [x, y] = cellCenter(j); burst(x, y, { count: 8, speed: 3.5 }); tone([SCALE[k % SCALE.length]], 0.1, "triangle", 0.08); }, 300 + k * 110));
+  setTimeout(() => { if (G) after(); }, 300 + cats.length * 110 + 350);
+}
+function dailyWin() {
+  const key = G.daily, D = save.daily, t = dayNum(key);
+  const first = !D.done[key];
+  let gift = { cans: 0, hint: 0, revive: 0 };
+  if (first) {
+    D.done[key] = { t: Math.max(1, G.elapsed), m: G.mistakes, n: G.n };
+    // 只有当天做今天的题才算打卡
+    if (key === todayKey()) {
+      D.streak = D.last && t - dayNum(D.last) === 1 ? D.streak + 1 : 1;
+      D.last = key; D.best = Math.max(D.best || 0, D.streak);
+    }
+    gift.cans = Math.round(DAILY_CANS[G.n] * (G.mistakes === 0 ? 1.2 : 1));
+    if (D.last === key && D.streak % 7 === 0) { gift.hint = 1; gift.revive = 1; }   // 连续打卡满 7 天的倍数，加送道具
+    save.cans += gift.cans; save.hintCards += gift.hint; save.revives += gift.revive;
+    persist();
+    $("gameCans").textContent = save.cans;
+  }
+  celebrateCats(() => { fx.win(); confettiRain(); fireworks(5, 300); showDailyResult(key, gift); });
+}
+function starsOf(m) { return m === 0 ? 3 : m === 1 ? 2 : 1; }
+function starRow(stars) {
+  return `<div class="stars">${[0, 1, 2].map(k => `<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${k < stars ? "#FFCC00" : "#E5E5EA"};stroke:${k < stars ? "#F5A800" : "#D1D1D6"}"><use href="#star"/></svg>`).join("")}</div>`;
+}
+function showDailyResult(key, gift) {
+  const rec = save.daily.done[key], [, m, d] = key.split("-").map(Number);
+  const streak = save.daily.last === key || key === todayKey() ? dailyStreakNow() : 0;
+  const giftTxt = gift && gift.cans ? `<div class="reward">${CAN_SVG}<div>猫罐头 <b>+${gift.cans}</b><small>${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、复活心+1` : ""}</small></div></div>` : "";
+  showDialog(`${starRow(starsOf(rec.m))}
+    <h3>${m}月${d}日 每日挑战完成</h3>
+    <div class="stats"><div>用时<b>${fmt(rec.t)}</b></div><div>失误<b>${rec.m}</b></div><div>连续打卡<b>${streak}天</b></div></div>
+    ${giftTxt}
+    <button class="btn" id="dCard">生成成绩卡，晒给朋友</button>
+    <button class="btn alt" id="dHome">回到首页</button>
+    <p style="font-size:12px">明天 0 点换新题。</p>`);
+  if (gift) $("dialog").classList.add("win");
+  $("dCard").onclick = () => openScoreCard(key);
+  $("dHome").onclick = () => { hideDialog(); goHome(); };
+}
+
+/* ---------- 成绩卡：一张图，只有棋盘颜色和成绩，不剧透座位 ---------- */
+function loadImg(src) { return new Promise(res => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); }
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+async function makeScoreCard(key) {
+  const P = dailyPuzzle(key), rec = save.daily.done[key], [, m, d] = key.split("-").map(Number);
+  const colors = assignColors(P.seed, P.n, P.reg);
+  const W = 720, H = 1000, c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const ctx = c.getContext("2d"), F = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif';
+  ctx.fillStyle = "#F6F2EE"; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = "#FFFFFF"; rr(ctx, 32, 32, W - 64, H - 64, 36); ctx.fill();
+  const head = await loadImg(CAT_IMG.headBig);
+  if (head) { const h = 120, w = h * head.width / head.height; ctx.drawImage(head, 72, 66, w, h); }
+  ctx.fillStyle = "#3B302B"; ctx.textBaseline = "alphabetic";
+  ctx.font = `800 46px ${F}`; ctx.fillText("爆米花找座位", 222, 122);
+  ctx.fillStyle = "#9A8F88"; ctx.font = `500 26px ${F}`; ctx.fillText(`每日挑战 · ${m}月${d}日 周${WD[wdOf(key)]} · ${P.n}×${P.n}`, 224, 164);
+  // 棋盘颜色马赛克（没有猫，不剧透）
+  const bs = 440, bx = (W - bs) / 2, by = 222, gap = P.n <= 8 ? 7 : P.n <= 9 ? 6 : 5, cs = (bs - gap * (P.n - 1)) / P.n;
+  for (let i = 0; i < P.n * P.n; i++) {
+    const r = Math.floor(i / P.n), cc = i % P.n;
+    ctx.fillStyle = REGION_COLORS[colors[P.reg[i]]];
+    rr(ctx, bx + cc * (cs + gap), by + r * (cs + gap), cs, cs, cs * .16); ctx.fill();
+  }
+  // 中间盖一个“已完成”章
+  ctx.save(); ctx.translate(W / 2, by + bs / 2); ctx.rotate(-0.12);
+  ctx.fillStyle = "rgba(255,255,255,.92)"; rr(ctx, -150, -54, 300, 108, 54); ctx.fill();
+  ctx.fillStyle = "#E8963A"; ctx.font = `800 52px ${F}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("✓ 全部坐好", 0, 2);
+  ctx.restore();
+  // 成绩
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  const stats = [["用时", fmt(rec.t)], ["失误", String(rec.m)], ["连续打卡", `${save.daily.last === key ? save.daily.streak : 1}天`]];
+  stats.forEach(([a, b], k) => {
+    const x = W / 2 + (k - 1) * 200;
+    ctx.fillStyle = "#3B302B"; ctx.font = `800 52px ${F}`; ctx.fillText(b, x, 778);
+    ctx.fillStyle = "#9A8F88"; ctx.font = `500 24px ${F}`; ctx.fillText(a, x, 814);
+  });
+  // 星星
+  const stars = starsOf(rec.m);
+  for (let k = 0; k < 3; k++) {
+    const x = W / 2 + (k - 1) * 56, y = 698, R = 22;
+    ctx.beginPath(); for (let j = 0; j < 10; j++) { const rad = j % 2 ? R * .45 : R, a = -Math.PI / 2 + j * Math.PI / 5; ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad); }
+    ctx.closePath(); ctx.fillStyle = k < stars ? "#FFCC00" : "#E8E2DC"; ctx.fill();
+  }
+  ctx.fillStyle = "#F6F2EE"; rr(ctx, 72, 840, W - 144, 92, 22); ctx.fill();
+  ctx.fillStyle = "#3B302B"; ctx.font = `700 30px ${F}`; ctx.fillText("今天的题所有人都一样，你能比我快吗？", W / 2, 884);
+  ctx.fillStyle = "#9A8F88"; ctx.font = `500 22px ${F}`; ctx.fillText(SHARE_URL.replace(/^https?:\/\//, "").replace(/\/$/, ""), W / 2, 916);
+  return c;
+}
+async function openScoreCard(key) {
+  const c = await makeScoreCard(key), url = c.toDataURL("image/png");
+  const rec = save.daily.done[key], [, m, d] = key.split("-").map(Number);
+  const streak = save.daily.last === key ? save.daily.streak : 1;
+  const text = `爆米花找座位 · 每日挑战 ${m}月${d}日\n⏱ ${fmt(rec.t)}  ${"⭐".repeat(starsOf(rec.m))}  连续打卡${streak}天\n今天的题所有人都一样，你能比我快吗？`;
+  let file = null;
+  try { const blob = await new Promise(r => c.toBlob(r, "image/png")); file = new File([blob], `爆米花-每日挑战-${key}.png`, { type: "image/png" }); } catch (e) {}
+  const canFile = file && navigator.canShare && navigator.canShare({ files: [file] });
+  showDialog(`<h3>我的成绩卡</h3>
+    <img class="cardimg" src="${url}" alt="每日挑战成绩卡：用时${fmt(rec.t)}，失误${rec.m}次">
+    <p>长按图片可以保存，或者直接发给朋友。</p>
+    ${canFile ? '<button class="btn" id="dShareImg">分享图片</button>' : ""}
+    <div class="row2"><button class="btn alt" id="dShareTxt">分享文字</button><button class="btn alt" id="dClose">关闭</button></div>`);
+  if (canFile) $("dShareImg").onclick = async () => { try { await navigator.share({ files: [file], text }); } catch (e) {} };
+  $("dShareTxt").onclick = () => share(text);
+  $("dClose").onclick = hideDialog;
+}
+
+/* ---------- 签到 ---------- */
+function giftIcons(g, size = 26) {
+  const out = [];
+  if (g.cans) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#can"/></svg>`);
+  if (g.hint) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#i-bulb"/></svg>`);
+  if (g.revive) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#i-revive"/></svg>`);
+  return out.join("");
+}
+function giftText(g, mul = 1) {
+  const t = [];
+  if (g.cans) t.push(`罐头×${g.cans * mul}`);
+  if (g.hint) t.push(`提示卡×${g.hint * mul}`);
+  if (g.revive) t.push(`复活心×${g.revive * mul}`);
+  return t.join(" ");
+}
+function openSign() {
+  const today = todayKey(), can = save.sign.last !== today;
+  const cur = save.sign.count % 7;                  // 今天（或下一次）领第 cur+1 天
+  const got = can ? cur : (cur === 0 ? 7 : cur);    // 本轮已经领过几天
+  const cells = SIGN_REWARDS.map((g, k) => {
+    const cls = ["sday", k === 6 ? "s7" : "", k < got ? "got" : "", can && k === cur ? "today" : ""].join(" ");
+    return k === 6
+      ? `<div class="${cls}"><div class="gifts">${giftIcons(g, 26)}</div><div>第7天<b style="display:block">大礼包</b></div></div>`
+      : `<div class="${cls}">第${k + 1}天${giftIcons(g, 28)}<b>${g.cans ? g.cans : "×" + (g.hint || g.revive)}</b></div>`;
+  }).join("");
+  const g = SIGN_REWARDS[cur];
+  showDialog(`<h3>每日签到</h3>
+    <p>${can ? `今天领第${cur + 1}天：${giftText(g)}` : "今天已经领过了，明天再来。"}</p>
+    <div class="signgrid">${cells}</div>
+    <p style="font-size:12px">断签不清零，接着往下领；领满7天重新开始。</p>
+    ${can ? `<button class="btn dark" id="dDouble">看广告领双倍</button><button class="btn" id="dClaim">直接领取</button>` : `<button class="btn alt" id="dClose">好的</button>`}`);
+  if (!can) { $("dClose").onclick = () => { hideDialog(); renderHome(); }; return; }
+  const claim = mul => {
+    save.cans += (g.cans || 0) * mul; save.hintCards += (g.hint || 0) * mul; save.revives += (g.revive || 0) * mul;
+    save.sign.count++; save.sign.last = today; persist();
+    fx.win(); confettiRain();
+    showDialog(`<div style="display:flex;justify-content:center;gap:8px">${giftIcons(g, 56)}</div>
+      <h3>领到啦</h3><p>${giftText(g, mul)}${mul > 1 ? "（双倍）" : ""}</p>
+      <button class="btn" id="dOk">好的</button>`);
+    $("dialog").classList.add("win");
+    $("dOk").onclick = () => { hideDialog(); renderHome(); };
+  };
+  $("dDouble").onclick = () => claim(2);   // 原型直接给；微信版这里先播激励视频
+  $("dClaim").onclick = () => claim(1);
+}
+$("signTile").onclick = openSign;
+
+/* ---------- 罐头商店：道具只能用罐头、签到、看广告拿，不卖钱 ---------- */
+function openShop(msg) {
+  const today = todayKey();
+  if (save.adHint.day !== today) save.adHint = { day: today, n: 0 };
+  const adLeft = AD_HINTS_PER_DAY - save.adHint.n;
+  const row = (icon, name, sub, btn) => `<div class="shoprow"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${icon}"/></svg><div>${name}<small>${sub}</small></div>${btn}</div>`;
+  const buyBtn = (id, price) => `<button class="buy" id="${id}" ${save.cans < price ? "disabled" : ""}>${CAN_SVG}${price}</button>`;
+  showDialog(`<h3>罐头商店</h3>
+    <div class="bag"><span class="pill">${CAN_SVG}${save.cans}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bulb"/></svg>${save.hintCards}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-revive"/></svg>${save.revives}</span></div>
+    ${msg ? `<p style="color:var(--accent-ink);font-weight:600">${msg}</p>` : ""}
+    <div class="shoplist">
+      ${row("i-bulb", "提示卡 ×1", "每关免费提示用完后，用它找1个座位", buyBtn("bH1", PRICE.hint1))}
+      ${row("i-bulb", "提示卡 ×3", "多买省一点", buyBtn("bH3", PRICE.hint3))}
+      ${row("i-revive", "复活心 ×1", "心用完时直接复活，不用看广告", buyBtn("bRv", PRICE.revive))}
+      ${row("i-bulb", "免费提示卡 ×1", `看一段广告领，今天还能领 ${adLeft} 次`, `<button class="buy ad" id="bAd" ${adLeft <= 0 ? "disabled" : ""}>看广告</button>`)}
+    </div>
+    <p style="font-size:12px">爆米花皮肤和棋盘主题也会放在这里，用罐头解锁，等新表情画好就上。</p>
+    <button class="btn alt" id="dClose">关闭</button>`);
+  const buy = (price, apply, label) => () => { if (save.cans < price) return; save.cans -= price; apply(); persist(); fx.good(); openShop(`买到了：${label}`); };
+  $("bH1").onclick = buy(PRICE.hint1, () => save.hintCards += 1, "提示卡×1");
+  $("bH3").onclick = buy(PRICE.hint3, () => save.hintCards += 3, "提示卡×3");
+  $("bRv").onclick = buy(PRICE.revive, () => save.revives += 1, "复活心×1");
+  $("bAd").onclick = () => { if (adLeft <= 0) return; save.adHint.n++; save.hintCards++; persist(); fx.good(); openShop("领到1张提示卡"); };
+  $("dClose").onclick = () => { hideDialog(); renderHome(); };
+}
+$("shopTile").onclick = () => openShop();
+$("cansPill").onclick = () => openShop();
+
 function breakStreak() { if (save.streak) { save.streak = 0; persist(); } }
 function fail() {
   G.over = true; clearInterval(timerId);
   setTimeout(() => {
+    const has = save.revives > 0;
     showDialog(`<svg class="big" viewBox="0 0 100 100" aria-hidden="true"><use href="#brokenHeart"/></svg>
-      <h3>心用完了</h3><p>看个广告就能拿回1颗心接着玩，连胜也保住。重新开始的话连胜会清零。</p>
-      <button class="btn dark" id="dRevive">看广告复活（原型直接复活）</button>
-      <button class="btn alt" id="dRetry">重新开始本关</button>
+      <h3>心用完了</h3><p>${G.daily ? "复活后接着玩，计时不停。重来的话计时和失误也不清零。" : "复活就能拿回1颗心接着玩，连胜也保住。重新开始的话连胜会清零。"}</p>
+      ${has ? `<button class="btn" id="dUse"><svg viewBox="0 0 24 24" style="width:20px;height:20px;vertical-align:-4px;margin-right:4px" aria-hidden="true"><use href="#i-revive"/></svg>用复活心（还有${save.revives}个）</button>` : ""}
+      <button class="btn ${has ? "alt" : "dark"}" id="dRevive">看广告复活（原型直接复活）</button>
+      <button class="btn alt" id="dRetry">${G.daily ? "重来（计时继续）" : "重新开始本关"}</button>
       <button class="btn alt" id="dHome">回到选关</button>`);
-    $("dRevive").onclick = () => {
+    const revive = () => {
       hideDialog(); G.hearts = 1; G.over = false; renderHearts();
       G.startT = Date.now() - G.elapsed * 1000; timerId = setInterval(tick, 500);
     };
-    $("dRetry").onclick = () => { hideDialog(); breakStreak(); startLevel(G.id); };
-    $("dHome").onclick = () => { hideDialog(); breakStreak(); goHome(); };
+    if (has) $("dUse").onclick = () => { save.revives--; persist(); revive(); };
+    $("dRevive").onclick = revive;
+    $("dRetry").onclick = () => { hideDialog(); if (G.daily) startDaily(G.daily, { elapsed: G.elapsed, mistakes: G.mistakes }); else { breakStreak(); startLevel(G.id); } };
+    $("dHome").onclick = () => { hideDialog(); if (!G.daily) breakStreak(); goHome(); };
   }, 400);
 }
 function goHome() {
@@ -736,14 +1057,24 @@ function goHome() {
 }
 /* 没通关就离开或重来，连胜清零（先问一下） */
 function leaveGuard(action) {
-  if (!G || G.over || save.streak === 0) return action();
+  if (G && G.daily && !G.over) {
+    showDialog(`<h3>确定离开？</h3><p>每日挑战离开后，下次进来要从头做，计时也重新算。</p>
+      <button class="btn" id="dStay">继续玩</button><button class="btn alt" id="dLeave">确定</button>`);
+    $("dStay").onclick = hideDialog;
+    $("dLeave").onclick = () => { hideDialog(); action(); };
+    return;
+  }
+  if (!G || G.over || G.daily || save.streak === 0) return action();
   showDialog(`<h3>确定离开？</h3><p>这一关还没通过，离开或重来会让 ${save.streak} 连胜清零。</p>
     <button class="btn" id="dStay">继续玩</button><button class="btn alt" id="dLeave">确定</button>`);
   $("dStay").onclick = hideDialog;
   $("dLeave").onclick = () => { hideDialog(); breakStreak(); action(); };
 }
 $("backBtn").onclick = () => leaveGuard(goHome);
-$("restartBtn").onclick = () => leaveGuard(() => startLevel(G.id));
+$("restartBtn").onclick = () => {
+  if (G && G.daily) { if (!G.over) startDaily(G.daily, { elapsed: G.elapsed, mistakes: G.mistakes }); return; }
+  leaveGuard(() => startLevel(G.id));
+};
 $("undoBtn").onclick = () => {
   if (!G || G.over || !G.undo.length) return;
   const batch = G.undo.pop();
@@ -760,12 +1091,23 @@ $("hintBtn").onclick = () => {
     if (cnt < bestCount) { bestCount = cnt; best = i; }
   }
   if (best < 0) return;
-  if (G.hints > 0) G.hints--;
-  renderHint();
-  if (G.st[best] === 1) G.st[best] = 0;
-  drawCell(best, "hint");
-  tryPlace(best);
+  const use = () => {
+    renderHint();
+    if (G.st[best] === 1) G.st[best] = 0;
+    drawCell(best, "hint");
+    tryPlace(best);
+  };
+  if (G.hints > 0) { G.hints--; return use(); }
+  if (save.hintCards > 0) { save.hintCards--; persist(); toast(best, `用了1张提示卡，还剩${save.hintCards}张`); return use(); }
+  watchAd("看完广告，爆米花帮你找1个座位", use);
 };
+/* 原型里“看广告”直接生效；微信版换成激励视频广告，看完才给奖励 */
+function watchAd(what, done) {
+  showDialog(`<h3>看个广告？</h3><p>${what}。</p><p style="font-size:12px">这一版没有真广告，点了直接给。</p>
+    <button class="btn dark" id="adYes">看广告</button><button class="btn alt" id="adNo">算了</button>`);
+  $("adYes").onclick = () => { hideDialog(); done(); };
+  $("adNo").onclick = hideDialog;
+}
 
 /* ---------- 设置 ---------- */
 function openSettings() {
@@ -787,9 +1129,9 @@ function openSettings() {
   $("sRules").onclick = flip("rules");
   $("sPat").onclick = () => { save.patterns = !save.patterns; persist(); if (G) { buildBoard(); renderChips(); } openSettings(); };
   $("sReset").onclick = () => {
-    showDialog(`<h3>清空进度？</h3><p>通关记录、猫罐头和连胜都会清零。</p>
+    showDialog(`<h3>清空进度？</h3><p>通关记录、猫罐头、连胜、道具、签到和每日挑战记录都会清零。</p>
       <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">取消</button>`);
-    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0 }); persist(); hideDialog(); goHome(); };
+    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0, hintCards: 3, revives: 1, sign: { last: "", count: 0 }, daily: { done: {}, streak: 0, last: "", best: 0 }, adHint: { day: "", n: 0 } }); persist(); hideDialog(); goHome(); };
     $("dNo").onclick = openSettings;
   };
   $("sClose").onclick = hideDialog;
@@ -825,6 +1167,7 @@ function renderRank() {
       <tr class="me"><td>我</td><td>猫罐头</td><td>${save.cans}</td></tr>
       <tr><td></td><td>当前连胜</td><td>${save.streak}</td></tr>
       <tr><td></td><td>最高连胜</td><td>${save.bestStreak}</td></tr>
+      <tr><td></td><td>每日挑战最长连续打卡</td><td>${save.daily.best || 0} 天</td></tr>
       <tr><td></td><td>已通关</td><td>${Object.keys(save.best).length} / ${LEVELS.length}</td></tr>
       </tbody></table>`;
   } else {
@@ -897,6 +1240,8 @@ document.addEventListener("touchend", e => {
 
 $("brandImg").src = CAT_IMG.headBig;
 renderHome();
+// 每天第一次打开：玩过的人自动弹签到（第一次来的新玩家先玩，不打扰）
+if (save.sign.last !== todayKey() && (save.sign.count > 0 || Object.keys(save.best).length > 0)) setTimeout(openSign, 400);
 </script>
 </body>
 </html>
