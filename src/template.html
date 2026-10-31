@@ -93,12 +93,18 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .combo small { font-size: 13px; font-weight: 700; margin-left: 4px; opacity: .9; }
 @keyframes comboUp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.6); } 15% { opacity: 1; transform: translate(-50%, -60%) scale(1.15); } 30% { transform: translate(-50%, -70%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -160%) scale(1); } }
 .cell.wave { animation: wave .5s ease-out; }
+.cell.nudge .cat { animation: nudge .5s ease-in-out; }
+@keyframes nudge { 0%,100% { transform: rotate(0) scale(1); } 20% { transform: rotate(-12deg) scale(1.12); } 50% { transform: rotate(10deg) scale(1.12); } 80% { transform: rotate(-6deg) scale(1.05); } }
+.toast { position: fixed; z-index: 6; transform: translate(-50%, -50%); pointer-events: none; background: rgba(28,28,30,.86); color: #fff; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; white-space: nowrap; animation: toastIn 1.4s ease forwards; }
+@keyframes toastIn { 0% { opacity: 0; transform: translate(-50%, -30%); } 12%, 80% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -70%); } }
 @keyframes wave { 0% { transform: scale(1); } 40% { transform: scale(.86); } 100% { transform: scale(1); } }
 .cell.dance .cat { animation: dance .55s ease-in-out 2; }
 @keyframes dance { 0%,100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-18%) rotate(-8deg); } 75% { transform: translateY(-18%) rotate(8deg); } }
 .dialog.win { animation: rise .45s cubic-bezier(.2, 1.3, .4, 1); }
 @keyframes rise { from { opacity: 0; transform: translateY(40px) scale(.9); } to { opacity: 1; transform: none; } }
-.dialog.win .big { animation: dance .55s ease-in-out 3; }
+.dialog.win .big { animation: trophyIn .7s cubic-bezier(.2, 1.5, .4, 1) both; }
+@keyframes trophyIn { 0% { transform: scale(.2) rotate(-20deg); opacity: 0; } 60% { transform: scale(1.12) rotate(4deg); opacity: 1; } 100% { transform: none; } }
+.dialog svg.trophy { width: 120px; height: 110px; }
 .stars { display: flex; justify-content: center; gap: 6px; margin-top: -4px; }
 .stars svg { width: 34px; height: 34px; animation: starIn .4s cubic-bezier(.2, 1.4, .4, 1) backwards; }
 .stars svg:nth-child(2) { animation-delay: .15s; width: 42px; height: 42px; margin-top: -6px; }
@@ -163,7 +169,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
     <img id="brandImg" alt="爆米花">
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v0.8 · 卡通版爆米花上岗</p>
+      <p>原型 v0.9 · 卡通版爆米花上岗</p>
     </div>
   </div>
   <div class="homebar">
@@ -262,6 +268,23 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
       <path d="M4 11 A8 3 0 0 0 20 11 V14 A8 3 0 0 1 4 14 Z" fill="#FFFFFF"/>
       <circle cx="9.8" cy="12.6" r=".9" fill="#FF9F0A"/><circle cx="12.2" cy="12" r=".9" fill="#FF9F0A"/><circle cx="14.5" cy="12.8" r=".9" fill="#FF9F0A"/>
     </symbol>
+    <symbol id="trophy" viewBox="0 0 120 110">
+      <g fill="#FFD25A"><path d="M18 22 L12 16 L18 14 Z M102 22 L108 16 L102 14 Z" opacity=".9"/><circle cx="14" cy="44" r="3"/><circle cx="106" cy="40" r="3.5"/><circle cx="22" cy="70" r="2.5"/><circle cx="100" cy="72" r="2.5"/></g>
+      <path d="M38 22 C22 22 20 34 24 42 C28 50 38 54 44 54" fill="none" stroke="#F5A800" stroke-width="7" stroke-linecap="round"/>
+      <path d="M82 22 C98 22 100 34 96 42 C92 50 82 54 76 54" fill="none" stroke="#F5A800" stroke-width="7" stroke-linecap="round"/>
+      <path d="M36 14 H84 V38 C84 58 74 68 60 68 C46 68 36 58 36 38 Z" fill="#FFCC00"/>
+      <path d="M44 18 V38 C44 50 49 58 56 61" fill="none" stroke="#FFF3B0" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+      <path d="M60 26 L63.5 33.5 L71.5 34.4 L65.5 39.8 L67.2 47.6 L60 43.6 L52.8 47.6 L54.5 39.8 L48.5 34.4 L56.5 33.5 Z" fill="#FFFFFF"/>
+      <rect x="53" y="67" width="14" height="14" rx="3" fill="#F5A800"/>
+      <rect x="40" y="80" width="40" height="12" rx="5" fill="#FF9F0A"/>
+      <rect x="34" y="91" width="52" height="11" rx="5" fill="#FF8A00"/>
+    </symbol>
+    <symbol id="brokenHeart" viewBox="0 0 100 100">
+      <path d="M48 86 C22 66 8 52 8 34 C8 20 19 10 32 10 C40 10 46 14 50 20 L44 34 L54 44 L46 58 Z" fill="#FF6B6B"/>
+      <path d="M53 86 C78 66 92 52 92 34 C92 20 81 10 68 10 C60 10 54 14 51 20 L46 34 L56 44 L49 58 Z" fill="#FF8585" transform="translate(4 3) rotate(6 70 50)"/>
+      <circle cx="30" cy="38" r="3.2" fill="#1C1C1E"/><circle cx="74" cy="42" r="3.2" fill="#1C1C1E"/>
+      <path d="M26 52 Q31 48 36 52 M68 56 Q73 52 78 56" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
     <symbol id="star" viewBox="0 0 24 24"><path d="M12 2.8 L14.8 8.7 L21.2 9.4 L16.4 13.8 L17.8 20.2 L12 16.9 L6.2 20.2 L7.6 13.8 L2.8 9.4 L9.2 8.7 Z" stroke-linejoin="round" stroke-width="1.5"/></symbol>
     <symbol id="i-gear" viewBox="0 0 24 24"><path d="M4 7 H20 M4 17 H20" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="2.6" fill="#fff" stroke="#1C1C1E" stroke-width="2"/><circle cx="15" cy="17" r="2.6" fill="#fff" stroke="#1C1C1E" stroke-width="2"/></symbol>
     <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3 V15 M7.5 7.5 L12 3 L16.5 7.5" fill="none" stroke="#1C1C1E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11 H5 V21 H19 V11 H18" fill="none" stroke="#1C1C1E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -296,8 +319,43 @@ const TIPS = {
   2: "<b>规则2</b>：每种颜色也只能有1只爆米花。看上面的颜色提示，先找格子最少的那种颜色下手。",
   3: "<b>规则3</b>：爆米花不喜欢挤，两只不能挨着，斜着挨也不行。从下一关开始，放错会扣一颗心。"
 };
-/* 11 种明亮柔和的颜色：7×7 用到的前 7 种色相完全不同；更大的棋盘再加颜色，同时靠图案区分 */
-const REGION_COLORS = ["#FFB3C7", "#8EE3C8", "#FFD966", "#9CC8FF", "#FFBC85", "#C9B2FF", "#B6E88C", "#7FD6E6", "#FF9E9E", "#A9B4FF", "#F5B5EC"];
+/* 11 种颜色，色相跨度尽量大；前 7 种（7×7 用到）互相差别最大。具体哪个区用哪种颜色，每关按“挨着的区颜色差别最大”来分配 */
+const REGION_COLORS = ["#FF8FB3", "#FFD25A", "#5FD3A0", "#5FA8FF", "#FF9A4D", "#B38BFF", "#A6DA4E", "#36C3CC", "#FF6363", "#E27BDF", "#D2A679"];
+function hexLab(hex) {
+  const c = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16) / 255).map(v => v > .04045 ? Math.pow((v + .055) / 1.055, 2.4) : v / 12.92);
+  const X = (c[0] * .4124 + c[1] * .3576 + c[2] * .1805) / .95047, Y = c[0] * .2126 + c[1] * .7152 + c[2] * .0722, Z = (c[0] * .0193 + c[1] * .1192 + c[2] * .9505) / 1.08883;
+  const f = t => t > .008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116;
+  return [116 * f(Y) - 16, 500 * (f(X) - f(Y)), 200 * (f(Y) - f(Z))];
+}
+const LABS = REGION_COLORS.map(hexLab);
+const colorDist = (a, b) => Math.hypot(LABS[a][0] - LABS[b][0], LABS[a][1] - LABS[b][1], LABS[a][2] - LABS[b][2]);
+/* 给每个颜色区挑颜色：挨着的两个区，颜色差别越大越好（每关固定，不会每次打开都变） */
+function assignColors(id, n, reg) {
+  const adj = new Set();
+  for (let i = 0; i < n * n; i++) {
+    const r = Math.floor(i / n), c = i % n;
+    for (const j of [c + 1 < n ? i + 1 : -1, r + 1 < n ? i + n : -1, (c + 1 < n && r + 1 < n) ? i + n + 1 : -1, (c > 0 && r + 1 < n) ? i + n - 1 : -1]) {
+      if (j < 0 || reg[j] === reg[i]) continue;
+      const a = Math.min(reg[i], reg[j]), b = Math.max(reg[i], reg[j]);
+      adj.add(a * 100 + b);
+    }
+  }
+  const pairs = [...adj].map(k => [Math.floor(k / 100), k % 100]);
+  let seed = id * 9301 + 49297;
+  const rnd = () => (seed = (seed * 233280 + 49297) % 2147483647) / 2147483647;
+  let best = null, bestMin = -1, bestSum = -1;
+  for (let t = 0; t < 600; t++) {
+    const pool = [...Array(REGION_COLORS.length).keys()];
+    // 小棋盘优先用前几种差别最大的颜色
+    const pick = pool.slice(0, Math.max(n, 7));
+    for (let k = pick.length - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [pick[k], pick[j]] = [pick[j], pick[k]]; }
+    const perm = pick.slice(0, n);
+    let mn = 1e9, sum = 0;
+    for (const [a, b] of pairs) { const d = colorDist(perm[a], perm[b]); mn = Math.min(mn, d); sum += d; }
+    if (mn > bestMin || (mn === bestMin && sum > bestSum)) { best = perm; bestMin = mn; bestSum = sum; }
+  }
+  return best;
+}
 const FREE_HINTS = 3;
 const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 24 };
 
@@ -353,12 +411,24 @@ addEventListener("resize", fxResize);
 function fxLoop() {
   const ctx = FX.ctx; if (!ctx) return;
   ctx.clearRect(0, 0, innerWidth, innerHeight);
+  // 火箭飞到最高点就炸开
+  for (const p of FX.parts) if (p.kind === "rocket" && p.vy > -1.2 && p.life > 0) {
+    p.life = 0;
+    const cols = p.palette, cnt = 34;
+    for (let k = 0; k < cnt; k++) {
+      const ang = Math.PI * 2 * k / cnt + Math.random() * .1, v = 2.6 + Math.random() * 2.2;
+      FX.parts.push({ x: p.x, y: p.y, vx: Math.cos(ang) * v, vy: Math.sin(ang) * v, g: .05, rot: 0, vr: 0, s: 2.2 + Math.random() * 1.6, color: cols[k % cols.length], kind: "spark", life: 55 + Math.random() * 25 });
+    }
+  }
   FX.parts = FX.parts.filter(p => p.life > 0);
   for (const p of FX.parts) {
     p.vy += p.g; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life -= 1;
     const a = Math.min(1, p.life / 25);
     ctx.save(); ctx.globalAlpha = a; ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.color;
-    if (p.kind === "corn") { // 爆米花粒：三个小圆叠在一起
+    if (p.kind === "rocket" || p.kind === "spark") {
+      ctx.beginPath(); ctx.arc(0, 0, p.s, 0, 7); ctx.fill();
+      if (p.kind === "rocket") { ctx.globalAlpha = a * .35; ctx.beginPath(); ctx.arc(-p.vx * 2, -p.vy * 2, p.s * .8, 0, 7); ctx.fill(); }
+    } else if (p.kind === "corn") { // 爆米花粒：三个小圆叠在一起
       ctx.beginPath(); ctx.arc(-p.s * .35, 0, p.s * .55, 0, 7); ctx.arc(p.s * .35, -p.s * .1, p.s * .5, 0, 7); ctx.arc(0, -p.s * .45, p.s * .5, 0, 7); ctx.fill();
     } else if (p.kind === "star") {
       ctx.beginPath(); for (let k = 0; k < 10; k++) { const r = k % 2 ? p.s * .45 : p.s; ctx.lineTo(Math.cos(k * Math.PI / 5) * r, Math.sin(k * Math.PI / 5) * r); } ctx.fill();
@@ -379,6 +449,15 @@ function burst(x, y, opts = {}) {
   if (!FX.running) { FX.running = true; requestAnimationFrame(fxLoop); }
 }
 function cellCenter(i) { const r = cellEl(i).getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
+function toast(i, text) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.textContent = text;
+  const [x, y] = cellCenter(i);
+  el.style.left = Math.max(100, Math.min(innerWidth - 100, x)) + "px"; el.style.top = (y - 34) + "px";
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
 function comboText(i, k) {
   const words = ["", "", "不错！", "很棒！", "太厉害了！", "完美！", "无敌了！"];
   const el = document.createElement("div");
@@ -388,6 +467,16 @@ function comboText(i, k) {
   el.style.left = Math.max(70, Math.min(innerWidth - 70, x)) + "px"; el.style.top = y + "px";
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1100);
+}
+function fireworks(count = 5, gap = 320) {
+  if (reduceMotion) return;
+  if (!FX.ctx) fxResize();
+  const sets = [["#FF6363", "#FFD25A", "#FFFFFF"], ["#5FA8FF", "#36C3CC", "#FFFFFF"], ["#B38BFF", "#FF8FB3", "#FFFFFF"], ["#A6DA4E", "#FFD25A", "#FFFFFF"], ["#FF9A4D", "#FF6363", "#FFD25A"]];
+  for (let k = 0; k < count; k++) setTimeout(() => {
+    FX.parts.push({ x: innerWidth * (.15 + Math.random() * .7), y: innerHeight + 10, vx: (Math.random() - .5) * 1.2, vy: -(9.5 + Math.random() * 3), g: .16, rot: 0, vr: 0, s: 3, color: "#FFE9A8", kind: "rocket", life: 200, palette: sets[k % sets.length] });
+    tone([300 + Math.random() * 200], 0.08, "sine", 0.03);
+    if (!FX.running) { FX.running = true; requestAnimationFrame(fxLoop); }
+  }, k * gap);
 }
 function confettiRain() {
   if (reduceMotion) return;
@@ -436,10 +525,12 @@ function startLevel(id) {
     auto: new Array(n * n).fill(false),
     bad: new Array(n * n).fill(false),
     given: new Set(L.given || []),
+    colors: null,
     hearts: 3, mistakes: 0, combo: 0, tutorial: id <= 3, hints: FREE_HINTS,
     undo: [], startT: Date.now(), elapsed: 0, over: false
   };
   for (const i of G.given) G.st[i] = 2;
+  G.colors = assignColors(id, n, G.reg);
   show("game");
   $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}`;
   if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
@@ -454,7 +545,7 @@ function tick() {
   if (!G.over) G.elapsed = Math.floor((Date.now() - G.startT) / 1000);
   $("lvSub").textContent = `${G.n}×${G.n}${G.tutorial ? " · 教学" : ""} · ${fmt(G.elapsed)}`;
 }
-function colorOf(g) { return REGION_COLORS[g % REGION_COLORS.length]; }
+function colorOf(g) { return REGION_COLORS[G.colors[g]]; }
 function buildBoard() {
   const { n, reg } = G, b = $("board");
   b.style.setProperty("--n", n);
@@ -462,7 +553,7 @@ function buildBoard() {
   let html = "";
   for (let i = 0; i < n * n; i++) {
     const g = reg[i];
-    html += `<div class="cell" data-i="${i}" role="gridcell" style="background:${colorOf(g)}">${save.patterns ? `<svg class="pat" viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 11}"/></svg>` : ""}<span class="fg" style="display:contents"></span></div>`;
+    html += `<div class="cell" data-i="${i}" role="gridcell" style="background:${colorOf(g)}">${save.patterns ? `<svg class="pat" viewBox="0 0 24 24" aria-hidden="true"><use href="#p${G.colors[g]}"/></svg>` : ""}<span class="fg" style="display:contents"></span></div>`;
   }
   b.innerHTML = html;
   for (let i = 0; i < n * n; i++) drawCell(i);
@@ -498,7 +589,7 @@ function renderChips() {
   for (let i = 0; i < G.n * G.n; i++) if (G.st[i] === 2) done.add(G.reg[i]);
   const html = [];
   for (let g = 0; g < G.n; g++) {
-    html.push(`<span class="chip${done.has(g) ? " done" : ""}" style="background:${colorOf(g)}" aria-label="${done.has(g) ? "已坐好" : "还没坐"}">${save.patterns ? `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 11}"/></svg>` : ""}</span>`);
+    html.push(`<span class="chip${done.has(g) ? " done" : ""}" style="background:${colorOf(g)}" aria-label="${done.has(g) ? "已坐好" : "还没坐"}">${save.patterns ? `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#p${G.colors[g]}"/></svg>` : ""}</span>`);
   }
   $("chips").innerHTML = html.join("");
   $("chips").classList.toggle("small", G.n >= 10);
@@ -531,8 +622,10 @@ function flashTip(text) { $("tip").innerHTML = text; $("tip").classList.remove("
 function tryPlace(i) {
   if (G.over || G.st[i] === 2 || G.bad[i]) return;
   if (conflictsWithCat(i)) {
-    drawCell(i, "shake"); fx.bad();
-    flashTip("这一格和已经坐好的爆米花冲突（同行、同列、同色或挨着），不扣心，换一格吧。");
+    drawCell(i, "shake"); fx.mark(); buzz([20, 30, 20]);
+    const who = neighborsOf(i).filter(j => G.st[j] === 2);
+    who.forEach(j => drawCell(j, "nudge"));
+    toast(i, "和这只爆米花冲突了，不扣心");
     return;
   }
   if (isAnswer(i)) {
@@ -599,10 +692,10 @@ function checkWin() {
   const stars = G.mistakes === 0 ? 3 : G.mistakes === 1 ? 2 : 1;
   setTimeout(() => {
     if (!G) return;
-    fx.win(); confettiRain();
+    fx.win(); confettiRain(); fireworks(6, 280);
     const next = G.id < LEVELS.length;
     showDialog(`<div class="stars">${[0, 1, 2].map(k => `<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${k < stars ? "#FFCC00" : "#E5E5EA"};stroke:${k < stars ? "#F5A800" : "#D1D1D6"}"><use href="#star"/></svg>`).join("")}</div>
-      <img class="big belly" src="${CAT_IMG.belly}" alt="爆米花躺平露肚皮">
+      <svg class="big trophy" viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg>
       <h3>都找到座位啦！</h3>
       <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div><div>连胜<b>${save.streak}</b></div></div>
       <div class="reward">${CAN_SVG}<div>猫罐头 <b id="canCount">+0</b><small>${notes.join(" · ") || "继续连胜有加成"}</small></div></div>
@@ -622,7 +715,7 @@ function breakStreak() { if (save.streak) { save.streak = 0; persist(); } }
 function fail() {
   G.over = true; clearInterval(timerId);
   setTimeout(() => {
-    showDialog(`<img class="face" src="${CAT_IMG.soft}" alt="委屈的爆米花">
+    showDialog(`<svg class="big" viewBox="0 0 100 100" aria-hidden="true"><use href="#brokenHeart"/></svg>
       <h3>心用完了</h3><p>看个广告就能拿回1颗心接着玩，连胜也保住。重新开始的话连胜会清零。</p>
       <button class="btn dark" id="dRevive">看广告复活（原型直接复活）</button>
       <button class="btn alt" id="dRetry">重新开始本关</button>
