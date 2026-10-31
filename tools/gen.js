@@ -354,9 +354,10 @@ module.exports = { makeLevel, pickLevels, sawtooth, countSolutions, logicSolve }
 if (require.main === module) {
   const t0 = Date.now();
   const fs = require('fs');
-  // 结构：每 11 关一组，前 10 关是 7→8→9→10→11 循环两次，第 11 关是 12×12 困难关，一共 5 组 55 关
+  // 结构：每 11 关一组；普通关按 7→8→9→10 一直循环，每组第 11 关是 11×11 困难关；一共 5 组 55 关
   const BLOCKS = 5;
-  const NORMAL = [7, 8, 9, 10, 11, 7, 8, 9, 10, 11];
+  const NORMAL_SIZES = [7, 8, 9, 10];
+  const HARD_N = 11;
   const isSimple = lv => lv.used.T_lookahead === 0 && lv.used.T_confineK === 0;
   const normalOk = (lv, b) => b < 3 ? isSimple(lv) : lv.used.T_lookahead === 0 && lv.used.T_confineK <= 1;
   const hardOk = lv => lv.used.T_confineK >= 1 || lv.used.T_lookahead >= 1;
@@ -364,38 +365,40 @@ if (require.main === module) {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
     return sz.filter(x => x === 1).length <= 1 && Math.max(...sz) <= lv.n * lv.n * 0.3;
   };
-  const need = { 7: 10, 8: 10, 9: 10, 10: 10, 11: 10 };
-  const pools = {};
-  for (const n of [7, 8, 9, 10, 11]) {
-    const pool = [];
-    let simple = 0;
-    // 一直生成，直到“简单题”够用（留余量），或者达到上限
-    for (let s = 0; s < 4000 && (simple < need[n] * 2.5 || pool.length < 40); s++) {
-      const lv = makeLevel(n, 300000 * n + s);
-      if (!lv || !shapeOk(lv)) continue;
-      pool.push(lv);
-      if (isSimple(lv)) simple++;
+
+  // 候选池缓存：生成过的就存下来，下次不用重新算
+  const cacheDir = __dirname + '/pools';
+  if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
+  function getPool(n, wantSimple, wantTotal, seedBase, filter) {
+    const file = `${cacheDir}/pool-${n}.json`;
+    let pool = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];
+    let s = pool.length ? Math.max(...pool.map(p => p.seed)) + 1 : seedBase;
+    const count = () => [pool.filter(isSimple).length, pool.filter(filter).length];
+    while ((count()[0] < wantSimple || count()[1] < wantTotal) && s < seedBase + 6000) {
+      const lv = makeLevel(n, s);
+      if (lv && shapeOk(lv)) pool.push(Object.assign(lv, { seed: s }));
+      s++;
     }
+    fs.writeFileSync(file, JSON.stringify(pool));
     pool.sort((a, b) => a.score - b.score);
-    pools[n] = pool;
-    console.log('pool', n, pool.length, 'simple', simple, Math.round((Date.now() - t0) / 1000) + 's');
+    console.log('pool', n, pool.length, 'simple', count()[0], Math.round((Date.now() - t0) / 1000) + 's');
+    return pool;
   }
-  const hardPool = [];
-  for (let s = 0; s < 400 && hardPool.length < 12; s++) {
-    const lv = makeLevel(12, 900000 + s);
-    if (lv && shapeOk(lv) && hardOk(lv)) hardPool.push(lv);
-  }
-  hardPool.sort((a, b) => a.score - b.score);
-  console.log('hard pool', hardPool.length, Math.round((Date.now() - t0) / 1000) + 's');
+  const pools = {};
+  for (const n of NORMAL_SIZES) pools[n] = getPool(n, 22, 40, 400000 * n, () => true);
+  const hardPool = getPool(HARD_N, 0, 12, 7000000, hardOk).filter(hardOk);
 
   const used = new Set();
-  const seen = { 7: 0, 8: 0, 9: 0, 10: 0, 11: 0 };
+  const seen = { 7: 0, 8: 0, 9: 0, 10: 0 };
+  const per = 50 / NORMAL_SIZES.length; // 每种尺寸大约出现的次数
   const all = [];
+  let m = 0;
   for (let b = 0; b < BLOCKS; b++) {
-    for (const n of NORMAL) {
-      const k = seen[n]++;
+    for (let k = 0; k < 10; k++) {
+      const n = NORMAL_SIZES[m++ % NORMAL_SIZES.length];
+      const idx = seen[n]++;
       const cands = pools[n].filter(lv => normalOk(lv, b) && !used.has(lv));
-      const q = 0.05 + 0.5 * k / 9;
+      const q = 0.05 + 0.5 * idx / per;
       const lv = cands[Math.min(cands.length - 1, Math.floor(q * cands.length))];
       used.add(lv); all.push({ lv, hard: false });
     }
@@ -405,7 +408,7 @@ if (require.main === module) {
     used.add(hl); all.push({ lv: hl, hard: true });
   }
 
-  // 前 30 关里的普通关，开局送 1 只爆米花，放在最大的颜色区里
+  // 开局送 1 只爆米花：前 30 关的普通关，以及所有困难关；放在最大的颜色区里
   const givenOf = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
     let best = 0;
@@ -414,7 +417,7 @@ if (require.main === module) {
   };
   const levels = all.map(({ lv, hard }, i) => ({
     id: i + 1, n: lv.n, hard, reg: lv.reg.join(','), sol: lv.sol.join(','), score: lv.score,
-    tech: lv.used, given: (!hard && i < 30) ? [givenOf(lv)] : []
+    tech: lv.used, given: (hard || i < 30) ? [givenOf(lv)] : []
   }));
   fs.writeFileSync(__dirname + '/levels.json', JSON.stringify(levels));
   console.log('levels', levels.length, 'time', Math.round((Date.now() - t0) / 1000) + 's');

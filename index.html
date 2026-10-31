@@ -4,133 +4,138 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>爆米花找座位</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* 布局：手机竖屏单列。顶部圆按钮+关卡信息，状态条（心、罐头、还差哪些颜色），留白分隔的圆角方块棋盘，底部圆形道具按钮 */
-  --bg: #FFF8EF;
+  /* 苹果风格：系统灰底、纯白卡片、系统字体、很轻的阴影；棋盘是明亮干净的马卡龙色块，图案用白色剪影 */
+  --bg: #F2F2F7;
   --card: #FFFFFF;
-  --ink: #4A3428;
-  --ink-soft: #9A8170;
-  --caramel: #E39B35;
-  --heart: #E5596C;
-  --hard: #C8546A;
-  --shadow: 0 3px 10px rgba(122, 82, 46, .11);
-  --font-display: "ZCOOL KuaiLe", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  --font-body: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --ink: #1C1C1E;
+  --ink-soft: #8E8E93;
+  --fill: rgba(118, 118, 128, .12);
+  --accent: #FF9F0A;
+  --accent-ink: #B86E00;
+  --heart: #FF3B30;
+  --hard: #FF375F;
+  --green: #34C759;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 4px 16px rgba(0, 0, 0, .05);
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color-scheme: light;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; margin: 0; touch-action: manipulation; }
-body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.5; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
 button { font-family: inherit; color: inherit; cursor: pointer; border: 0; }
-button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
-.screen { max-width: 480px; margin: 0 auto; padding: 14px 12px 28px; min-height: 100%; display: flex; flex-direction: column; gap: 12px; }
+button:active { opacity: .7; }
+button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset: 2px; }
+.screen { max-width: 480px; margin: 0 auto; padding: 14px 16px 28px; min-height: 100%; display: flex; flex-direction: column; gap: 12px; }
 .hidden { display: none !important; }
-.round { width: 48px; height: 48px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; padding: 0; flex: none; }
-.round svg { width: 24px; height: 24px; }
-.pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 6px 12px; font-size: 14px; font-variant-numeric: tabular-nums; }
-.pill svg { width: 22px; height: 22px; }
+.round { width: 44px; height: 44px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; padding: 0; flex: none; }
+.round svg { width: 22px; height: 22px; }
+.pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 6px 12px; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pill svg { width: 20px; height: 20px; }
 
-/* ---------- 选关页 ---------- */
-.brand { display: flex; align-items: center; gap: 12px; padding: 6px 4px 0; }
-.brand svg { width: 60px; height: 60px; flex: none; }
-.brand h1 { font-family: var(--font-display); font-weight: 400; font-size: 34px; margin: 0; line-height: 1.1; letter-spacing: 1px; }
-.brand p { margin: 2px 0 0; color: var(--ink-soft); font-size: 13px; }
-.homebar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+/* 选关页 */
+.brand { display: flex; align-items: center; gap: 12px; padding: 8px 2px 0; }
+.brand svg { width: 52px; height: 52px; flex: none; }
+.brand h1 { font-size: 30px; font-weight: 800; letter-spacing: -.5px; margin: 0; line-height: 1.1; }
+.brand p { margin: 3px 0 0; color: var(--ink-soft); font-size: 13px; }
+.homebar { display: flex; gap: 8px; align-items: center; }
 .homebar .grow { flex: 1; }
-.panel { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 12px; }
-.blocks { display: flex; flex-direction: column; gap: 10px; }
-.block h2 { margin: 0 0 6px; font-size: 13px; font-weight: 500; color: var(--ink-soft); }
-.levels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.lv { height: 50px; border-radius: 13px; background: #FFF1DD; font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; line-height: 1.15; }
-.lv small { font-size: 10px; font-weight: 400; color: var(--ink-soft); }
-.lv.hard { background: #FBE0E5; }
+.panel { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 14px; }
+.blocks { display: flex; flex-direction: column; gap: 14px; }
+.block h2 { margin: 0 0 8px; font-size: 13px; font-weight: 600; color: var(--ink-soft); text-transform: none; }
+.levels { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.lv { height: 48px; border-radius: 12px; background: var(--bg); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; line-height: 1.15; }
+.lv small { font-size: 10px; font-weight: 500; color: var(--ink-soft); }
+.lv.hard { background: #FFE5EA; }
 .lv.hard small { color: var(--hard); }
-.lv.done { background: var(--caramel); color: #fff; }
-.lv.done small { color: #FFF1DD; }
+.lv.done { background: var(--accent); color: #fff; }
+.lv.done small { color: rgba(255,255,255,.85); }
 .lv.hard.done { background: var(--hard); }
-.note { font-size: 12px; color: var(--ink-soft); margin: 0; }
+.note { font-size: 12px; color: var(--ink-soft); margin: 0; line-height: 1.5; }
 
-/* ---------- 游戏页 ---------- */
+/* 游戏页 */
 .topbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .lvinfo { text-align: center; line-height: 1.2; }
-.lvinfo b { display: block; font-family: var(--font-display); font-weight: 400; font-size: 26px; }
-.lvinfo b em { font-style: normal; font-family: var(--font-body); font-size: 12px; font-weight: 600; color: #fff; background: var(--hard); border-radius: 6px; padding: 1px 6px; vertical-align: middle; margin-left: 6px; }
-.lvinfo span { font-size: 12px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.lvinfo b { display: block; font-size: 22px; font-weight: 700; letter-spacing: -.3px; }
+.lvinfo b em { font-style: normal; font-size: 12px; font-weight: 600; color: #fff; background: var(--hard); border-radius: 6px; padding: 2px 6px; vertical-align: 3px; margin-left: 6px; }
+.lvinfo span { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
 .status { display: flex; justify-content: center; gap: 8px; }
 .hearts { display: flex; gap: 4px; }
-.hearts svg { width: 22px; height: 22px; }
-.left { background: var(--card); box-shadow: var(--shadow); border-radius: 16px; padding: 8px 10px; }
-.left p { margin: 0 0 6px; font-size: 12px; color: var(--ink-soft); text-align: center; }
-.chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
-.chip { width: 26px; height: 26px; border-radius: 9px; position: relative; display: grid; place-items: center; transition: opacity .3s, transform .3s; }
-.chip svg { width: 70%; height: 70%; color: rgba(74,52,40,.28); }
+.hearts svg { width: 20px; height: 20px; }
+.left { background: var(--card); box-shadow: var(--shadow); border-radius: 16px; padding: 10px 12px; }
+.left p { margin: 0 0 8px; font-size: 13px; color: var(--ink-soft); text-align: center; }
+.chips { display: flex; flex-wrap: nowrap; justify-content: center; gap: 6px; }
+.chip { width: 28px; height: 28px; border-radius: 8px; position: relative; display: grid; place-items: center; transition: opacity .3s, transform .3s; flex: none; }
+.chip svg { width: 68%; height: 68%; color: rgba(255,255,255,.9); }
 .chips.small { gap: 4px; }
-.chips.small .chip { width: 22px; height: 22px; border-radius: 7px; }
-.chip.done { opacity: .28; transform: scale(.82); }
-.chip.done::after { content: ""; position: absolute; width: 9px; height: 5px; border-left: 2.5px solid var(--ink); border-bottom: 2.5px solid var(--ink); transform: rotate(-45deg) translate(1px, -1px); }
-.rulebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.rule { background: var(--card); border-radius: 12px; box-shadow: var(--shadow); padding: 6px 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--ink-soft); text-align: center; line-height: 1.25; }
+.chips.small .chip { width: 24px; height: 24px; border-radius: 7px; }
+.chip.done { opacity: .25; transform: scale(.8); }
+.rulebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.rule { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); padding: 8px 4px 7px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--ink-soft); text-align: center; line-height: 1.2; }
 .rule svg { width: 26px; height: 26px; }
-.tip { background: #FFF1DD; border-radius: 14px; padding: 10px 12px; font-size: 14px; }
-.tip b { color: #A0621A; }
-.boardcard { background: var(--card); border-radius: 20px; box-shadow: var(--shadow); padding: 10px; }
+.tip { background: #FFF4E0; border-radius: 14px; padding: 10px 12px; font-size: 14px; }
+.tip b { color: var(--accent-ink); }
+.boardcard { background: var(--card); border-radius: 22px; box-shadow: var(--shadow); padding: 10px; }
 .board { --n: 7; --gap: 6px; width: 100%; aspect-ratio: 1; display: grid; gap: var(--gap); grid-template-columns: repeat(var(--n), 1fr); grid-template-rows: repeat(var(--n), 1fr); touch-action: none; user-select: none; -webkit-user-select: none; }
-.cell { position: relative; border-radius: 24%; display: grid; place-items: center; overflow: hidden; }
-.cell .pat { position: absolute; width: 54%; height: 54%; left: 23%; top: 23%; color: rgba(74, 52, 40, .2); pointer-events: none; }
-.cell .x { position: relative; width: 50%; height: 50%; pointer-events: none; }
+.cell { position: relative; border-radius: 26%; display: grid; place-items: center; overflow: hidden; }
+.cell .pat { position: absolute; width: 52%; height: 52%; left: 24%; top: 24%; color: rgba(255, 255, 255, .78); pointer-events: none; }
+.cell .x { position: relative; width: 46%; height: 46%; pointer-events: none; }
 .cell.bad .x line { stroke: var(--heart); }
 .cell svg.cat { position: relative; width: 88%; height: 88%; pointer-events: none; }
-.cell.marked .pat, .cell.cat .pat { opacity: .3; }
+.cell.marked .pat, .cell.cat .pat { opacity: 0; }
+.cell.marked { filter: saturate(.75); }
 .cell.pop svg.cat { animation: pop .28s ease-out; }
 .cell.shake { animation: shake .35s; }
-.cell.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.7); animation: fade .6s forwards; pointer-events: none; }
-.cell.hint::after { content: ""; position: absolute; inset: 0; border: 3px solid var(--caramel); border-radius: inherit; animation: fade 1.6s forwards; pointer-events: none; }
-@keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+.cell.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.75); animation: fade .6s forwards; pointer-events: none; }
+.cell.hint::after { content: ""; position: absolute; inset: 0; border: 3px solid var(--accent); border-radius: inherit; animation: fade 1.6s forwards; pointer-events: none; }
+@keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 @keyframes fade { from { opacity: 1; } to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .cell.pop svg.cat, .cell.shake, .cell.flash::after, .cell.hint::after, .chip { animation: none; transition: none; } }
-.tools { display: flex; justify-content: center; gap: 26px; padding-top: 4px; }
-.tool { position: relative; width: 70px; height: 70px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; font-size: 12px; padding: 0; }
-.tool svg { width: 27px; height: 27px; }
-.badge { position: absolute; top: -4px; right: -6px; min-width: 24px; height: 24px; border-radius: 12px; background: var(--heart); color: #fff; font-size: 13px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
-.badge.ad { background: var(--caramel); font-size: 11px; }
+.tools { display: flex; justify-content: center; gap: 28px; padding-top: 2px; }
+.tool { position: relative; width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--ink-soft); background: none; padding: 0; }
+.tool span.ic { width: 56px; height: 56px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; }
+.tool svg { width: 25px; height: 25px; }
+.badge { position: absolute; top: -3px; right: 0; min-width: 22px; height: 22px; border-radius: 11px; background: var(--heart); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
+.badge.ad { background: var(--accent); font-size: 10px; }
 .howto { text-align: center; }
 
-/* ---------- 排行榜 ---------- */
-.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; background: #FFF1DD; border-radius: 14px; padding: 4px; }
-.tabs button { border-radius: 11px; padding: 8px; font-size: 15px; background: transparent; }
-.tabs button[aria-selected="true"] { background: var(--card); box-shadow: var(--shadow); font-weight: 600; }
+/* 排行榜 */
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--fill); border-radius: 10px; padding: 2px; }
+.tabs button { border-radius: 8px; padding: 7px; font-size: 14px; font-weight: 500; background: transparent; }
+.tabs button[aria-selected="true"] { background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,.12); font-weight: 600; }
 .rank { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
-.rank td { padding: 10px 6px; border-bottom: 1px solid #F3E6D6; }
+.rank td { padding: 11px 4px; border-bottom: .5px solid #E5E5EA; }
+.rank tr:last-child td { border-bottom: 0; }
 .rank td:last-child { text-align: right; font-weight: 600; }
-.rank tr.me td { background: #FFF6E6; }
 .empty { text-align: center; color: var(--ink-soft); font-size: 14px; padding: 8px 0; }
 
-/* ---------- 弹窗 ---------- */
-.overlay { position: fixed; inset: 0; background: rgba(74,52,40,.45); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 5; }
-.dialog { background: var(--card); border-radius: 22px; padding: 22px 20px 18px; width: min(100%, 340px); text-align: center; display: flex; flex-direction: column; gap: 12px; max-height: 92vh; overflow-y: auto; }
-.dialog h3 { font-family: var(--font-display); font-weight: 400; font-size: 27px; margin: 0; }
+/* 弹窗 */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.32); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 5; }
+.dialog { background: var(--card); border-radius: 24px; padding: 22px 18px 16px; width: min(100%, 330px); text-align: center; display: flex; flex-direction: column; gap: 12px; max-height: 92vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+.dialog h3 { font-size: 22px; font-weight: 700; letter-spacing: -.3px; margin: 0; }
 .dialog p { margin: 0; color: var(--ink-soft); font-size: 14px; }
-.dialog svg.big { width: 84px; height: 84px; margin: 0 auto; }
-.stats { display: flex; justify-content: center; gap: 18px; font-size: 13px; color: var(--ink-soft); }
-.stats b { display: block; font-size: 20px; font-variant-numeric: tabular-nums; color: var(--ink); }
-.reward { background: #FFF1DD; border-radius: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 15px; }
-.reward svg { width: 30px; height: 30px; }
-.reward b { font-size: 22px; color: #A0621A; font-variant-numeric: tabular-nums; }
+.dialog svg.big { width: 80px; height: 80px; margin: 0 auto; }
+.stats { display: flex; justify-content: center; gap: 22px; font-size: 12px; color: var(--ink-soft); }
+.stats b { display: block; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+.reward { background: var(--bg); border-radius: 14px; padding: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 15px; text-align: left; }
+.reward svg { width: 32px; height: 32px; flex: none; }
+.reward b { font-size: 20px; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
 .reward small { display: block; font-size: 12px; color: var(--ink-soft); }
-.btn { border-radius: 14px; padding: 12px; font-size: 16px; font-weight: 600; background: var(--caramel); color: #fff; }
-.btn.alt { background: #FFF1DD; color: #8A5A1E; }
-.btn.dark { background: #4A3428; color: #fff; }
+.btn { border-radius: 14px; padding: 13px; font-size: 16px; font-weight: 600; background: var(--accent); color: #fff; }
+.btn.alt { background: var(--fill); color: var(--ink); }
+.btn.dark { background: var(--ink); color: #fff; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.setrow { display: flex; justify-content: space-between; align-items: center; text-align: left; font-size: 15px; padding: 4px 2px; gap: 10px; }
+.setlist { background: var(--bg); border-radius: 14px; text-align: left; }
+.setrow { display: flex; justify-content: space-between; align-items: center; font-size: 15px; padding: 10px 12px; gap: 10px; border-bottom: .5px solid #E5E5EA; }
+.setrow:last-child { border-bottom: 0; }
 .setrow small { display: block; font-size: 11px; color: var(--ink-soft); }
-.setrow button { background: #FFF1DD; border-radius: 999px; padding: 6px 14px; font-size: 14px; min-width: 64px; flex: none; }
-.setrow button[aria-pressed="true"] { background: var(--caramel); color: #fff; }
-.copybox { width: 100%; font: inherit; font-size: 13px; border: 1.5px solid #F0DEC6; border-radius: 10px; padding: 8px; color: var(--ink); background: #FFFBF5; resize: none; }
+.switch { width: 51px; height: 31px; border-radius: 16px; background: #E9E9EA; position: relative; flex: none; padding: 0; transition: background .2s; }
+.switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.2); transition: transform .2s; }
+.switch[aria-checked="true"] { background: var(--green); }
+.switch[aria-checked="true"]::after { transform: translateX(20px); }
+.copybox { width: 100%; font: inherit; font-size: 13px; border: 0; border-radius: 10px; padding: 10px; color: var(--ink); background: var(--bg); resize: none; }
 </style>
 </head>
 <body>
@@ -141,7 +146,7 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
     <svg viewBox="0 0 40 40" aria-hidden="true"><use href="#cat"/></svg>
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v0.4 · 画面里的猫以后换成爆米花</p>
+      <p>原型 v0.5 · 画面里的猫以后换成爆米花</p>
     </div>
   </div>
   <div class="homebar">
@@ -153,13 +158,13 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
     <button class="round" id="setHome" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
   </div>
   <div class="panel"><div class="blocks" id="blocks"></div></div>
-  <p class="note">每组11关：7×7到11×11各两关，第11关是12×12困难关（罐头翻倍）。前30关的普通关开局先坐好1只爆米花。复活和提示在正式版要看广告，这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
+  <p class="note">每组11关：前10关是7×7到10×10轮流出现，第11关是11×11困难关（罐头翻倍）。前30关和所有困难关，开局先坐好1只爆米花。复活和提示在正式版要看广告，这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
 </section>
 
 <!-- 游戏页 -->
 <section class="screen hidden" id="game">
   <div class="topbar">
-    <button class="round" id="backBtn" aria-label="返回选关"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="#4A3428" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="round" id="backBtn" aria-label="返回选关"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="#1C1C1E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="lvinfo"><b id="lvName">第1关</b><span id="lvSub">7×7 · 0:00</span></div>
     <button class="round" id="setBtn" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
   </div>
@@ -180,9 +185,9 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
   <div class="tip hidden" id="tip"></div>
   <div class="boardcard"><div class="board" id="board" role="grid" aria-label="棋盘"></div></div>
   <div class="tools">
-    <button class="tool" id="undoBtn" aria-label="撤回标×"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 L4 11.5 L9 16" fill="none" stroke="#4A3428" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 11.5 H14 a5.5 5.5 0 0 1 0 11 H11" fill="none" stroke="#4A3428" stroke-width="2.4" stroke-linecap="round"/></svg>撤回</button>
-    <button class="tool" id="hintBtn" aria-label="提示"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 a6.5 6.5 0 0 1 3.8 11.8 V17 H8.2 V14.8 A6.5 6.5 0 0 1 12 3 Z" fill="#FFD36B" stroke="#4A3428" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20 H15 M10 22.5 H14" stroke="#4A3428" stroke-width="1.8" stroke-linecap="round"/></svg>提示<span class="badge" id="hintBadge">3</span></button>
-    <button class="tool" id="restartBtn" aria-label="重新开始本关"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12 a7.5 7.5 0 1 1 -2.2 -5.3" fill="none" stroke="#4A3428" stroke-width="2.4" stroke-linecap="round"/><path d="M18 3 V7.5 H13.5" fill="none" stroke="#4A3428" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>重来</button>
+    <button class="tool" id="undoBtn" aria-label="撤回标×"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 L4 11.5 L9 16" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 11.5 H14 a5.5 5.5 0 0 1 0 11 H11" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round"/></svg></span>撤回</button>
+    <button class="tool" id="hintBtn" aria-label="提示"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 a6.5 6.5 0 0 1 3.8 11.8 V17 H8.2 V14.8 A6.5 6.5 0 0 1 12 3 Z" fill="#FFD36B" stroke="#1C1C1E" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20 H15 M10 22.5 H14" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round"/></svg></span>提示<span class="badge" id="hintBadge">3</span></button>
+    <button class="tool" id="restartBtn" aria-label="重新开始本关"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12 a7.5 7.5 0 1 1 -2.2 -5.3" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round"/><path d="M18 3 V7.5 H13.5" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>重来</button>
   </div>
   <p class="note howto">点一下标×，再点一下放爆米花；按住拖动可以连续标×，从×上开始拖可以擦掉</p>
 </section>
@@ -190,7 +195,7 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
 <!-- 排行榜 -->
 <section class="screen hidden" id="rank">
   <div class="topbar">
-    <button class="round" id="rankBack" aria-label="返回"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="#4A3428" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="round" id="rankBack" aria-label="返回"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="#1C1C1E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <div class="lvinfo"><b>排行榜</b><span>好友排名等微信版接入</span></div>
     <button class="round" id="rankShare" aria-label="分享"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-share"/></svg></button>
   </div>
@@ -234,48 +239,46 @@ button:focus-visible { outline: 3px solid var(--caramel); outline-offset: 2px; }
       <path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z"/>
     </symbol>
     <symbol id="can" viewBox="0 0 24 24">
-      <ellipse cx="12" cy="7" rx="8" ry="3" fill="#F2C46B" stroke="#7A5634" stroke-width="1.4"/>
-      <path d="M4 7 V17 A8 3 0 0 0 20 17 V7" fill="#E39B35" stroke="#7A5634" stroke-width="1.4"/>
-      <path d="M4 11 A8 3 0 0 0 20 11 V14 A8 3 0 0 1 4 14 Z" fill="#FFF1DD"/>
-      <circle cx="10" cy="13" r="1" fill="#7A5634"/><circle cx="12.4" cy="12.3" r="1" fill="#7A5634"/><circle cx="14.6" cy="13.2" r="1" fill="#7A5634"/>
-      <ellipse cx="12.3" cy="15.2" rx="1.8" ry="1.3" fill="#7A5634"/>
+      <path d="M4 7 V17 A8 3 0 0 0 20 17 V7" fill="#FF9F0A"/>
+      <ellipse cx="12" cy="7" rx="8" ry="3" fill="#FFC861"/>
+      <path d="M4 11 A8 3 0 0 0 20 11 V14 A8 3 0 0 1 4 14 Z" fill="#FFFFFF"/>
+      <circle cx="9.8" cy="12.6" r=".9" fill="#FF9F0A"/><circle cx="12.2" cy="12" r=".9" fill="#FF9F0A"/><circle cx="14.5" cy="12.8" r=".9" fill="#FF9F0A"/>
     </symbol>
-    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="#4A3428" stroke-width="2.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M5.5 18.5l2.1-2.1M16.4 7.6l2.1-2.1" stroke="#4A3428" stroke-width="2.2" stroke-linecap="round"/></symbol>
-    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3 V15 M7.5 7.5 L12 3 L16.5 7.5" fill="none" stroke="#4A3428" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11 H5 V21 H19 V11 H18" fill="none" stroke="#4A3428" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-rank" viewBox="0 0 24 24"><rect x="3" y="12" width="5" height="9" rx="1.5" fill="#F2C46B" stroke="#4A3428" stroke-width="1.8"/><rect x="9.5" y="6" width="5" height="15" rx="1.5" fill="#E39B35" stroke="#4A3428" stroke-width="1.8"/><rect x="16" y="15" width="5" height="6" rx="1.5" fill="#F7D9A8" stroke="#4A3428" stroke-width="1.8"/></symbol>
-    <!-- 规则小图 -->
-    <symbol id="r-row" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><rect x="3" y="11" width="24" height="8" rx="3" fill="#F3DB86"/><circle cx="15" cy="15" r="3" fill="#7A5634"/><path d="M5 13 l4 4 m0 -4 l-4 4 M21 13 l4 4 m0 -4 l-4 4" stroke="#B08A6E" stroke-width="1.4" stroke-linecap="round"/></symbol>
-    <symbol id="r-col" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><rect x="11" y="3" width="8" height="24" rx="3" fill="#A6DDC4"/><circle cx="15" cy="15" r="3" fill="#7A5634"/><path d="M13 5 l4 4 m0 -4 l-4 4 M13 21 l4 4 m0 -4 l-4 4" stroke="#6C9A8B" stroke-width="1.4" stroke-linecap="round"/></symbol>
-    <symbol id="r-reg" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><path d="M4 4 H18 V12 H26 V26 H12 V18 H4 Z" fill="#D4B5EA"/><circle cx="21" cy="19" r="3" fill="#7A5634"/><path d="M7 7 l3.5 3.5 m0 -3.5 l-3.5 3.5" stroke="#8E76AE" stroke-width="1.4" stroke-linecap="round"/></symbol>
-    <symbol id="r-adj" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="6" fill="#FFF1DD"/><rect x="6" y="6" width="18" height="18" rx="4" fill="#F3B4C2"/><circle cx="15" cy="15" r="3" fill="#7A5634"/><path d="M7.5 7.5 l3 3 m0 -3 l-3 3 M19.5 7.5 l3 3 m0 -3 l-3 3 M7.5 19.5 l3 3 m0 -3 l-3 3 M19.5 19.5 l3 3 m0 -3 l-3 3" stroke="#B9707C" stroke-width="1.3" stroke-linecap="round"/></symbol>
-    <!-- 颜色区花纹：每个区一个，色弱也能分清 -->
-    <symbol id="p0" viewBox="0 0 24 24"><circle cx="8" cy="9" r="3.4" fill="currentColor"/><circle cx="12.5" cy="6.8" r="3.6" fill="currentColor"/><circle cx="16.5" cy="9.5" r="3.2" fill="currentColor"/><path d="M6 12 H18 L16.3 21 H7.7 Z" fill="currentColor"/></symbol>
-    <symbol id="p1" viewBox="0 0 24 24"><path d="M3 8.5 L12 4 L21 8.5 V17 L12 21 L3 17 Z M3 8.5 L12 13 L21 8.5 M12 13 V21" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></symbol>
-    <symbol id="p2" viewBox="0 0 24 24"><path d="M2.5 11 H21.5 A9.5 8 0 0 1 2.5 11 Z" fill="currentColor"/><rect x="8" y="18.5" width="8" height="2.5" rx="1.2" fill="currentColor"/></symbol>
-    <symbol id="p3" viewBox="0 0 24 24"><path d="M19.5 3 C10 4 5 10 5 18 L4 21 M5 18 C13 18 18.5 11.5 19.5 3 M8 14.5 L12 13.5 M10 10.5 L14.5 9.5" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="p4" viewBox="0 0 24 24"><path d="M15.5 3 A9 9 0 1 0 21 15.5 A7 7 0 0 1 15.5 3 Z" fill="currentColor"/></symbol>
-    <symbol id="p5" viewBox="0 0 24 24"><circle cx="12" cy="6" r="3.6" fill="currentColor"/><circle cx="17.7" cy="10.2" r="3.6" fill="currentColor"/><circle cx="15.5" cy="17" r="3.6" fill="currentColor"/><circle cx="8.5" cy="17" r="3.6" fill="currentColor"/><circle cx="6.3" cy="10.2" r="3.6" fill="currentColor"/></symbol>
-    <symbol id="p6" viewBox="0 0 24 24"><path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z" fill="currentColor"/></symbol>
-    <symbol id="p7" viewBox="0 0 24 24"><path d="M12 2.5 C12 2.5 5 10.5 5 15 A7 7 0 0 0 19 15 C19 10.5 12 2.5 12 2.5 Z" fill="currentColor"/></symbol>
-    <symbol id="p8" viewBox="0 0 24 24"><circle cx="8" cy="14" r="4.5" fill="currentColor"/><circle cx="13" cy="10" r="5.5" fill="currentColor"/><circle cx="17.5" cy="14.5" r="4" fill="currentColor"/><rect x="5" y="14" width="14" height="4.5" rx="2.2" fill="currentColor"/></symbol>
-    <symbol id="p9" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5 V5.5 M12 18.5 V21.5 M2.5 12 H5.5 M18.5 12 H21.5 M5.3 5.3 L7.4 7.4 M16.6 16.6 L18.7 18.7 M5.3 18.7 L7.4 16.6 M16.6 7.4 L18.7 5.3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
-    <symbol id="p10" viewBox="0 0 24 24"><path d="M9 18 V5 L19 3 V16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="6.5" cy="18" rx="3.2" ry="2.6" fill="currentColor"/><ellipse cx="16.5" cy="16" rx="3.2" ry="2.6" fill="currentColor"/></symbol>
-    <symbol id="p11" viewBox="0 0 24 24"><path d="M12 2.5 L20.5 12 L12 21.5 L3.5 12 Z" fill="currentColor"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><path d="M4 7 H20 M4 17 H20" stroke="#1C1C1E" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="7" r="2.6" fill="#fff" stroke="#1C1C1E" stroke-width="2"/><circle cx="15" cy="17" r="2.6" fill="#fff" stroke="#1C1C1E" stroke-width="2"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3 V15 M7.5 7.5 L12 3 L16.5 7.5" fill="none" stroke="#1C1C1E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 11 H5 V21 H19 V11 H18" fill="none" stroke="#1C1C1E" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-rank" viewBox="0 0 24 24"><rect x="3" y="12" width="5" height="9" rx="1.5" fill="#F2C46B" stroke="#1C1C1E" stroke-width="1.8"/><rect x="9.5" y="6" width="5" height="15" rx="1.5" fill="#E39B35" stroke="#1C1C1E" stroke-width="1.8"/><rect x="16" y="15" width="5" height="6" rx="1.5" fill="#F7D9A8" stroke="#1C1C1E" stroke-width="1.8"/></symbol>
+    <!-- 规则小图：浅灰底小棋盘，一排或一列上色，中间一只（圆点），其余打叉 -->
+    <symbol id="r-row" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><rect x="3" y="11" width="24" height="8" rx="3" fill="#FFE07A"/><circle cx="15" cy="15" r="2.8" fill="#1C1C1E"/><path d="M5.5 13.5 l3 3 m0 -3 l-3 3 M21.5 13.5 l3 3 m0 -3 l-3 3" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="r-col" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><rect x="11" y="3" width="8" height="24" rx="3" fill="#8EE3C8"/><circle cx="15" cy="15" r="2.8" fill="#1C1C1E"/><path d="M13.5 5.5 l3 3 m0 -3 l-3 3 M13.5 21.5 l3 3 m0 -3 l-3 3" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="r-reg" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><path d="M4 4 H18 V12 H26 V26 H12 V18 H4 Z" fill="#C9B2FF"/><circle cx="20" cy="19" r="2.8" fill="#1C1C1E"/><path d="M7 7 l3 3 m0 -3 l-3 3" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="r-adj" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><rect x="6" y="6" width="18" height="18" rx="4" fill="#FFB3C7"/><circle cx="15" cy="15" r="2.8" fill="#1C1C1E"/><path d="M8 8 l2.6 2.6 m0 -2.6 l-2.6 2.6 M19.4 8 l2.6 2.6 m0 -2.6 l-2.6 2.6 M8 19.4 l2.6 2.6 m0 -2.6 l-2.6 2.6 M19.4 19.4 l2.6 2.6 m0 -2.6 l-2.6 2.6" stroke="#8E8E93" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <!-- 颜色区图案：猫零食和玩具的白色剪影，一个区一个 -->
+    <symbol id="p0" viewBox="0 0 24 24"><rect x="4" y="7.5" width="16" height="12.5" rx="3" fill="currentColor"/><ellipse cx="12" cy="7.5" rx="8" ry="2.8" fill="currentColor"/></symbol><!-- 猫罐头 -->
+    <symbol id="p1" viewBox="0 0 24 24"><circle cx="8" cy="8.5" r="3.5" fill="currentColor"/><circle cx="12.5" cy="6.5" r="3.8" fill="currentColor"/><circle cx="16.5" cy="9" r="3.3" fill="currentColor"/><path d="M5.5 11.5 H18.5 L16.8 21 H7.2 Z" fill="currentColor"/></symbol><!-- 爆米花 -->
+    <symbol id="p2" viewBox="0 0 24 24"><path d="M4 21 L14 9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M13 10 C13 5 16 3 20.5 3.5 C21 8 19 11 14 11 Z" fill="currentColor"/></symbol><!-- 逗猫棒 -->
+    <symbol id="p3" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="currentColor"/></symbol><!-- 小球 -->
+    <symbol id="p4" viewBox="0 0 24 24"><path d="M3 8 L12 3.5 L21 8 V17 L12 21.5 L3 17 Z" fill="currentColor"/></symbol><!-- 纸箱 -->
+    <symbol id="p5" viewBox="0 0 24 24"><path d="M2.5 10.5 H21.5 A9.5 8 0 0 1 2.5 10.5 Z" fill="currentColor"/><rect x="8" y="18.5" width="8" height="2.5" rx="1.25" fill="currentColor"/></symbol><!-- 猫碗 -->
+    <symbol id="p6" viewBox="0 0 24 24"><path d="M19.5 3 C9.5 3.5 4.5 10 5 18.5 C13.5 19 19.5 12.5 19.5 3 Z" fill="currentColor"/><path d="M5 18.5 L3.5 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol><!-- 羽毛 -->
+    <symbol id="p7" viewBox="0 0 24 24"><path d="M7 9 L9.5 3.5 H14.5 L17 9 V21 H7 Z" fill="currentColor"/></symbol><!-- 牛奶盒 -->
+    <symbol id="p8" viewBox="0 0 24 24"><circle cx="9.5" cy="9.5" r="6.5" fill="currentColor"/><path d="M13.5 13.5 L19 19" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="19.5" cy="17.5" r="2" fill="currentColor"/><circle cx="17.5" cy="19.5" r="2" fill="currentColor"/></symbol><!-- 鸡腿 -->
+    <symbol id="p9" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5" fill="currentColor"/><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/></symbol><!-- 激光点 -->
+    <symbol id="p10" viewBox="0 0 24 24"><path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z" fill="currentColor"/></symbol><!-- 爱心饼干 -->
   </defs>
 </svg>
 
 <script>
-const LEVELS = [{"n":7,"hard":false,"reg":"2,2,1,1,3,0,0,2,2,1,1,3,0,3,2,2,1,1,3,3,3,2,5,1,3,3,3,6,2,5,5,3,3,4,6,5,5,5,5,6,6,6,5,5,5,5,6,6,6","sol":"6,2,0,3,5,1,4","given":[24]},{"n":8,"hard":false,"reg":"4,4,1,1,2,2,0,2,4,4,1,2,2,2,2,2,7,4,2,2,3,2,3,2,7,4,3,3,3,3,3,2,7,4,7,7,3,3,5,2,7,7,7,6,6,3,5,5,7,7,7,7,6,6,6,6,7,7,7,7,7,6,6,6","sol":"6,2,5,3,1,7,4,0","given":[56]},{"n":9,"hard":false,"reg":"4,0,1,1,1,1,2,2,3,4,4,1,1,1,1,1,2,3,4,4,1,1,1,2,2,2,3,4,4,4,1,1,2,2,3,3,4,4,4,1,1,1,5,5,3,4,4,4,4,1,1,5,5,3,4,4,6,6,1,5,5,7,7,8,8,8,8,8,8,5,5,7,8,8,8,8,8,8,8,5,5","sol":"1,3,5,7,0,6,2,8,4","given":[12]},{"n":10,"hard":false,"reg":"3,3,0,2,2,2,2,2,2,2,3,0,0,0,2,2,2,2,2,1,3,3,3,3,4,4,4,2,4,4,8,3,3,5,4,4,4,4,4,4,8,8,5,5,6,6,6,4,4,4,8,8,5,5,6,6,6,4,6,4,8,8,5,5,6,6,6,6,6,4,8,8,7,7,7,9,6,6,6,6,8,8,7,9,9,9,9,6,9,6,8,8,8,9,9,9,9,9,9,9","sol":"2,9,7,1,8,3,6,4,0,5","given":[66]},{"n":11,"hard":false,"reg":"2,0,1,1,1,1,1,1,1,1,1,2,2,1,1,3,1,4,4,1,5,5,2,2,3,3,3,3,4,4,5,5,5,3,3,3,4,4,4,4,6,6,5,5,3,3,7,7,7,4,6,6,6,6,5,3,3,7,7,7,7,7,7,6,6,5,3,3,7,7,7,7,7,7,6,6,6,3,10,10,7,7,7,7,7,8,8,8,10,10,10,10,7,7,9,9,8,8,8,10,10,10,10,7,9,9,9,9,9,8,10,10,10,10,10,9,9,9,9,8,8","sol":"1,3,0,2,5,10,8,6,9,7,4","given":[83]},{"n":7,"hard":false,"reg":"3,3,3,1,1,0,0,3,3,3,1,1,0,0,4,4,3,3,1,1,2,4,4,3,3,1,1,1,4,4,6,6,5,5,5,6,6,6,6,5,5,5,6,6,6,6,6,5,5","sol":"5,3,6,2,0,4,1","given":[43]},{"n":8,"hard":false,"reg":"1,1,1,1,1,0,0,0,1,1,1,1,1,0,0,0,1,1,1,1,1,3,2,2,4,4,3,3,1,3,3,2,4,4,3,3,3,3,3,2,7,4,4,5,3,6,6,6,7,7,7,7,7,7,7,6,7,7,7,7,7,7,7,7","sol":"5,1,6,2,0,3,7,4","given":[9]},{"n":9,"hard":false,"reg":"0,0,2,2,2,5,5,1,1,0,2,2,2,5,5,4,4,1,2,2,2,5,5,5,5,4,4,3,2,2,2,5,4,5,4,4,3,5,5,2,5,4,4,4,4,5,5,5,5,5,5,4,4,6,5,5,5,7,4,4,4,6,6,7,7,5,7,4,4,4,4,6,7,7,7,7,7,8,6,6,6","sol":"1,8,2,0,6,4,7,3,5","given":[49]},{"n":10,"hard":false,"reg":"1,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,1,1,1,0,0,2,2,2,2,1,1,1,1,0,3,3,3,3,2,1,1,1,1,4,3,3,3,2,2,1,5,5,4,4,4,3,3,3,3,7,7,5,5,4,4,4,6,6,3,7,7,5,7,7,7,7,7,6,3,8,7,7,7,7,7,7,6,6,6,8,8,8,8,8,7,7,6,9,6","sol":"5,2,9,6,4,1,7,3,0,8","given":[5]},{"n":11,"hard":false,"reg":"0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,3,1,1,1,2,2,3,0,0,0,0,3,4,1,2,2,2,3,0,3,3,3,3,4,1,2,2,2,3,3,3,5,5,4,4,4,4,4,4,3,3,3,5,5,7,4,4,6,6,4,3,3,3,5,5,7,4,6,6,6,4,8,3,5,5,7,7,7,6,6,4,4,8,3,5,5,5,7,7,7,6,4,4,8,8,8,5,7,7,7,7,9,9,9,8,8,5,5,5,7,9,9,9,9,10","sol":"1,6,9,2,5,3,7,4,0,8,10","given":[35]},{"n":12,"hard":true,"reg":"5,5,5,3,0,0,0,0,0,1,1,1,5,5,5,3,0,0,0,1,1,1,2,2,5,5,5,3,0,0,0,1,1,2,2,2,5,5,3,3,3,4,1,1,1,1,2,2,5,5,3,3,3,4,4,2,2,2,2,2,5,5,5,3,3,3,4,4,2,2,6,2,8,5,5,11,4,4,4,4,6,6,6,6,8,5,8,11,11,6,6,6,6,6,7,7,8,5,8,8,11,11,11,11,11,6,6,7,8,8,8,8,11,11,9,9,9,9,9,7,8,8,8,8,11,11,9,9,9,9,9,10,8,8,8,11,11,11,9,9,9,9,9,10","sol":"4,7,9,2,5,1,8,10,0,6,11,3","given":[]},{"n":7,"hard":false,"reg":"4,2,2,2,0,0,0,4,4,4,2,1,0,0,4,4,2,2,3,3,0,4,2,2,5,3,3,3,4,6,6,5,5,5,3,6,6,6,5,5,5,5,6,6,5,5,5,5,5","sol":"6,4,2,5,0,3,1","given":[38]},{"n":8,"hard":false,"reg":"0,0,0,0,0,0,0,1,0,0,0,3,0,3,1,1,0,2,4,3,3,3,3,1,4,4,4,6,6,3,3,5,4,7,7,6,6,3,3,5,7,7,7,6,6,6,6,5,7,7,7,7,6,6,6,6,7,7,7,7,7,6,6,6","sol":"3,6,1,5,0,7,4,2","given":[52]},{"n":9,"hard":false,"reg":"2,2,0,0,0,0,0,0,3,2,2,2,0,0,1,1,1,3,2,2,2,2,4,4,1,1,3,2,2,2,2,4,4,3,3,3,2,5,5,4,4,4,3,3,3,2,5,5,5,4,4,4,3,3,5,5,5,4,4,4,6,7,7,5,4,4,4,8,8,8,7,7,5,4,4,4,8,8,8,8,8","sol":"2,5,0,7,3,1,6,8,4","given":[39]},{"n":10,"hard":false,"reg":"4,1,1,1,1,1,1,0,0,2,4,1,1,1,3,1,1,0,0,2,4,1,1,1,3,0,0,0,2,2,4,4,1,3,3,3,3,0,0,2,7,4,4,3,7,3,3,3,5,5,7,7,7,3,7,7,5,5,5,5,9,7,7,7,7,7,8,5,8,6,9,7,9,8,8,8,8,5,8,8,9,9,9,9,9,8,8,8,8,8,9,9,9,9,9,9,9,8,8,8","sol":"7,3,8,4,2,6,9,1,5,0","given":[85]},{"n":11,"hard":false,"reg":"2,2,0,0,0,0,1,1,1,1,1,2,2,2,0,0,0,1,1,1,1,1,2,2,2,0,0,3,3,3,1,1,4,2,5,5,0,3,3,3,3,1,4,4,2,2,5,5,3,3,3,4,4,4,4,2,2,2,5,5,3,6,4,6,4,4,2,2,5,5,5,6,6,4,6,4,4,2,7,5,6,6,6,6,6,6,8,4,2,7,5,5,6,6,6,8,8,8,8,7,7,7,5,5,6,6,9,9,9,9,7,9,9,9,9,9,9,9,9,10,9","sol":"2,6,0,4,8,3,5,1,10,7,9","given":[22]},{"n":7,"hard":false,"reg":"2,0,0,0,1,1,3,2,2,0,1,1,1,3,2,2,0,0,1,1,3,5,2,5,0,0,3,3,5,5,5,0,4,3,3,5,5,5,6,6,6,6,5,5,5,5,6,6,6","sol":"1,3,0,6,4,2,5","given":[37]},{"n":8,"hard":false,"reg":"0,0,0,0,1,1,1,1,0,2,2,1,1,1,1,1,3,3,2,2,2,2,1,1,3,3,2,2,6,6,6,1,3,3,3,4,6,6,6,6,3,5,3,4,7,7,6,7,3,7,7,7,7,7,6,7,7,7,7,7,7,7,7,7","sol":"2,7,5,0,3,1,6,4","given":[60]},{"n":9,"hard":false,"reg":"3,3,3,3,0,0,0,1,1,3,3,3,2,2,0,0,0,1,3,3,2,2,2,0,1,1,1,3,3,3,2,2,2,1,4,4,3,3,7,2,5,4,4,4,4,3,3,7,5,5,4,4,4,4,3,7,7,7,5,5,4,6,6,3,7,7,7,7,7,8,8,6,3,7,7,7,7,7,8,8,6","sol":"4,8,2,0,5,3,7,1,6","given":[27]},{"n":10,"hard":false,"reg":"0,0,0,4,4,4,4,4,4,4,3,0,0,0,4,4,4,1,1,1,3,3,3,3,4,4,4,1,1,2,5,3,5,4,4,4,4,4,4,4,5,5,5,6,4,7,7,7,7,7,5,5,6,6,6,6,7,7,7,7,9,5,9,6,6,6,6,7,7,8,9,9,9,6,9,6,7,7,7,8,9,9,6,6,9,7,7,8,8,8,9,9,9,9,9,9,9,8,8,8","sol":"2,7,9,1,4,0,3,6,8,5","given":[44]},{"n":11,"hard":false,"reg":"2,0,0,2,2,1,1,1,1,1,1,2,2,2,2,2,2,4,3,3,1,3,2,4,4,4,4,4,4,3,3,3,3,6,4,4,4,4,4,4,4,3,3,5,6,4,4,4,4,4,4,4,5,5,5,6,6,6,6,6,6,4,5,5,5,8,6,7,6,4,4,4,4,4,8,8,8,6,7,7,7,7,4,7,7,8,8,8,6,9,7,7,7,4,7,10,8,8,8,6,9,9,9,7,7,7,10,8,8,8,9,9,9,7,7,7,10,10,8,8,8","sol":"1,9,0,8,5,7,2,4,10,3,6","given":[49]},{"n":12,"hard":true,"reg":"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,2,0,2,0,0,1,1,1,3,0,0,2,2,2,2,2,1,1,1,1,3,3,3,2,2,2,2,5,5,1,4,1,3,3,6,2,2,2,5,5,5,7,4,4,3,3,6,6,6,6,5,5,5,7,7,7,3,6,6,6,6,6,5,5,7,7,9,7,8,6,8,6,8,8,9,9,9,9,9,7,8,6,8,6,8,8,9,9,9,9,10,7,8,8,8,8,8,9,9,9,9,10,10,10,8,8,11,8,8,8,8,10,10,10,10,10","sol":"1,11,4,0,10,6,3,8,5,7,9,2","given":[]},{"n":7,"hard":false,"reg":"0,0,1,2,2,2,2,0,0,1,1,3,3,2,4,0,1,3,3,2,2,4,4,1,1,3,3,3,4,4,4,1,5,5,3,4,4,4,1,1,5,3,4,6,1,1,1,5,5","sol":"0,3,6,4,2,5,1","given":[10]},{"n":8,"hard":false,"reg":"0,0,0,0,0,0,0,0,1,3,3,0,2,2,2,0,1,1,3,0,2,3,2,0,1,3,3,3,3,3,2,0,1,3,3,3,3,4,2,0,5,5,5,6,6,4,4,4,5,5,6,6,6,4,4,4,5,7,6,6,6,6,6,6","sol":"7,0,6,3,5,2,4,1","given":[7]},{"n":9,"hard":false,"reg":"0,0,0,0,1,1,2,2,4,0,0,0,1,1,1,2,2,4,0,0,3,1,2,2,2,4,4,0,3,3,1,2,4,4,4,4,0,0,3,1,1,4,4,4,7,0,3,3,3,5,6,6,4,7,0,3,3,3,8,6,6,7,7,0,0,3,8,8,8,8,7,7,0,0,8,8,8,8,7,7,7","sol":"0,3,5,1,7,4,6,8,2","given":[0]},{"n":10,"hard":false,"reg":"2,0,0,0,0,0,3,1,1,1,2,2,2,0,0,0,3,1,1,1,2,2,2,3,0,0,3,3,1,1,2,2,2,3,3,3,3,3,1,1,2,2,2,4,3,3,3,3,5,5,2,2,2,8,6,6,6,6,6,5,2,7,7,8,8,8,6,6,6,6,2,2,7,7,7,8,8,6,6,6,2,7,7,8,8,8,8,6,6,9,2,7,8,8,8,8,8,8,9,9","sol":"1,7,0,5,3,9,6,2,4,8","given":[20]},{"n":11,"hard":false,"reg":"1,1,1,0,0,0,4,2,2,2,2,1,3,1,3,3,3,4,2,2,2,2,3,3,3,3,3,4,4,2,2,2,2,3,3,3,3,4,4,4,4,2,2,2,6,3,5,5,4,4,4,4,2,2,2,6,3,3,5,5,4,4,4,2,2,2,6,6,6,5,5,4,4,4,9,2,7,6,6,8,8,5,9,9,4,9,7,7,6,6,8,5,5,9,4,4,9,9,7,6,8,8,5,5,9,4,4,9,7,7,8,8,8,8,9,9,9,9,9,7,10","sol":"5,0,7,3,6,4,1,9,2,8,10","given":[50]},{"n":7,"hard":false,"reg":"1,1,2,2,0,0,0,1,1,1,2,4,0,0,1,1,2,2,4,0,3,1,1,4,4,4,4,3,1,1,6,4,4,3,3,1,1,6,6,6,5,3,1,6,6,5,5,5,5","sol":"4,0,2,6,3,5,1","given":[7]},{"n":8,"hard":false,"reg":"1,1,1,1,1,0,0,0,1,3,1,1,1,1,0,0,3,3,1,1,1,1,1,2,3,3,1,1,1,4,4,6,3,3,3,4,4,4,4,6,3,5,5,5,7,4,4,6,5,5,5,5,7,7,6,6,5,5,5,5,7,7,7,7","sol":"5,2,7,0,3,1,6,4","given":[10]},{"n":9,"hard":false,"reg":"0,0,0,0,0,0,0,0,1,0,2,2,0,0,1,1,1,1,0,0,2,0,0,1,1,1,1,5,2,2,2,4,4,4,4,3,5,5,5,2,2,4,6,4,4,5,7,5,2,2,6,6,6,6,7,7,7,7,7,8,6,8,6,7,7,7,7,7,8,8,8,6,7,7,7,7,8,8,8,8,6","sol":"3,7,2,8,5,0,6,1,4","given":[3]},{"n":10,"hard":false,"reg":"1,1,1,1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,2,0,1,1,1,1,1,3,0,2,2,2,1,1,1,3,3,3,4,4,4,2,1,3,3,3,4,3,4,6,2,2,3,3,5,3,4,4,4,6,2,2,5,5,5,5,5,5,6,6,6,2,5,7,7,5,5,5,5,6,6,6,7,7,7,5,5,5,5,8,6,6,7,7,7,7,9,5,8,8,8,8","sol":"5,0,9,3,6,2,8,1,7,4","given":[]},{"n":11,"hard":false,"reg":"3,0,0,0,0,0,0,0,0,0,1,3,3,0,2,0,0,0,0,0,1,1,3,3,0,2,2,0,0,0,0,1,1,3,3,3,2,2,4,0,5,1,1,5,3,6,3,3,2,4,4,5,1,1,5,3,6,3,6,2,4,5,5,5,5,5,6,6,6,6,2,4,5,4,4,5,5,6,6,6,7,4,4,4,4,5,5,5,6,7,7,7,7,4,7,4,5,5,8,6,9,7,9,7,7,7,7,7,8,8,9,9,9,9,10,10,7,7,8,8,8","sol":"7,9,4,2,6,8,0,3,10,1,5","given":[]},{"n":12,"hard":true,"reg":"2,2,2,2,2,3,3,3,3,0,0,0,2,2,2,2,2,3,3,3,0,0,3,1,6,2,7,5,2,2,2,3,3,3,3,3,6,7,7,5,5,5,5,5,4,4,3,3,6,7,7,5,5,5,5,5,4,4,4,3,6,6,7,7,7,5,5,5,5,4,4,3,6,6,8,7,7,7,5,5,10,10,4,3,8,6,8,8,9,7,9,5,10,10,10,3,8,8,8,9,9,9,9,10,10,10,10,10,11,11,11,11,9,9,9,9,10,10,10,10,11,11,11,11,11,9,9,10,10,10,10,10,11,11,11,11,11,9,9,10,10,10,10,10","sol":"9,11,1,10,8,6,0,5,2,4,7,3","given":[]},{"n":7,"hard":false,"reg":"0,0,0,0,2,2,2,1,0,0,0,2,2,2,5,3,3,3,3,4,2,5,5,3,5,4,4,4,5,5,5,5,4,4,4,5,5,5,6,6,4,4,5,5,5,6,6,4,4","sol":"3,0,6,2,5,1,4","given":[]},{"n":8,"hard":false,"reg":"0,0,2,2,2,2,2,2,0,0,2,2,2,2,2,1,4,4,2,2,7,2,3,3,4,4,4,7,7,2,3,3,6,4,7,7,7,5,5,5,6,6,6,7,5,5,5,5,6,6,6,7,5,5,5,5,6,6,6,7,7,5,5,5","sol":"0,7,3,6,1,5,2,4","given":[]},{"n":9,"hard":false,"reg":"0,0,0,0,0,0,0,0,4,1,0,0,3,0,0,0,0,4,1,0,0,3,0,2,2,2,4,1,1,3,3,0,2,4,2,4,3,1,3,3,0,2,4,4,4,3,3,3,5,2,2,4,4,4,8,8,5,5,2,2,7,7,6,8,5,5,8,2,2,7,7,7,8,8,8,8,7,7,7,7,7","sol":"4,0,5,2,7,3,8,6,1","given":[]},{"n":10,"hard":false,"reg":"2,0,0,5,5,1,1,6,6,6,2,0,0,0,5,1,1,1,1,6,2,2,2,5,5,1,1,1,1,6,2,2,4,5,5,5,1,1,3,6,2,2,4,4,5,5,3,3,3,6,2,2,4,5,5,5,5,6,6,6,2,4,4,4,5,6,6,6,6,6,4,4,7,4,4,4,4,6,6,6,7,7,7,7,8,8,8,6,6,6,9,9,9,9,9,8,8,8,8,6","sol":"1,7,0,8,3,5,9,2,6,4","given":[]},{"n":11,"hard":false,"reg":"0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,1,1,1,1,1,3,1,0,2,0,0,1,1,1,4,4,3,1,0,2,2,2,2,1,4,4,4,3,3,0,0,6,6,6,6,4,6,4,4,3,7,0,7,6,6,6,6,6,8,5,8,7,7,7,7,9,9,6,6,8,8,8,10,7,7,10,10,9,6,8,8,8,8,10,7,10,10,10,9,6,8,8,8,8,10,7,7,10,10,9,9,9,9,9,8,10,10,10,10,10,10,10,10,9,9,9","sol":"0,4,1,10,6,9,7,2,8,5,3","given":[]},{"n":7,"hard":false,"reg":"0,0,0,0,0,0,0,0,0,1,1,0,0,0,2,0,1,3,3,4,0,2,2,1,3,3,4,4,2,2,5,3,6,4,4,2,2,5,6,6,4,4,2,2,2,6,6,6,4","sol":"1,3,0,4,6,2,5","given":[]},{"n":8,"hard":false,"reg":"0,0,0,0,0,0,0,2,0,1,1,1,0,0,0,2,0,1,1,1,0,0,2,2,3,1,1,1,1,2,2,2,3,3,3,1,4,4,2,2,3,5,5,4,4,4,2,6,7,5,5,4,4,4,2,6,7,7,5,5,5,6,6,6","sol":"5,3,6,0,4,2,7,1","given":[]},{"n":9,"hard":false,"reg":"3,2,2,1,1,1,0,0,0,3,3,2,2,1,1,1,1,0,3,3,2,2,2,6,1,0,0,3,3,3,2,6,6,6,6,6,3,3,2,2,6,6,6,6,4,3,5,5,5,6,6,6,4,4,3,3,5,6,6,6,6,6,8,3,3,5,7,6,6,6,6,8,3,3,7,7,7,6,6,8,8","sol":"6,4,2,0,8,1,5,3,7","given":[]},{"n":10,"hard":false,"reg":"2,2,2,2,2,2,2,0,0,0,2,1,2,2,4,4,0,0,0,5,3,3,2,2,2,4,4,5,0,5,3,3,2,2,4,4,4,5,5,5,6,3,6,6,4,4,4,4,4,5,6,6,6,6,4,6,8,8,8,5,6,6,6,6,6,6,6,8,8,9,6,7,6,7,7,6,6,8,8,9,6,7,6,7,8,8,8,8,8,9,6,7,7,7,7,7,8,8,9,9","sol":"7,1,3,0,5,9,2,4,6,8","given":[]},{"n":11,"hard":false,"reg":"4,4,4,4,4,4,0,0,0,0,0,4,4,4,1,1,0,0,0,2,2,3,4,4,4,4,1,1,0,2,2,2,3,4,4,4,4,4,4,0,2,6,3,3,4,4,4,5,4,4,0,2,6,6,3,5,5,4,5,5,5,0,2,2,6,6,5,5,5,5,8,5,8,2,6,6,6,5,7,5,7,8,5,8,6,6,6,6,5,7,5,7,8,8,8,8,8,6,6,5,7,7,7,8,8,8,8,8,8,9,5,7,7,7,10,8,8,8,9,9,9","sol":"6,3,7,9,2,0,8,1,5,10,4","given":[]},{"n":12,"hard":true,"reg":"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,2,2,2,0,1,1,3,3,1,0,0,5,2,2,2,0,3,3,3,5,5,5,0,5,2,4,3,3,3,3,3,3,5,5,5,5,2,4,4,4,4,3,3,3,7,7,5,5,4,4,6,4,4,3,3,7,7,7,5,5,4,6,6,6,6,3,7,7,7,7,8,5,4,4,4,6,6,7,7,7,8,8,8,8,4,4,4,6,6,7,7,9,8,8,8,8,4,4,4,9,9,9,9,9,11,8,10,8,4,4,4,9,9,9,9,9,11,10,10,10","sol":"3,5,0,4,1,11,2,6,9,7,10,8","given":[]},{"n":7,"hard":false,"reg":"0,0,0,1,1,1,1,0,0,0,3,3,1,1,0,2,0,3,3,1,1,0,2,3,3,3,3,3,0,4,4,3,3,5,3,0,6,6,3,5,5,3,6,6,6,6,6,5,5","sol":"0,6,1,4,2,5,3","given":[]},{"n":8,"hard":false,"reg":"1,1,1,0,0,0,0,0,1,1,3,2,2,0,0,0,1,1,3,4,2,2,2,0,3,3,3,4,4,4,0,0,6,6,3,4,7,4,0,0,6,6,5,5,7,4,4,0,6,5,5,7,7,4,0,0,6,5,5,7,7,0,0,0","sol":"7,1,6,2,5,3,0,4","given":[]},{"n":9,"hard":false,"reg":"1,1,1,1,0,0,3,3,3,1,1,1,1,0,3,3,3,3,1,1,1,2,0,3,3,3,3,1,1,2,2,3,3,3,3,3,1,1,4,2,4,6,3,3,3,5,5,4,4,4,6,6,3,3,5,4,4,4,6,6,6,6,3,5,5,4,8,7,7,6,6,6,8,8,8,8,8,8,8,6,6","sol":"5,1,3,8,2,0,7,4,6","given":[]},{"n":10,"hard":false,"reg":"3,3,1,1,1,1,1,0,0,0,3,3,1,1,4,4,4,0,0,0,3,3,3,3,4,4,0,0,2,2,6,6,3,3,4,4,4,0,5,2,8,6,6,4,4,4,4,5,5,2,8,8,6,4,4,7,5,5,5,2,8,6,6,4,7,7,7,5,5,5,8,8,6,7,7,7,7,7,5,5,8,8,8,8,7,7,7,5,5,5,8,8,8,8,7,7,7,7,5,9","sol":"7,3,8,2,4,6,1,5,0,9","given":[]},{"n":11,"hard":false,"reg":"2,2,2,2,1,1,1,1,1,0,0,3,2,3,2,1,1,4,4,1,1,0,3,2,3,2,1,4,4,4,4,4,0,3,2,3,3,3,6,6,6,6,4,0,3,3,3,3,6,6,6,6,4,4,4,5,5,5,3,7,6,6,6,6,6,4,5,5,7,3,7,6,6,6,8,4,4,5,5,7,7,7,6,6,6,8,4,4,5,5,5,7,7,7,7,8,8,8,4,5,9,7,7,7,8,8,8,8,8,4,9,9,9,9,7,8,8,8,8,8,10","sol":"9,5,3,0,8,2,6,4,7,1,10","given":[]},{"n":7,"hard":false,"reg":"4,0,0,0,3,3,3,4,0,0,3,1,3,3,4,2,4,3,3,3,3,4,2,4,3,3,3,5,4,4,4,5,5,5,5,6,4,4,5,5,5,5,6,6,6,6,5,5,5","sol":"2,4,1,5,0,6,3","given":[]},{"n":8,"hard":false,"reg":"0,0,0,0,2,2,2,2,0,1,1,1,2,2,2,2,0,0,1,2,2,2,2,2,0,3,1,1,1,4,2,2,0,3,4,4,4,4,6,2,3,3,3,4,4,5,6,6,7,7,7,4,4,7,7,6,7,7,7,7,7,7,7,6","sol":"0,2,6,1,3,5,7,4","given":[]},{"n":9,"hard":false,"reg":"0,0,2,2,2,2,2,1,1,0,2,2,2,2,2,2,1,1,2,2,2,2,2,5,2,2,2,3,6,6,2,2,5,5,5,5,3,6,6,6,2,4,4,5,5,6,6,6,6,6,7,7,5,7,6,8,8,6,8,7,7,7,7,8,8,8,8,8,8,7,7,7,8,8,8,8,7,7,7,7,7","sol":"1,8,4,0,5,7,3,6,2","given":[]},{"n":10,"hard":false,"reg":"3,3,0,0,1,1,1,1,2,2,3,3,3,3,1,4,1,2,2,2,3,3,3,3,4,4,1,1,1,2,3,6,3,4,4,4,4,1,5,5,6,6,3,3,4,4,4,4,5,5,6,6,6,4,4,8,5,5,5,5,6,6,6,6,6,8,5,5,5,7,6,6,8,6,8,8,5,5,7,7,6,6,8,8,8,8,5,7,7,7,8,8,8,8,8,8,9,7,7,7","sol":"2,4,9,0,5,7,1,8,3,6","given":[]},{"n":11,"hard":false,"reg":"1,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,2,2,1,1,1,1,3,3,3,3,3,2,2,1,3,3,3,3,3,3,3,5,2,2,1,3,4,3,4,5,5,3,5,7,7,1,4,4,4,4,5,5,5,5,5,7,1,1,4,6,6,5,8,5,5,7,7,1,1,4,4,6,5,8,5,7,7,7,1,1,4,6,6,8,8,9,7,7,9,1,1,4,6,6,6,6,9,7,7,9,1,1,4,4,6,6,10,9,9,9,9","sol":"2,0,9,1,4,7,3,8,5,10,6","given":[]},{"n":12,"hard":true,"reg":"1,1,1,0,0,0,0,0,0,0,0,2,1,1,1,1,0,0,3,0,2,0,0,2,1,1,1,1,0,3,3,0,2,0,2,2,1,1,1,1,3,3,3,3,2,2,2,4,1,1,1,1,1,3,3,3,4,4,2,4,1,1,6,9,7,5,3,3,5,4,4,4,1,6,6,9,7,5,5,5,5,4,8,4,6,6,6,9,7,7,7,8,5,8,8,4,6,6,6,9,9,9,8,8,8,8,8,8,6,6,9,9,9,10,10,8,8,8,8,8,6,6,6,9,10,10,11,8,8,8,8,8,6,6,6,6,6,10,11,8,8,8,8,8","sol":"3,0,10,7,11,8,1,5,9,2,4,6","given":[]}];
+const LEVELS = [{"n":7,"hard":false,"reg":"2,2,1,1,1,0,0,2,2,2,1,1,0,3,2,2,1,1,1,3,3,2,4,4,1,3,3,3,2,4,4,4,3,3,3,4,4,4,4,4,5,3,4,4,6,5,5,5,5","sol":"6,3,0,4,1,5,2","given":[29]},{"n":8,"hard":false,"reg":"1,1,1,1,1,1,0,2,4,3,3,3,1,1,2,2,4,4,4,3,4,1,2,2,4,4,4,3,4,5,2,5,6,4,4,4,4,5,5,5,6,6,6,4,5,5,5,5,6,6,6,7,7,7,5,5,6,6,7,7,7,7,7,7","sol":"6,4,7,3,1,5,0,2","given":[33]},{"n":9,"hard":false,"reg":"0,1,1,5,5,5,2,2,2,0,1,1,1,5,5,2,2,2,3,1,1,1,5,5,2,4,4,3,3,3,5,5,4,4,4,6,3,3,5,5,4,4,4,4,6,3,5,5,5,5,4,4,6,6,3,7,7,7,7,4,6,6,6,8,7,7,7,7,7,7,6,6,8,8,7,7,7,7,7,7,6","sol":"0,3,6,2,7,4,8,5,1","given":[68]},{"n":10,"hard":false,"reg":"0,0,0,0,0,0,1,1,1,1,2,2,0,0,0,1,1,1,1,1,2,5,0,0,0,0,1,3,3,3,5,5,5,4,0,6,3,3,3,3,5,5,5,4,0,6,3,6,3,7,5,5,5,4,4,6,6,6,3,7,5,4,4,4,6,6,6,8,8,7,5,4,4,6,6,6,6,8,7,7,5,4,4,4,6,6,8,8,7,7,5,5,8,8,8,8,8,8,7,9","sol":"2,5,0,7,3,1,4,8,6,9","given":[2]},{"n":7,"hard":false,"reg":"0,0,0,0,0,0,0,2,0,1,1,1,0,0,2,2,2,1,1,1,0,3,4,4,4,4,1,1,5,5,4,4,4,1,6,5,5,4,4,6,1,6,5,5,5,5,6,6,6","sol":"6,4,2,0,3,1,5","given":[6]},{"n":8,"hard":false,"reg":"0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,3,1,1,1,1,4,4,2,3,1,5,4,4,4,4,7,5,5,5,5,5,4,7,7,5,5,5,5,5,7,7,7,6,6,5,5,5,7,7,7,6,7,7,7,7,7,7,7","sol":"2,4,7,0,5,3,1,6","given":[62]},{"n":9,"hard":false,"reg":"2,2,2,1,1,0,0,0,0,2,2,3,1,1,1,0,0,0,2,2,3,3,1,1,0,0,4,2,2,3,3,1,1,0,4,4,5,2,5,3,1,1,0,4,4,5,5,5,3,1,1,4,4,4,5,5,5,5,5,5,5,6,4,5,5,5,5,7,7,7,7,8,5,7,7,7,7,7,8,8,8","sol":"5,3,0,2,8,1,7,4,6","given":[46]},{"n":10,"hard":false,"reg":"0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,0,2,2,1,3,0,0,4,4,4,3,2,2,3,3,0,0,4,4,4,3,3,3,3,3,5,5,4,9,9,9,6,6,6,6,5,5,5,9,9,9,6,6,8,8,5,5,5,9,9,6,6,6,8,8,7,5,5,7,9,9,6,6,8,8,7,5,7,7,7,9,8,8,8,8,7,7,7,9,9,9,8,8,8,8","sol":"1,8,6,9,2,0,5,3,7,4","given":[1]},{"n":7,"hard":false,"reg":"0,0,0,2,3,3,3,0,0,2,2,1,3,3,0,0,2,2,3,3,3,0,4,4,4,3,3,3,0,4,6,4,3,3,5,0,4,6,4,5,3,5,0,6,6,5,5,5,5","sol":"0,4,2,5,3,6,1","given":[26]},{"n":8,"hard":false,"reg":"1,1,0,0,2,2,2,4,1,1,1,0,2,2,2,4,1,1,3,0,0,2,4,4,1,3,3,0,0,4,4,4,1,1,3,0,4,4,4,4,1,3,3,3,5,6,6,6,1,1,7,7,7,7,7,6,1,1,1,7,7,7,7,7","sol":"2,0,5,1,6,4,7,3","given":[8]},{"n":11,"hard":true,"reg":"0,0,0,0,1,1,1,1,1,1,1,4,0,0,0,1,1,1,3,3,3,3,4,4,0,2,1,1,3,3,3,6,3,4,4,4,1,1,3,3,3,6,6,6,4,5,5,5,5,3,6,6,6,6,6,7,7,5,5,5,3,6,6,6,6,6,7,5,5,5,8,6,6,6,6,6,6,7,7,5,5,8,6,6,6,6,6,10,7,7,7,5,8,8,9,9,9,10,10,7,7,7,5,8,10,9,10,9,10,10,7,7,5,5,5,10,10,10,10,10,10","sol":"2,6,3,7,0,4,9,1,5,8,10","given":[75]},{"n":9,"hard":false,"reg":"3,3,3,3,3,0,0,0,0,3,3,3,0,0,0,0,0,1,3,3,5,5,0,0,2,2,1,3,5,5,5,5,5,2,2,1,3,5,5,5,2,2,2,4,1,5,5,5,5,5,5,6,6,1,5,5,7,5,6,6,6,6,1,7,7,7,7,8,8,8,6,6,7,7,8,8,8,8,8,8,8","sol":"5,8,6,0,7,2,4,1,3","given":[47]},{"n":10,"hard":false,"reg":"1,1,1,1,2,2,2,0,0,0,1,1,1,1,1,1,2,0,0,0,1,1,1,1,2,2,2,2,0,0,1,1,3,3,3,2,2,2,0,0,7,3,3,3,5,4,2,2,2,0,7,7,7,5,5,6,6,6,2,0,7,7,7,6,6,6,6,0,0,0,7,7,7,7,6,6,8,8,0,0,7,7,7,9,6,6,6,8,8,0,7,9,9,9,6,6,6,8,8,8","sol":"9,4,7,2,5,3,6,0,8,1","given":[9]},{"n":7,"hard":false,"reg":"1,0,0,0,0,0,0,1,1,1,0,2,2,2,3,5,0,0,5,2,4,3,5,5,5,5,4,4,3,5,5,6,5,5,4,6,6,5,6,6,6,6,6,6,6,6,6,6,6","sol":"3,1,5,0,6,2,4","given":[46]},{"n":8,"hard":false,"reg":"0,2,2,2,1,1,1,1,2,2,1,1,1,1,3,3,2,2,4,1,4,1,3,3,2,4,4,4,4,4,4,3,2,5,5,5,4,6,4,6,5,5,5,7,6,6,6,6,5,7,7,7,6,6,6,6,7,7,7,7,6,6,6,6","sol":"0,5,1,7,4,2,6,3","given":[54]},{"n":9,"hard":false,"reg":"1,1,1,0,0,0,0,3,3,1,4,1,2,2,2,3,3,3,4,4,4,2,2,3,3,3,3,6,4,4,4,4,5,5,5,3,6,6,4,7,8,5,5,5,5,6,6,6,7,8,5,5,5,5,6,6,6,7,8,5,5,5,5,6,7,7,7,8,8,8,8,5,7,7,7,8,8,8,5,5,5","sol":"6,0,4,8,2,7,1,3,5","given":[52]},{"n":10,"hard":false,"reg":"1,1,3,3,3,0,0,0,0,0,1,1,3,3,3,0,0,0,0,0,1,1,3,3,3,3,0,0,0,2,1,1,3,3,3,3,3,2,2,2,4,4,4,4,4,5,3,5,2,2,4,4,4,4,5,5,5,5,2,2,4,6,6,7,7,7,5,5,2,2,4,9,9,7,8,8,8,5,2,2,9,9,9,9,8,8,5,5,2,2,9,9,9,9,8,8,8,8,2,2","sol":"8,0,9,6,4,7,1,3,5,2","given":[29]},{"n":7,"hard":false,"reg":"0,0,0,0,0,0,2,0,0,1,3,3,2,2,5,0,3,3,3,2,4,5,5,5,3,3,4,4,5,5,5,5,5,4,4,6,5,5,6,6,4,6,6,6,6,6,6,6,6","sol":"0,2,5,3,6,1,4","given":[36]},{"n":8,"hard":false,"reg":"0,0,0,0,0,0,0,1,2,2,1,1,1,1,1,1,2,2,2,2,1,3,3,1,2,2,2,2,3,3,3,1,4,4,2,2,2,2,3,1,7,4,5,2,2,3,3,3,7,7,7,6,6,3,3,3,7,7,7,6,6,6,6,3","sol":"5,7,3,6,0,2,4,1","given":[19]},{"n":9,"hard":false,"reg":"2,2,0,0,0,0,0,1,1,2,2,2,2,2,0,0,1,1,6,6,2,2,4,4,0,0,1,6,2,2,2,2,4,0,3,1,6,6,6,6,6,4,4,4,4,6,6,6,5,5,4,4,4,4,6,8,6,6,8,7,7,7,7,8,8,8,8,8,8,7,7,7,8,8,8,8,8,8,8,7,7","sol":"4,8,2,7,5,3,0,6,1","given":[73]},{"n":10,"hard":false,"reg":"0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,2,1,1,3,3,0,7,2,2,2,2,8,8,8,3,7,7,4,4,2,2,8,3,3,3,3,7,7,4,5,5,8,3,3,6,6,6,7,4,4,5,8,6,6,6,6,7,7,7,9,5,8,8,8,8,6,6,9,7,9,5,8,6,6,6,6,6,9,9,9,5","sol":"4,0,9,2,6,8,3,5,1,7","given":[4]},{"n":11,"hard":true,"reg":"1,0,0,0,0,0,0,0,0,0,2,1,0,0,4,0,0,0,0,0,2,2,1,1,1,4,0,0,2,2,0,2,2,1,1,1,4,4,0,2,2,2,2,3,5,1,1,4,4,4,2,3,3,3,3,5,5,5,4,4,4,3,3,3,3,3,5,5,5,6,4,4,4,3,3,3,3,9,5,6,6,6,8,4,3,3,7,7,9,9,9,9,9,8,8,3,7,7,7,9,9,9,9,9,8,7,7,7,7,7,9,10,10,10,9,8,8,7,7,7,7","sol":"8,0,7,10,5,1,3,9,6,4,2","given":[8]},{"n":7,"hard":false,"reg":"1,1,0,0,0,0,0,6,1,1,1,0,0,0,6,1,1,0,0,2,4,6,6,3,3,4,4,4,6,6,3,5,5,4,4,6,6,3,6,5,5,5,6,6,6,6,6,5,5","sol":"3,1,5,2,6,4,0","given":[42]},{"n":8,"hard":false,"reg":"2,2,2,0,0,0,0,0,2,2,1,1,0,0,0,0,2,2,2,2,2,4,4,4,5,5,2,3,4,4,6,4,5,5,5,5,4,6,6,4,5,5,5,7,7,7,6,4,5,7,5,7,7,7,6,7,5,7,7,7,7,7,7,7","sol":"5,2,0,3,7,1,6,4","given":[60]},{"n":9,"hard":false,"reg":"4,0,0,0,0,3,3,1,1,4,4,4,4,4,3,3,1,3,4,4,4,2,3,3,3,3,3,4,2,2,2,3,3,3,5,5,4,4,4,4,7,5,5,5,5,4,4,4,7,7,5,5,5,5,4,6,7,7,7,5,5,5,5,6,6,7,7,7,7,5,5,5,6,6,8,8,7,7,7,5,5","sol":"4,7,3,6,0,8,1,5,2","given":[53]},{"n":10,"hard":false,"reg":"3,3,1,1,1,1,1,1,0,0,3,1,1,3,3,1,1,1,1,0,3,3,3,3,3,3,1,2,2,2,3,3,3,3,3,3,4,4,2,2,3,3,3,4,4,4,4,4,4,2,3,5,5,4,4,4,4,6,2,2,5,5,5,5,6,6,6,6,2,2,5,7,5,7,6,7,6,7,2,2,5,7,7,7,7,7,7,7,2,8,5,7,9,7,7,7,8,8,8,8","sol":"8,5,7,0,4,1,6,3,9,2","given":[30]},{"n":7,"hard":false,"reg":"1,1,1,4,2,0,2,1,1,4,4,2,2,2,1,1,1,4,2,2,3,6,6,6,4,4,2,3,6,6,6,4,6,2,3,5,5,6,6,6,3,3,5,6,6,3,3,3,3","sol":"5,1,4,6,3,0,2","given":[44]},{"n":8,"hard":false,"reg":"3,0,2,2,2,1,1,1,3,3,3,2,2,4,4,1,3,3,2,2,4,4,4,4,3,2,2,4,4,5,5,5,3,4,4,4,4,7,5,5,6,6,6,4,7,7,5,5,6,6,6,7,7,7,7,5,6,6,6,7,7,7,7,7","sol":"1,7,3,0,4,6,2,5","given":[36]},{"n":9,"hard":false,"reg":"7,7,0,0,0,0,1,1,1,7,7,7,0,0,0,2,1,1,7,7,3,3,0,2,2,2,1,7,7,7,3,3,3,2,1,1,7,7,5,5,3,3,3,3,4,7,5,5,3,3,3,3,4,4,7,5,5,5,5,5,6,4,4,7,7,5,5,5,8,4,4,4,5,5,5,5,8,8,4,4,4","sol":"2,7,5,3,8,1,6,0,4","given":[46]},{"n":10,"hard":false,"reg":"0,0,0,0,2,2,2,3,3,3,0,0,2,2,2,4,2,1,1,3,5,5,5,2,4,4,4,4,3,3,5,5,5,5,4,4,4,4,4,3,5,5,5,5,5,4,9,4,4,6,8,7,5,5,5,7,9,6,6,6,8,7,7,7,7,7,9,9,6,6,8,8,8,7,7,9,9,9,9,6,9,8,9,7,9,9,9,9,9,6,9,9,9,9,9,9,9,9,9,9","sol":"0,7,3,9,5,2,8,4,1,6","given":[96]},{"n":7,"hard":false,"reg":"2,2,1,1,1,1,0,2,2,1,1,1,3,3,6,2,2,1,1,3,3,6,2,4,1,3,3,5,6,2,4,4,4,5,5,6,6,4,6,6,5,5,6,6,6,6,6,6,6","sol":"6,3,1,4,2,5,0","given":[]},{"n":8,"hard":false,"reg":"1,1,1,4,4,0,0,2,1,3,4,4,4,4,2,2,3,3,3,3,4,4,4,2,3,5,3,3,3,4,4,4,5,5,5,5,4,4,4,6,5,5,5,5,4,4,4,6,5,5,5,7,7,4,6,6,5,5,5,7,7,7,7,6","sol":"5,0,7,2,4,1,6,3","given":[]},{"n":11,"hard":true,"reg":"0,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1,2,2,1,1,0,0,0,0,1,1,1,1,2,1,2,0,3,0,1,1,1,2,2,2,2,2,3,3,3,3,1,4,2,4,2,2,2,5,5,3,3,4,4,4,4,4,4,4,5,5,5,3,6,6,6,4,4,4,4,6,6,5,6,6,8,6,6,7,7,4,6,6,6,6,6,8,7,7,7,7,7,6,9,9,8,8,8,8,8,7,7,7,9,9,9,9,8,8,7,7,7,10,7","sol":"3,6,10,1,7,0,4,8,5,2,9","given":[17]},{"n":9,"hard":false,"reg":"0,0,0,0,0,0,0,2,4,0,1,0,0,0,0,2,2,4,1,1,6,0,0,0,2,2,4,1,6,6,6,3,2,2,4,4,1,6,6,5,5,4,4,4,4,1,6,6,5,5,5,4,4,4,6,6,6,6,8,4,4,4,4,6,6,6,6,8,7,4,4,4,6,6,8,8,8,7,7,7,7","sol":"6,1,7,4,8,3,0,5,2","given":[]},{"n":10,"hard":false,"reg":"1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,2,2,0,0,0,1,1,3,3,2,2,2,2,2,0,1,4,3,3,3,2,2,2,2,0,4,4,3,3,3,3,3,2,2,5,4,4,4,3,3,3,6,6,5,5,4,8,4,6,6,6,6,6,7,7,8,8,6,6,6,6,7,7,7,7,8,8,8,8,8,6,7,9,9,9","sol":"4,2,5,3,1,9,6,8,0,7","given":[]},{"n":7,"hard":false,"reg":"3,2,2,2,0,0,0,3,3,2,2,0,1,1,3,3,2,4,4,5,5,3,3,4,4,4,5,5,3,3,4,4,4,4,5,3,3,4,6,5,5,5,3,6,6,6,6,5,5","sol":"4,6,2,0,3,5,1","given":[]},{"n":8,"hard":false,"reg":"0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,2,0,0,0,1,1,1,1,2,2,2,2,1,1,3,1,5,4,4,4,4,3,3,3,5,5,7,6,6,3,6,3,5,7,7,6,6,3,6,3,7,7,7,6,6,6,6,6","sol":"5,7,0,6,3,1,4,2","given":[]},{"n":9,"hard":false,"reg":"0,0,0,0,0,0,2,2,2,1,0,0,0,0,0,0,2,2,1,0,0,0,0,2,2,2,3,1,1,0,0,0,4,2,3,3,1,1,4,4,0,4,2,3,3,5,5,4,4,4,4,2,8,3,5,5,5,6,6,6,2,8,8,5,6,6,6,8,8,8,8,7,5,5,6,6,6,6,8,8,8","sol":"2,0,5,7,3,1,4,8,6","given":[]},{"n":10,"hard":false,"reg":"0,0,0,2,2,2,2,2,2,1,2,2,2,2,5,3,3,3,1,1,6,6,2,2,5,3,3,3,3,1,6,6,6,5,5,3,3,3,1,1,6,6,5,5,3,3,3,3,3,4,6,6,6,5,5,3,3,3,8,8,9,6,6,6,7,7,7,8,8,8,9,9,9,9,7,9,9,8,8,9,9,9,9,9,9,9,9,8,8,9,9,9,9,9,9,9,9,9,9,9","sol":"0,8,2,6,9,3,1,4,7,5","given":[]},{"n":7,"hard":false,"reg":"1,1,1,0,0,2,2,1,4,1,3,3,2,2,4,4,4,3,3,3,2,4,6,6,3,3,5,5,4,6,6,6,3,5,5,6,6,6,6,3,5,5,6,6,6,6,5,5,5","sol":"4,2,6,3,0,5,1","given":[]},{"n":8,"hard":false,"reg":"4,4,4,0,0,0,0,1,4,4,4,0,0,0,0,1,4,4,4,3,3,2,2,1,4,4,3,3,3,2,2,1,4,4,6,2,3,2,2,2,4,6,6,2,2,2,5,5,6,6,6,2,2,2,2,5,6,6,6,7,2,2,2,5","sol":"4,7,5,2,0,6,1,3","given":[]},{"n":9,"hard":false,"reg":"4,4,4,4,0,0,0,0,1,5,4,4,0,0,0,1,1,1,5,4,2,2,2,1,1,1,1,5,4,4,2,1,1,1,3,3,5,5,4,7,7,7,6,6,3,5,5,5,8,8,7,6,6,6,8,8,8,8,8,7,7,7,6,8,8,8,8,8,7,7,8,8,8,8,8,8,8,8,8,8,8","sol":"4,6,3,7,2,0,8,5,1","given":[]},{"n":10,"hard":false,"reg":"2,2,0,0,0,0,0,0,4,4,2,2,2,0,0,0,3,1,1,4,9,9,2,3,3,3,3,3,4,4,9,9,9,3,5,5,3,3,3,4,9,9,7,7,5,5,5,5,5,4,9,9,7,8,8,6,6,5,5,5,9,9,7,7,8,6,6,6,6,5,9,7,7,8,8,6,6,5,5,5,9,9,9,9,8,8,6,6,6,6,9,9,9,9,8,8,8,6,6,6","sol":"3,8,2,6,9,7,5,1,4,0","given":[]},{"n":11,"hard":true,"reg":"3,3,3,1,0,0,0,0,2,2,2,3,3,3,1,1,0,0,0,2,2,2,3,3,3,1,0,0,0,2,2,2,2,3,3,3,1,0,0,0,2,2,2,2,3,3,3,3,0,0,0,4,4,2,4,5,5,3,5,5,5,6,4,4,4,4,5,5,5,5,5,5,6,6,6,4,4,5,8,5,5,7,7,7,7,6,6,4,5,8,8,8,8,8,7,6,6,4,4,5,9,9,8,7,7,7,6,6,4,4,9,9,9,9,7,7,10,6,6,6,6","sol":"7,4,9,2,10,0,8,5,3,1,6","given":[35]},{"n":7,"hard":false,"reg":"0,0,1,1,1,1,1,0,1,1,1,1,2,2,0,0,1,1,6,6,2,3,3,1,1,6,2,2,3,4,4,6,6,6,5,4,4,6,6,5,5,5,6,6,6,6,5,5,5","sol":"1,4,6,0,2,5,3","given":[]},{"n":8,"hard":false,"reg":"2,2,2,0,0,0,0,1,2,2,2,0,0,1,1,1,2,2,2,2,0,0,3,1,2,2,2,0,0,0,3,3,2,5,5,4,4,3,3,3,2,5,5,5,3,3,3,3,5,5,5,7,7,7,6,3,5,5,7,7,6,6,6,6","sol":"3,5,0,7,4,1,6,2","given":[]},{"n":9,"hard":false,"reg":"0,0,0,2,3,3,3,5,5,0,0,0,2,1,3,5,5,5,0,4,2,2,1,3,3,3,5,0,4,4,4,3,3,3,3,5,0,4,4,4,3,3,5,5,5,0,0,4,4,6,3,5,5,5,4,4,4,6,6,5,5,5,5,4,6,6,6,6,5,7,7,5,4,4,6,8,8,8,7,7,7","sol":"0,4,2,6,1,8,3,7,5","given":[]},{"n":10,"hard":false,"reg":"0,0,0,0,2,1,1,1,1,1,0,0,0,2,2,1,1,1,1,1,0,0,0,0,2,2,2,2,1,1,0,0,0,0,2,2,2,3,1,1,0,4,4,3,3,3,2,3,5,5,4,4,4,3,3,3,3,3,3,5,4,6,4,3,3,3,3,5,5,5,6,6,6,9,7,7,7,7,5,5,8,8,8,9,7,7,7,5,5,5,8,8,9,9,9,7,7,7,5,5","sol":"3,8,5,7,2,9,1,6,0,4","given":[]},{"n":7,"hard":false,"reg":"0,0,2,2,1,1,4,0,0,2,1,1,1,4,0,2,2,2,3,4,4,2,2,2,2,3,4,4,5,5,5,5,6,4,4,5,5,5,5,6,6,6,5,5,5,5,6,6,6","sol":"0,3,1,4,6,2,5","given":[]},{"n":8,"hard":false,"reg":"0,0,0,0,0,0,0,0,0,1,2,2,0,0,0,0,1,1,1,2,0,2,0,0,1,6,1,2,2,2,2,3,6,6,1,2,4,4,3,3,6,5,5,7,4,3,3,3,6,5,7,7,4,4,3,3,6,6,6,7,4,4,3,3","sol":"6,1,5,7,4,2,0,3","given":[]},{"n":9,"hard":false,"reg":"0,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,3,1,0,0,2,0,0,0,1,3,1,2,2,2,2,0,0,3,3,3,5,2,5,2,4,4,3,6,3,5,5,5,5,4,6,6,6,6,5,5,5,4,4,4,4,6,6,7,4,4,4,4,4,6,6,6,7,7,7,7,4,4,6,8,6","sol":"3,5,2,6,4,1,8,0,7","given":[]},{"n":10,"hard":false,"reg":"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,2,0,4,4,1,1,1,3,1,2,2,2,4,4,4,4,1,3,3,2,4,4,4,4,4,1,1,3,3,4,4,4,4,8,8,1,1,5,3,4,4,7,7,8,6,5,5,5,5,4,4,4,7,8,8,8,8,5,5,4,7,7,7,9,8,8,8,9,9,7,7,7,7,9,9,9,9,9,9","sol":"0,7,1,9,2,8,5,3,6,4","given":[]},{"n":7,"hard":false,"reg":"0,0,1,1,1,1,1,0,1,1,3,1,2,2,0,4,1,3,3,3,2,4,4,3,3,3,3,2,4,5,3,3,6,6,6,4,5,5,3,3,6,6,5,5,3,3,6,6,6","sol":"1,4,6,3,0,2,5","given":[]},{"n":8,"hard":false,"reg":"3,2,2,0,0,1,1,1,3,2,2,2,0,4,1,1,3,3,2,2,0,4,1,4,3,3,3,2,2,4,1,4,6,3,2,2,4,4,4,4,6,6,2,6,4,7,5,4,6,6,2,6,4,7,7,7,6,6,6,6,6,7,7,7","sol":"3,7,2,0,4,6,1,5","given":[]},{"n":11,"hard":true,"reg":"2,2,2,2,0,0,0,0,0,0,1,3,2,2,2,0,0,0,0,1,0,1,3,2,2,2,2,0,0,0,1,1,1,3,3,4,4,2,2,2,0,0,1,1,3,3,3,4,2,2,2,0,0,1,1,5,3,3,4,4,4,4,4,4,4,4,5,6,6,6,4,6,4,7,7,7,9,5,5,5,6,6,6,7,7,9,9,9,5,5,6,6,10,8,7,7,9,9,9,5,5,10,10,10,10,10,7,9,9,9,5,5,5,5,5,5,10,10,9,9,9","sol":"8,10,4,1,3,0,2,7,5,9,6","given":[8]}];
 const SHARE_URL = "https://northlo.github.io/popcorn-seat/";
 const TIPS = {
   1: "<b>规则1</b>：每一行、每一列都要正好放1只爆米花。棋盘上已经坐好了1只，它所在的那一行、那一列就不能再放了，点一下格子标上×。确定某格是座位，就再点一下放上去。",
   2: "<b>规则2</b>：每种颜色也只能有1只爆米花。看上面的颜色提示，先找格子最少的那种颜色下手。",
   3: "<b>规则3</b>：爆米花不喜欢挤，两只不能挨着，斜着挨也不行。从下一关开始，放错会扣一颗心。"
 };
-/* 12 种柔和颜色：小棋盘用到的前 7 种色相完全不同；更大的棋盘再加颜色，同时靠花纹区分 */
-const REGION_COLORS = ["#F3B4C2", "#A8DCC0", "#F5DA7E", "#A9BEF2", "#F7B98A", "#CDB0EA", "#CDE69A", "#EE9E95", "#9FD4F0", "#EDB0DA", "#DCC9B2", "#7FC7BE"];
+/* 11 种明亮柔和的颜色：7×7 用到的前 7 种色相完全不同；更大的棋盘再加颜色，同时靠图案区分 */
+const REGION_COLORS = ["#FFB3C7", "#8EE3C8", "#FFD966", "#9CC8FF", "#FFBC85", "#C9B2FF", "#B6E88C", "#7FD6E6", "#FF9E9E", "#A9B4FF", "#F5B5EC"];
 const FREE_HINTS = 3;
-const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 22, 12: 30 };
+const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 24 };
 
 /* 存档：只存在这个浏览器里，读不到也能正常玩 */
 const SAVE_KEY = "popcorn-proto-v4";
@@ -315,7 +318,7 @@ const fx = {
 
 const $ = id => document.getElementById(id);
 const catSvg = (sym = "cat") => `<svg class="cat" viewBox="0 0 40 40" aria-hidden="true"><use href="#${sym}"/></svg>`;
-const X_SVG = '<svg class="x" viewBox="0 0 20 20" aria-hidden="true"><line x1="4" y1="4" x2="16" y2="16" stroke="#5B4234" stroke-width="2.8" stroke-linecap="round"/><line x1="16" y1="4" x2="4" y2="16" stroke="#5B4234" stroke-width="2.8" stroke-linecap="round"/></svg>';
+const X_SVG = '<svg class="x" viewBox="0 0 20 20" aria-hidden="true"><line x1="4" y1="4" x2="16" y2="16" stroke="#3A3A3C" stroke-width="2.4" stroke-linecap="round"/><line x1="16" y1="4" x2="4" y2="16" stroke="#3A3A3C" stroke-width="2.4" stroke-linecap="round"/></svg>';
 const CAN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg>';
 function fmt(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
 function show(id) { for (const s of ["home", "game", "rank"]) $(s).classList.toggle("hidden", s !== id); window.scrollTo(0, 0); }
@@ -379,7 +382,7 @@ function buildBoard() {
   let html = "";
   for (let i = 0; i < n * n; i++) {
     const g = reg[i];
-    html += `<div class="cell" data-i="${i}" role="gridcell" style="background:${colorOf(g)}"><svg class="pat" viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 12}"/></svg><span class="fg" style="display:contents"></span></div>`;
+    html += `<div class="cell" data-i="${i}" role="gridcell" style="background:${colorOf(g)}"><svg class="pat" viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 11}"/></svg><span class="fg" style="display:contents"></span></div>`;
   }
   b.innerHTML = html;
   for (let i = 0; i < n * n; i++) drawCell(i);
@@ -399,7 +402,7 @@ function renderHearts() {
   const h = [];
   for (let k = 0; k < 3; k++) {
     const on = G.tutorial || k < G.hearts;
-    h.push(`<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${on ? "#E5596C" : "#E8DCCF"}"><use href="#heart"/></svg>`);
+    h.push(`<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${on ? "#FF3B30" : "#E5E5EA"}"><use href="#heart"/></svg>`);
   }
   $("hearts").innerHTML = h.join("");
   $("hearts").setAttribute("aria-label", G.tutorial ? "教学关不扣心" : `剩余 ${G.hearts} 颗心`);
@@ -415,10 +418,10 @@ function renderChips() {
   for (let i = 0; i < G.n * G.n; i++) if (G.st[i] === 2) done.add(G.reg[i]);
   const html = [];
   for (let g = 0; g < G.n; g++) {
-    html.push(`<span class="chip${done.has(g) ? " done" : ""}" style="background:${colorOf(g)}" aria-label="${done.has(g) ? "已坐好" : "还没坐"}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 12}"/></svg></span>`);
+    html.push(`<span class="chip${done.has(g) ? " done" : ""}" style="background:${colorOf(g)}" aria-label="${done.has(g) ? "已坐好" : "还没坐"}"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#p${g % 11}"/></svg></span>`);
   }
   $("chips").innerHTML = html.join("");
-  $("chips").classList.toggle("small", G.n >= 11);
+  $("chips").classList.toggle("small", G.n >= 10);
   const left = G.n - done.size;
   $("leftText").textContent = left ? `还有 ${left} 种颜色等着爆米花` : "全部坐好啦";
 }
@@ -569,14 +572,16 @@ $("hintBtn").onclick = () => {
 
 /* ---------- 设置 ---------- */
 function openSettings() {
-  const row = (id, label, on, sub) => `<div class="setrow"><span>${label}${sub ? `<small>${sub}</small>` : ""}</span><button id="${id}" aria-pressed="${on}">${on ? "开" : "关"}</button></div>`;
+  const row = (id, label, on, sub) => `<div class="setrow"><span>${label}${sub ? `<small>${sub}</small>` : ""}</span><button class="switch" id="${id}" role="switch" aria-checked="${on}" aria-label="${label}"></button></div>`;
   showDialog(`<h3>设置</h3>
+    <div class="setlist">
     ${row("sSound", "音效", save.sound)}
-    ${row("sVib", "震动反馈", save.vibrate, canVibrate ? "放对、放错、通关时震一下" : "这台手机的浏览器不支持震动，微信版里才有")}
-    ${row("sAuto", "放下爆米花后自动标×", save.autoX)}
+    ${row("sVib", "震动反馈", save.vibrate, canVibrate ? "放对、放错、通关时震一下" : "这台手机的浏览器不支持，微信版里才有")}
+    ${row("sAuto", "放下后自动标×", save.autoX)}
     ${row("sRules", "显示规则卡片", save.rules)}
+    </div>
     <button class="btn alt" id="sReset">清空进度</button>
-    <button class="btn" id="sClose">好的</button>`);
+    <button class="btn" id="sClose">完成</button>`);
   const flip = key => () => { save[key] = !save[key]; persist(); if (key === "rules" && G) $("rulebar").classList.toggle("hidden", !save.rules); if (key === "vibrate" && save.vibrate) buzz(30); openSettings(); };
   $("sSound").onclick = flip("sound");
   $("sVib").onclick = flip("vibrate");
@@ -584,7 +589,7 @@ function openSettings() {
   $("sRules").onclick = flip("rules");
   $("sReset").onclick = () => {
     showDialog(`<h3>清空进度？</h3><p>通关记录、猫罐头和连胜都会清零。</p>
-      <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">算了</button>`);
+      <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">取消</button>`);
     $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0 }); persist(); hideDialog(); goHome(); };
     $("dNo").onclick = openSettings;
   };
@@ -627,10 +632,10 @@ function renderRank() {
     const bySize = {};
     for (const [id, t] of Object.entries(save.best)) {
       const L = LEVELS[id - 1]; if (!L) continue;
-      const key = L.hard ? "12×12 困难" : `${L.n}×${L.n}`;
+      const key = L.hard ? `${L.n}×${L.n} 困难` : `${L.n}×${L.n}`;
       if (!bySize[key] || t < bySize[key].t) bySize[key] = { t, id };
     }
-    const keys = ["7×7", "8×8", "9×9", "10×10", "11×11", "12×12 困难"].filter(k => bySize[k]);
+    const keys = ["7×7", "8×8", "9×9", "10×10", "11×11 困难"].filter(k => bySize[k]);
     $("rankBody").innerHTML = keys.length
       ? `<table class="rank"><tbody>${keys.map(k => `<tr class="me"><td>${k}</td><td>第${bySize[k].id}关</td><td>${fmt(bySize[k].t)}</td></tr>`).join("")}</tbody></table>`
       : `<p class="empty">还没有通关记录，先去玩一关吧。</p>`;
