@@ -82,7 +82,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .cell .pat { position: absolute; width: 52%; height: 52%; left: 24%; top: 24%; color: rgba(255, 255, 255, .78); pointer-events: none; }
 .cell .x { position: relative; width: 46%; height: 46%; pointer-events: none; }
 .cell.bad .x line { stroke: var(--heart); }
-.cell .cat { position: relative; width: 92%; height: 92%; pointer-events: none; border-radius: 50%; filter: drop-shadow(0 1px 2px rgba(0,0,0,.18)); -webkit-user-drag: none; }
+.cell .cat { position: relative; width: 94%; height: 94%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.16)); -webkit-user-drag: none; }
 .cell.marked .pat, .cell.cat .pat { opacity: 0; }
 .cell.pop .cat { animation: pop .28s ease-out; }
 .cell.shake { animation: shake .35s; }
@@ -163,7 +163,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
     <img id="brandImg" alt="爆米花">
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v0.7 · 棋盘上就是爆米花本猫</p>
+      <p>原型 v0.8 · 卡通版爆米花上岗</p>
     </div>
   </div>
   <div class="homebar">
@@ -289,7 +289,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 <script>
 const LEVELS = /*LEVELS*/[];
 const CAT_IMG = /*CATIMG*/{};
-const BOARD_FACES = ["serious", "soft", "sit"]; // 棋盘上轮流用这三张爆米花头像
+const BOARD_FACES = ["head"]; // 棋盘上用卡通版爆米花头像
 const SHARE_URL = "https://northlo.github.io/popcorn-seat/";
 const TIPS = {
   1: "<b>规则1</b>：每一行、每一列都要正好放1只爆米花。棋盘上已经坐好了1只，它所在的那一行、那一列就不能再放了，点一下格子标上×。确定某格是座位，就再点一下放上去。",
@@ -800,7 +800,7 @@ document.addEventListener("touchend", e => {
   lastTouchEnd = now;
 }, { passive: false });
 
-$("brandImg").src = CAT_IMG.stand;
+$("brandImg").src = CAT_IMG.headBig;
 renderHome();
 </script>
 </body>
