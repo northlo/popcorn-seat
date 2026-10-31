@@ -7,17 +7,19 @@
 <style>
 :root {
   /* 苹果风格：系统灰底、纯白卡片、系统字体、很轻的阴影；棋盘是明亮干净的马卡龙色块，图案用白色剪影 */
-  --bg: #F2F2F7;
+  /* 哑光平面：暖白底、几乎不用阴影，靠细边和留白分层 */
+  --bg: #F6F2EE;
   --card: #FFFFFF;
-  --ink: #1C1C1E;
-  --ink-soft: #8E8E93;
-  --fill: rgba(118, 118, 128, .12);
-  --accent: #FF9F0A;
-  --accent-ink: #B86E00;
-  --heart: #FF3B30;
-  --hard: #FF375F;
-  --green: #34C759;
-  --shadow: 0 1px 2px rgba(0, 0, 0, .04), 0 4px 16px rgba(0, 0, 0, .05);
+  --ink: #3B302B;
+  --ink-soft: #9A8F88;
+  --fill: #EFE9E3;
+  --line: rgba(80, 55, 40, .08);
+  --accent: #E8963A;
+  --accent-ink: #A9661C;
+  --heart: #E0625F;
+  --hard: #D45D6E;
+  --green: #6DBE7B;
+  --shadow: 0 0 0 1px var(--line);
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color-scheme: light;
 }
@@ -27,7 +29,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--font); font-
 button { font-family: inherit; color: inherit; cursor: pointer; border: 0; }
 button:active { opacity: .7; }
 button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset: 2px; }
-.screen { max-width: 480px; margin: 0 auto; padding: 14px 16px 28px; min-height: 100%; display: flex; flex-direction: column; gap: 12px; }
+.screen { max-width: 480px; margin: 0 auto; padding: 12px 12px 28px; min-height: 100%; display: flex; flex-direction: column; gap: 12px; }
 .hidden { display: none !important; }
 .round { width: 44px; height: 44px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; padding: 0; flex: none; }
 .round svg { width: 22px; height: 22px; }
@@ -63,25 +65,25 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .status { display: flex; justify-content: center; gap: 8px; }
 .hearts { display: flex; gap: 4px; }
 .hearts svg { width: 20px; height: 20px; }
-.left { background: var(--card); box-shadow: var(--shadow); border-radius: 16px; padding: 10px 12px; }
-.left p { margin: 0 0 8px; font-size: 13px; color: var(--ink-soft); text-align: center; }
+.left { padding: 2px 0 0; }
+.left p { margin: 0 0 6px; font-size: 12px; color: var(--ink-soft); text-align: center; }
 .chips { display: flex; flex-wrap: nowrap; justify-content: center; gap: 6px; }
-.chip { width: 28px; height: 28px; border-radius: 8px; position: relative; display: grid; place-items: center; transition: opacity .3s, transform .3s; flex: none; }
+.chip { width: 26px; height: 26px; border-radius: 7px; position: relative; display: grid; place-items: center; transition: opacity .3s, transform .3s; flex: none; }
 .chip svg { width: 68%; height: 68%; color: rgba(255,255,255,.9); }
 .chips.small { gap: 4px; }
 .chips.small .chip { width: 24px; height: 24px; border-radius: 7px; }
-.chip.done { opacity: .25; transform: scale(.8); }
+.chip.done { opacity: .22; transform: scale(.72); }
 .rulebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-.rule { background: var(--card); border-radius: 14px; box-shadow: var(--shadow); padding: 8px 4px 7px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: var(--ink-soft); text-align: center; line-height: 1.2; }
-.rule svg { width: 26px; height: 26px; }
+.rule { background: var(--card); border-radius: 12px; padding: 6px 4px; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--ink-soft); text-align: center; line-height: 1.2; }
+.rule svg { width: 20px; height: 20px; flex: none; }
 .tip { background: #FFF4E0; border-radius: 14px; padding: 10px 12px; font-size: 14px; }
 .tip b { color: var(--accent-ink); }
-.boardcard { background: var(--card); border-radius: 22px; box-shadow: var(--shadow); padding: 10px; }
+.boardcard { background: var(--card); border-radius: 18px; padding: 7px; }
 .board { --n: 7; --gap: 6px; width: 100%; aspect-ratio: 1; display: grid; gap: var(--gap); grid-template-columns: repeat(var(--n), 1fr); grid-template-rows: repeat(var(--n), 1fr); touch-action: none; user-select: none; -webkit-user-select: none; }
-.cell { position: relative; border-radius: 26%; display: grid; place-items: center; overflow: hidden; }
-.cell .pat { position: absolute; width: 52%; height: 52%; left: 24%; top: 24%; color: rgba(255, 255, 255, .78); pointer-events: none; }
-.cell .x { position: relative; width: 46%; height: 46%; pointer-events: none; }
-.cell.bad .x line { stroke: var(--heart); }
+.cell { position: relative; border-radius: 16%; display: grid; place-items: center; overflow: hidden; }
+.cell .pat { position: absolute; width: 52%; height: 52%; left: 24%; top: 24%; color: rgba(40, 20, 10, .16); pointer-events: none; }
+.cell .x { position: relative; width: 52%; height: 52%; pointer-events: none; filter: drop-shadow(0 1px 1px rgba(60, 30, 20, .22)); }
+.cell.bad .x line { stroke: #8E2424; }
 .cell .cat { position: relative; width: 94%; height: 94%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.16)); -webkit-user-drag: none; }
 .cell.marked .pat, .cell.cat .pat { opacity: 0; }
 .cell.pop .cat { animation: pop .28s ease-out; }
@@ -89,7 +91,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .cell.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.75); animation: fade .6s forwards; pointer-events: none; }
 .cell.hint::after { content: ""; position: absolute; inset: 0; border: 3px solid var(--accent); border-radius: inherit; animation: fade 1.6s forwards; pointer-events: none; }
 #fxCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 7; }
-.combo { position: fixed; z-index: 6; transform: translate(-50%, -50%); pointer-events: none; font-weight: 800; font-size: 22px; color: #fff; white-space: nowrap; padding: 4px 12px; border-radius: 999px; background: linear-gradient(135deg, #FF9F0A, #FF375F); box-shadow: 0 6px 18px rgba(255, 55, 95, .35); animation: comboUp 1s ease-out forwards; }
+.combo { position: fixed; z-index: 6; transform: translate(-50%, -50%); pointer-events: none; font-weight: 800; font-size: 22px; color: #fff; white-space: nowrap; padding: 4px 12px; border-radius: 999px; background: #3B302B; box-shadow: none; animation: comboUp 1s ease-out forwards; }
 .combo small { font-size: 13px; font-weight: 700; margin-left: 4px; opacity: .9; }
 @keyframes comboUp { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.6); } 15% { opacity: 1; transform: translate(-50%, -60%) scale(1.15); } 30% { transform: translate(-50%, -70%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -160%) scale(1); } }
 .cell.wave { animation: wave .5s ease-out; }
@@ -156,7 +158,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .setrow small { display: block; font-size: 11px; color: var(--ink-soft); }
 .switch { width: 51px; height: 31px; border-radius: 16px; background: #E9E9EA; position: relative; flex: none; padding: 0; transition: background .2s; }
 .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.2); transition: transform .2s; }
-.switch[aria-checked="true"] { background: var(--green); }
+.switch[aria-checked="true"] { background: var(--accent); }
 .switch[aria-checked="true"]::after { transform: translateX(20px); }
 .copybox { width: 100%; font: inherit; font-size: 13px; border: 0; border-radius: 10px; padding: 10px; color: var(--ink); background: var(--bg); resize: none; }
 </style>
@@ -169,7 +171,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
     <img id="brandImg" alt="爆米花">
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v0.9 · 卡通版爆米花上岗</p>
+      <p>原型 v1.0 · 哑光新皮肤</p>
     </div>
   </div>
   <div class="homebar">
@@ -181,7 +183,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
     <button class="round" id="setHome" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
   </div>
   <div class="panel"><div class="blocks" id="blocks"></div></div>
-  <p class="note">每组11关：前10关是7×7到10×10轮流出现，第11关是11×11困难关（罐头翻倍）。前30关和所有困难关，开局先坐好1只爆米花。复活和提示在正式版要看广告，这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
+  <p class="note">每组11关：棋盘从7×7开始，每10关大一号，最后到11×11；每组第1关是大一号的困难关（罐头翻倍）。前30关和所有困难关，开局先坐好1只爆米花。复活和提示在正式版要看广告，这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
 </section>
 
 <!-- 游戏页 -->
@@ -202,7 +204,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
   <div class="rulebar" id="rulebar" aria-label="规则">
     <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-row"/></svg>每行1只</div>
     <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-col"/></svg>每列1只</div>
-    <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-reg"/></svg>每种颜色1只</div>
+    <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-reg"/></svg>每色1只</div>
     <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-adj"/></svg>不能挨着</div>
   </div>
   <div class="tip hidden" id="tip"></div>
@@ -320,7 +322,7 @@ const TIPS = {
   3: "<b>规则3</b>：爆米花不喜欢挤，两只不能挨着，斜着挨也不行。从下一关开始，放错会扣一颗心。"
 };
 /* 11 种颜色，色相跨度尽量大；前 7 种（7×7 用到）互相差别最大。具体哪个区用哪种颜色，每关按“挨着的区颜色差别最大”来分配 */
-const REGION_COLORS = ["#FF8FB3", "#FFD25A", "#5FD3A0", "#5FA8FF", "#FF9A4D", "#B38BFF", "#A6DA4E", "#36C3CC", "#FF6363", "#E27BDF", "#D2A679"];
+const REGION_COLORS = ["#9B84D8", "#AFD69B", "#CD7D7A", "#A9BDD9", "#DFC062", "#6075B6", "#F0A96C", "#62B2A8", "#E390C0", "#A87855", "#F2BCD2"];
 function hexLab(hex) {
   const c = [1, 3, 5].map(k => parseInt(hex.slice(k, k + 2), 16) / 255).map(v => v > .04045 ? Math.pow((v + .055) / 1.055, 2.4) : v / 12.92);
   const X = (c[0] * .4124 + c[1] * .3576 + c[2] * .1805) / .95047, Y = c[0] * .2126 + c[1] * .7152 + c[2] * .0722, Z = (c[0] * .0193 + c[1] * .1192 + c[2] * .9505) / 1.08883;
@@ -487,7 +489,7 @@ function confettiRain() {
 }
 const catSvg = (sym = "cat") => `<svg class="cat" viewBox="0 0 40 40" aria-hidden="true"><use href="#${sym}"/></svg>`;
 const catImg = (face, cls = "cat") => `<img class="${cls}" src="${CAT_IMG[face]}" alt="" draggable="false">`;
-const X_SVG = '<svg class="x" viewBox="0 0 20 20" aria-hidden="true"><line x1="4" y1="4" x2="16" y2="16" stroke="#3A3A3C" stroke-width="2.4" stroke-linecap="round"/><line x1="16" y1="4" x2="4" y2="16" stroke="#3A3A3C" stroke-width="2.4" stroke-linecap="round"/></svg>';
+const X_SVG = '<svg class="x" viewBox="0 0 20 20" aria-hidden="true"><line x1="4.5" y1="4.5" x2="15.5" y2="15.5" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round"/><line x1="15.5" y1="4.5" x2="4.5" y2="15.5" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round"/></svg>';
 const CAN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg>';
 function fmt(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
 function show(id) { for (const s of ["home", "game", "rank"]) $(s).classList.toggle("hidden", s !== id); window.scrollTo(0, 0); }
@@ -549,7 +551,7 @@ function colorOf(g) { return REGION_COLORS[G.colors[g]]; }
 function buildBoard() {
   const { n, reg } = G, b = $("board");
   b.style.setProperty("--n", n);
-  b.style.setProperty("--gap", n <= 8 ? "6px" : n <= 10 ? "5px" : "4px");
+  b.style.setProperty("--gap", n <= 8 ? "5px" : n <= 10 ? "4px" : "3px");
   let html = "";
   for (let i = 0; i < n * n; i++) {
     const g = reg[i];
@@ -573,7 +575,7 @@ function renderHearts() {
   const h = [];
   for (let k = 0; k < 3; k++) {
     const on = G.tutorial || k < G.hearts;
-    h.push(`<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${on ? "#FF3B30" : "#E5E5EA"}"><use href="#heart"/></svg>`);
+    h.push(`<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${on ? "#E0625F" : "#E6DED6"}"><use href="#heart"/></svg>`);
   }
   $("hearts").innerHTML = h.join("");
   $("hearts").setAttribute("aria-label", G.tutorial ? "教学关不扣心" : `剩余 ${G.hearts} 颗心`);

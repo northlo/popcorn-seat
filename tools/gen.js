@@ -41,6 +41,7 @@ function genSolution(n, r) {
 }
 
 // 以每只猫为种子随机长出颜色区
+let STRAIGHT = 6;
 function genRegions(n, sol, r) {
   const reg = new Array(n * n).fill(-1);
   for (let row = 0; row < n; row++) reg[row * n + sol[row]] = row;
@@ -68,7 +69,25 @@ function genRegions(n, sol, r) {
     let x = r() * tot, g = 0;
     while (g < n - 1 && x > w[g]) { x -= w[g]; g++; }
     if (!frontier[g].length) continue;
-    const j = frontier[g][Math.floor(r() * frontier[g].length)];
+    // 往哪长：优先“顺着直线接着长”，让颜色区多是长条、L 形，看起来整齐
+    const cand = [...new Set(frontier[g])];
+    const cw = cand.map(j => {
+      const jr = Math.floor(j / n), jc = j % n;
+      let straight = 0, same = 0;
+      for (const [dr, dc] of dirs) {
+        const r1 = jr + dr, c1 = jc + dc, r2 = jr + 2 * dr, c2 = jc + 2 * dc;
+        if (r1 < 0 || c1 < 0 || r1 >= n || c1 >= n) continue;
+        if (reg[r1 * n + c1] === g) {
+          same++;
+          if (r2 >= 0 && c2 >= 0 && r2 < n && c2 < n && reg[r2 * n + c2] === g) straight = 1;
+        }
+      }
+      return 1 + STRAIGHT * straight + (same >= 2 ? 1.5 : 0);
+    });
+    const ct = cw.reduce((a, b) => a + b, 0);
+    let y = r() * ct, ci = 0;
+    while (ci < cand.length - 1 && y > cw[ci]) { y -= cw[ci]; ci++; }
+    const j = cand[ci];
     reg[j] = g; size[g]++; left--;
   }
   return reg;
@@ -349,66 +368,68 @@ function sawtooth(levels) {
   return out;
 }
 
-module.exports = { makeLevel, pickLevels, sawtooth, countSolutions, logicSolve };
+module.exports = { setStraight: v => { STRAIGHT = v; }, makeLevel, pickLevels, sawtooth, countSolutions, logicSolve };
 
 if (require.main === module) {
   const t0 = Date.now();
   const fs = require('fs');
-  // 结构：每 11 关一组；普通关按 7→8→9→10 一直循环，每组第 11 关是 11×11 困难关；一共 5 组 55 关
-  const BLOCKS = 5;
-  const NORMAL_SIZES = [7, 8, 9, 10];
-  const HARD_N = 11;
+  STRAIGHT = 6;
+  // 关卡顺序：棋盘随关卡号慢慢变大，每种尺寸 10 关，难度在同尺寸里一点点往上；每 11 关插一个“大一号 + 更难”的困难关
+  // 1–3 教学(7×7) · 4–10 7×7 · 11 困难8×8 · 12–21 8×8 · 22 困难9×9 · 23–32 9×9 · 33 困难10×10 · 34–43 10×10 · 44 困难11×11 · 45–54 11×11 · 55 困难11×11
+  const PLAN = [];
+  for (let k = 0; k < 10; k++) PLAN.push({ n: 7, hard: false });
+  for (const n of [8, 9, 10, 11]) { PLAN.push({ n, hard: true }); for (let k = 0; k < 10; k++) PLAN.push({ n, hard: false }); }
+  PLAN.push({ n: 11, hard: true });
   const isSimple = lv => lv.used.T_lookahead === 0 && lv.used.T_confineK === 0;
-  const normalOk = (lv, b) => b < 3 ? isSimple(lv) : lv.used.T_lookahead === 0 && lv.used.T_confineK <= 1;
+  const mildOk = lv => lv.used.T_lookahead === 0 && lv.used.T_confineK <= 1;
   const hardOk = lv => lv.used.T_confineK >= 1 || lv.used.T_lookahead >= 1;
   const shapeOk = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
-    return sz.filter(x => x === 1).length <= 1 && Math.max(...sz) <= lv.n * lv.n * 0.3;
+    return sz.filter(x => x === 1).length <= 1 && Math.max(...sz) <= lv.n * lv.n * 0.32;
   };
-
-  // 候选池缓存：生成过的就存下来，下次不用重新算
-  const cacheDir = __dirname + '/pools';
+  const cacheDir = __dirname + '/pools-straight';
   if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir);
-  function getPool(n, wantSimple, wantTotal, seedBase, filter) {
+  function getPool(n, need) {
     const file = `${cacheDir}/pool-${n}.json`;
     let pool = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : [];
-    let s = pool.length ? Math.max(...pool.map(p => p.seed)) + 1 : seedBase;
-    const count = () => [pool.filter(isSimple).length, pool.filter(filter).length];
-    while ((count()[0] < wantSimple || count()[1] < wantTotal) && s < seedBase + 6000) {
+    let s = pool.length ? Math.max(...pool.map(p => p.seed)) + 1 : 500000 * n;
+    while (!need(pool) && s < 500000 * n + 4000) {
       const lv = makeLevel(n, s);
       if (lv && shapeOk(lv)) pool.push(Object.assign(lv, { seed: s }));
       s++;
     }
     fs.writeFileSync(file, JSON.stringify(pool));
     pool.sort((a, b) => a.score - b.score);
-    console.log('pool', n, pool.length, 'simple', count()[0], Math.round((Date.now() - t0) / 1000) + 's');
+    console.log('pool', n, pool.length, 'simple', pool.filter(isSimple).length, 'mild', pool.filter(mildOk).length, 'hard', pool.filter(hardOk).length, Math.round((Date.now() - t0) / 1000) + 's');
     return pool;
   }
-  const pools = {};
-  for (const n of NORMAL_SIZES) pools[n] = getPool(n, 22, 40, 400000 * n, () => true);
-  const hardPool = getPool(HARD_N, 0, 12, 7000000, hardOk).filter(hardOk);
-
+  const cnt = (pool, f) => pool.filter(f).length;
+  const pools = {
+    7: getPool(7, p => cnt(p, isSimple) >= 18),
+    8: getPool(8, p => cnt(p, isSimple) >= 16 && cnt(p, hardOk) >= 4),
+    9: getPool(9, p => cnt(p, isSimple) >= 16 && cnt(p, hardOk) >= 4),
+    10: getPool(10, p => cnt(p, isSimple) >= 10 && cnt(p, mildOk) >= 16 && cnt(p, hardOk) >= 4),
+    11: getPool(11, p => cnt(p, isSimple) >= 6 && cnt(p, mildOk) >= 16 && cnt(p, hardOk) >= 6),
+  };
   const used = new Set();
-  const seen = { 7: 0, 8: 0, 9: 0, 10: 0 };
-  const per = 50 / NORMAL_SIZES.length; // 每种尺寸大约出现的次数
+  const seenN = {};
   const all = [];
-  let m = 0;
-  for (let b = 0; b < BLOCKS; b++) {
-    for (let k = 0; k < 10; k++) {
-      const n = NORMAL_SIZES[m++ % NORMAL_SIZES.length];
-      const idx = seen[n]++;
-      const cands = pools[n].filter(lv => normalOk(lv, b) && !used.has(lv));
-      const q = 0.05 + 0.5 * idx / per;
-      const lv = cands[Math.min(cands.length - 1, Math.floor(q * cands.length))];
-      used.add(lv); all.push({ lv, hard: false });
+  for (const step of PLAN) {
+    const pool = pools[step.n];
+    let lv;
+    if (step.hard) {
+      const c = pool.filter(l => hardOk(l) && !used.has(l));
+      lv = c[Math.min(c.length - 1, Math.floor(c.length * 0.35))];
+    } else {
+      const k = seenN[step.n] = (seenN[step.n] || 0) + 1;   // 这是该尺寸的第几关（1–10）
+      // 前面几关只用最简单的推理，后几关才允许“两区锁两行”
+      let c = pool.filter(l => isSimple(l) && !used.has(l));
+      if (step.n >= 10 && (k > 6 || c.length < 3)) c = pool.filter(l => mildOk(l) && !used.has(l));
+      const q = 0.05 + 0.6 * (k - 1) / 9;
+      lv = c[Math.min(c.length - 1, Math.floor(q * c.length))];
     }
-    const hq = 0.15 + 0.6 * b / (BLOCKS - 1);
-    const hc = hardPool.filter(lv => !used.has(lv));
-    const hl = hc[Math.min(hc.length - 1, Math.floor(hq * hc.length))];
-    used.add(hl); all.push({ lv: hl, hard: true });
+    used.add(lv); all.push({ lv, hard: step.hard });
   }
-
-  // 开局送 1 只爆米花：前 30 关的普通关，以及所有困难关；放在最大的颜色区里
   const givenOf = lv => {
     const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++);
     let best = 0;
