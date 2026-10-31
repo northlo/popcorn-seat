@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>爆米花形象草稿</title>
+<style>
+:root {
+  /* 布局：单列卡片，先比三种画风，再看表情，最后看放进棋盘的效果 */
+  --bg: #F2F2F7; --card: #FFFFFF; --ink: #1C1C1E; --soft: #8E8E93; --accent: #FF9F0A;
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+main { max-width: 760px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-size: 28px; font-weight: 800; letter-spacing: -.4px; margin: 4px 0 0; text-wrap: balance; }
+h2 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+p.lead { margin: 0; color: var(--soft); font-size: 14px; }
+.card { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.05); }
+.feat { margin: 0; padding-left: 18px; font-size: 14px; }
+.feat li { margin: 2px 0; }
+.styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.style { background: var(--bg); border-radius: 14px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.style .big { width: 100%; max-width: 130px; }
+.style .big svg { width: 100%; height: auto; display: block; }
+.style b { font-size: 16px; }
+.style span { font-size: 12px; color: var(--soft); }
+.minis { display: flex; gap: 6px; align-items: center; }
+.tile { border-radius: 26%; display: grid; place-items: center; }
+.tile svg { width: 88%; height: 88%; display: block; }
+.exprs { display: grid; grid-template-columns: 64px repeat(6, 1fr); gap: 6px; align-items: center; }
+.exprs .h { font-size: 12px; color: var(--soft); text-align: center; }
+.exprs .rowname { font-size: 13px; font-weight: 600; }
+.exprs .c svg { width: 100%; height: auto; display: block; }
+.board { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; background: #fff; }
+.board .tile { aspect-ratio: 1; }
+.boards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.boards figure { margin: 0; }
+.boards figcaption { text-align: center; font-size: 12px; color: var(--soft); margin-top: 6px; }
+.use { width: 100%; border-collapse: collapse; font-size: 14px; }
+.use td { padding: 8px 4px; border-bottom: .5px solid #E5E5EA; vertical-align: middle; }
+.use tr:last-child td { border-bottom: 0; }
+.use td:first-child { width: 52px; }
+.use td:first-child svg { width: 44px; height: 44px; display: block; }
+@media (max-width: 520px) {
+  .exprs { grid-template-columns: 22px repeat(6, 1fr); gap: 3px; }
+  .styles { gap: 6px; }
+  .style { padding: 8px 4px; }
+  .style b { font-size: 14px; }
+  .minis .tile:last-child { display: none; }
+  .boards { grid-template-columns: 1fr; }
+  .boards figure { max-width: 300px; margin: 0 auto; width: 100%; }
+}
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <h1>爆米花形象 · 第一版草稿</h1>
+    <p class="lead">照着你发的 9 张照片画的，三种画风先挑一种，再一起改细节。</p>
+  </div>
+
+  <section class="card">
+    <h2>从照片里抓的特征</h2>
+    <ul class="feat">
+      <li>圆滚滚的长毛大脸，两颊毛炸开</li>
+      <li>额头一道白色火焰状条纹，一直连到白鼻梁和白下巴</li>
+      <li>头顶正中一块深色斑，额头两侧有虎斑纹</li>
+      <li>琥珀色大圆眼，眼皮有点往下垂，经常一副“认真脸”</li>
+      <li>粉色小鼻子，嘴巴偶尔露一点舌尖</li>
+      <li>耳朵小、往前折、带耳毛；白胸口、白爪子</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>三种画风</h2>
+    <div class="styles" id="styles"></div>
+  </section>
+
+  <section class="card">
+    <h2>放进 7×7 棋盘的样子</h2>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section class="card">
+    <h2>六种表情</h2>
+    <div class="exprs" id="exprs"></div>
+  </section>
+
+  <section class="card">
+    <h2>游戏里什么时候用哪种表情</h2>
+    <table class="use"><tbody id="use"></tbody></table>
+  </section>
+</main>
+
+<script>
+// 爆米花卡通形象：三种画风 × 六种表情，全部用 SVG 画，游戏里可以直接用
+// 特征（来自照片）：圆脸长毛、额头白色火焰状条纹、头顶深色斑、琥珀色大眼、粉鼻子、白下巴白胸、小而折的耳朵、眼皮微垂的“认真脸”
+(function (root) {
+  const C = {
+    fur: '#C99A5E', furDark: '#8A6038', stripe: '#6E4B30', crown: '#3B2A20',
+    white: '#FFFFFF', whiteShade: '#EFE6DC', pink: '#F2A3AF', earIn: '#F3C1BF',
+    iris: '#D6AC3A', irisRing: '#94731F', pupil: '#2A1C14', line: '#5B3E2A',
+    mouth: '#7A3B3B', tongue: '#F28B9B', blush: '#F7A3B0', tear: '#8CCBF2'
+  };
+
+  // 毛绒头型：一圈小波浪
+  function fluffyHead(cx, cy, rx, ry, bumps, amp) {
+    let d = '';
+    for (let k = 0; k <= bumps; k++) {
+      const a = Math.PI * 2 * k / bumps - Math.PI / 2;
+      const am = Math.PI * 2 * (k - 0.5) / bumps - Math.PI / 2;
+      const x = cx + Math.cos(a) * rx, y = cy + Math.sin(a) * ry;
+      const qx = cx + Math.cos(am) * (rx + amp), qy = cy + Math.sin(am) * (ry + amp);
+      d += k === 0 ? `M${x.toFixed(1)} ${y.toFixed(1)}` : ` Q${qx.toFixed(1)} ${qy.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    }
+    return d + ' Z';
+  }
+
+  const HEAD_SMOOTH = 'M60 24 C86 24 103 39 105 58 L112 65 L104 69 L109 77 L100 79 C95 95 80 104 60 104 C40 104 25 95 20 79 L11 77 L16 69 L8 65 L15 58 C17 39 34 24 60 24 Z';
+  const MUZZLE = 'M60 54 C53 54 51 63 45 70 C35 74 33 88 43 94 C51 100 69 100 77 94 C87 88 85 74 75 70 C69 63 67 54 60 54 Z';
+  const BLAZE = 'M60 31 C57.5 39 55.5 47 54.5 57 L65.5 57 C64.5 47 62.5 39 60 31 Z';
+
+  function ears(style, ol) {
+    // 小折耳：外耳 + 内耳 + 折下来的耳尖
+    const one = `<path d="M23 48 Q21 30 35 25 Q45 29 49 36 Z" fill="${C.fur}" ${ol}/>
+      <path d="M28.5 43 Q28 32 35.5 29.5 Q41 32 43 36 Z" fill="${C.earIn}"/>
+      <path d="M35 25 Q28.5 29 27 37.5 Q35.5 33 45.5 31.5 Q41 26.5 35 25 Z" fill="${C.furDark}" ${ol ? ol.replace('2.6', '1.8') : ''}/>`;
+    return `<g>${one}</g><g transform="translate(120 0) scale(-1 1)">${one}</g>`;
+  }
+
+  function eye(x, expr, side) {
+    const y = 63;
+    const outerX = side === 'L' ? x - 11 : x + 11, innerX = side === 'L' ? x + 11 : x - 11;
+    if (expr === 'happy') return `<path d="M${x - 7} ${y + 2} Q${x} ${y - 7} ${x + 7} ${y + 2}" fill="none" stroke="${C.pupil}" stroke-width="3.2" stroke-linecap="round"/>`;
+    if (expr === 'sleep') return `<path d="M${x - 7} ${y - 1} Q${x} ${y + 6} ${x + 7} ${y - 1}" fill="none" stroke="${C.pupil}" stroke-width="3" stroke-linecap="round"/>`;
+    const r = expr === 'surprised' ? 9.5 : 8.8;
+    const pr = expr === 'surprised' ? [3, 3.4] : [4.8, 5.8];
+    let s = `<circle cx="${x}" cy="${y}" r="${r}" fill="${C.iris}" stroke="${C.irisRing}" stroke-width="1.6"/>
+      <ellipse cx="${x}" cy="${y + 0.6}" rx="${pr[0]}" ry="${pr[1]}" fill="${C.pupil}"/>
+      <circle cx="${x - 3}" cy="${y - 3.4}" r="${expr === 'sad' ? 3 : 2.4}" fill="#fff"/>
+      <circle cx="${x + 2.6}" cy="${y + 2.6}" r="1.1" fill="#fff" opacity=".9"/>`;
+    // 眼皮：外眼角稍微往下垂，就是爆米花那种“认真脸”
+    if (expr === 'normal' || expr === 'sad') {
+      s += `<path d="M${outerX} ${y - 12} L${innerX} ${y - 12} L${innerX} ${y - 7.5} Q${x} ${y - 7.6} ${outerX} ${y - 4.2} Z" fill="${C.fur}"/>
+        <path d="M${innerX - (side === 'L' ? 1.5 : -1.5)} ${y - 7.6} Q${x} ${y - 7.6} ${outerX + (side === 'L' ? 1.5 : -1.5)} ${y - 4.6}" fill="none" stroke="${C.line}" stroke-width="1.6" stroke-linecap="round"/>`;
+    }
+    if (expr === 'smug') {
+      s += `<path d="M${x - 11} ${y - 12} L${x + 11} ${y - 12} L${x + 11} ${y + 0.5} L${x - 11} ${y + 0.5} Z" fill="${C.fur}"/>
+        <path d="M${x - 9} ${y + 0.5} L${x + 9} ${y + 0.5}" stroke="${C.line}" stroke-width="2" stroke-linecap="round"/>`;
+    }
+    return s;
+  }
+
+  function mouth(expr) {
+    if (expr === 'happy') return `<path d="M53 83.5 Q60 95 67 83.5 Z" fill="${C.mouth}"/><path d="M56 88 Q60 93.5 64 88 Q60 86.5 56 88 Z" fill="${C.tongue}"/>`;
+    if (expr === 'sad') return `<path d="M54.5 87 Q60 82 65.5 87" fill="none" stroke="${C.line}" stroke-width="1.8" stroke-linecap="round"/>`;
+    if (expr === 'surprised') return `<ellipse cx="60" cy="86" rx="3.2" ry="3.8" fill="${C.mouth}"/>`;
+    if (expr === 'smug') return `<path d="M55 84 Q61 88 66.5 82" fill="none" stroke="${C.line}" stroke-width="1.8" stroke-linecap="round"/>`;
+    if (expr === 'sleep') return `<path d="M57 84.5 Q60 86 63 84.5" fill="none" stroke="${C.line}" stroke-width="1.6" stroke-linecap="round"/>`;
+    // 平常：小小的 ω，露一点点舌尖（照片里经常这样）
+    return `<path d="M54 82.5 Q57 86 60 82.5 Q63 86 66 82.5" fill="none" stroke="${C.line}" stroke-width="1.7" stroke-linecap="round"/><path d="M58.6 84.3 Q60 86.6 61.4 84.3 Z" fill="${C.tongue}"/>`;
+  }
+
+  function extras(expr) {
+    let s = '';
+    if (expr === 'happy') s += `<ellipse cx="33" cy="77" rx="6" ry="3.6" fill="${C.blush}" opacity=".55"/><ellipse cx="87" cy="77" rx="6" ry="3.6" fill="${C.blush}" opacity=".55"/>`;
+    if (expr === 'sad') s += `<path d="M34 51 L47.5 46.5" stroke="${C.furDark}" stroke-width="2.6" stroke-linecap="round"/><path d="M86 51 L72.5 46.5" stroke="${C.furDark}" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M38 72 Q35.5 77 38 79 Q40.5 77 38 72 Z" fill="${C.tear}"/>`;
+    if (expr === 'surprised') s += `<path d="M35 49 Q41 44.5 48 47" fill="none" stroke="${C.furDark}" stroke-width="2.4" stroke-linecap="round"/><path d="M85 49 Q79 44.5 72 47" fill="none" stroke="${C.furDark}" stroke-width="2.4" stroke-linecap="round"/>`;
+    if (expr === 'sleep') s += `<text x="92" y="30" font-family="-apple-system, sans-serif" font-weight="800" font-size="15" fill="#9CC8FF">z</text><text x="102" y="18" font-family="-apple-system, sans-serif" font-weight="800" font-size="11" fill="#9CC8FF">z</text>`;
+    return s;
+  }
+
+  function cat(style, expr) {
+    const ol = style === 'A' ? `stroke="${C.line}" stroke-width="2.6" stroke-linejoin="round"` : '';
+    const head = style === 'C' ? fluffyHead(60, 66, 45, 38, 26, 4.5) : HEAD_SMOOTH;
+    const stripes = `<g stroke="${C.stripe}" stroke-width="2.6" stroke-linecap="round" fill="none" opacity=".75">
+        <path d="M48.5 33 Q50.5 39 49.5 46"/><path d="M42 36 Q45 41 44 47"/>
+        <path d="M71.5 33 Q69.5 39 70.5 46"/><path d="M78 36 Q75 41 76 47"/></g>`;
+    const chest = style === 'C' ? `<path d="${fluffyHead(60, 112, 26, 14, 14, 3)}" fill="${C.white}"/>` : '';
+    return `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      ${ears(style, ol)}
+      ${chest}
+      <path d="${head}" fill="${C.fur}" ${ol}/>
+      ${style !== 'B' ? `<path d="M22 70 C26 88 42 98 60 99 C78 98 94 88 98 70 C92 84 78 92 60 92 C42 92 28 84 22 70 Z" fill="${C.furDark}" opacity=".18"/>` : ''}
+      <ellipse cx="60" cy="29" rx="7.5" ry="4.5" fill="${C.crown}" opacity=".85"/>
+      ${stripes}
+      <path d="${BLAZE}" fill="${C.white}"/>
+      <path d="${MUZZLE}" fill="${C.white}"/>
+      ${style === 'A' ? '' : `<path d="M47 90 C52 96 68 96 73 90 C68 93.5 52 93.5 47 90 Z" fill="${C.whiteShade}"/>`}
+      ${eye(43, expr, 'L')}${eye(77, expr, 'R')}
+      <path d="M55.5 75.5 Q60 73.5 64.5 75.5 Q62.5 80.2 60 80.6 Q57.5 80.2 55.5 75.5 Z" fill="${C.pink}"/>
+      ${mouth(expr)}
+      <g stroke="#FFFFFF" stroke-width="1.3" stroke-linecap="round" opacity=".95">
+        <path d="M40 81 L13 76"/><path d="M40 84.5 L12 86"/><path d="M41 88 L16 95"/>
+        <path d="M80 81 L107 76"/><path d="M80 84.5 L108 86"/><path d="M79 88 L104 95"/></g>
+      ${extras(expr)}
+    </svg>`;
+  }
+
+  root.PopcornCat = { cat, colors: C };
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+const { cat } = window.PopcornCat;
+const STYLES = [
+  { k: "A", name: "A 描边 Q 版", note: "有深色描边，小格子里最清楚" },
+  { k: "B", name: "B 扁平无描边", note: "最干净，最接近苹果风" },
+  { k: "C", name: "C 毛绒版", note: "一圈毛边，最像爆米花本猫" }
+];
+const EXPRS = [
+  { k: "normal", name: "认真脸" }, { k: "happy", name: "开心" }, { k: "surprised", name: "吃惊" },
+  { k: "sad", name: "委屈" }, { k: "smug", name: "得意" }, { k: "sleep", name: "睡觉" }
+];
+const COLORS = ["#FFB3C7", "#8EE3C8", "#FFD966", "#9CC8FF", "#FFBC85", "#C9B2FF", "#B6E88C"];
+
+document.getElementById("styles").innerHTML = STYLES.map(s => `
+  <div class="style"><div class="big">${cat(s.k, "normal")}</div><b>${s.name}</b><span>${s.note}</span>
+  <div class="minis">${[44, 32, 26].map((px, i) => `<div class="tile" style="width:${px}px;height:${px}px;background:${COLORS[i + 1]}">${cat(s.k, "normal")}</div>`).join("")}</div></div>`).join("");
+
+/* 一个 7×7 小棋盘：随便摆 7 只（只是看效果） */
+const spots = [2, 11, 15, 27, 31, 36, 46];
+const regionOf = i => [0,0,0,1,1,1,1, 0,0,2,2,1,1,3, 4,0,2,2,2,3,3, 4,4,4,2,5,3,3, 4,4,6,5,5,5,3, 6,6,6,6,5,5,3, 6,6,6,6,6,5,5][i];
+document.getElementById("boards").innerHTML = STYLES.map(s => `
+  <figure><div class="board">${Array.from({ length: 49 }, (_, i) => `<div class="tile" style="background:${COLORS[regionOf(i)]}">${spots.includes(i) ? cat(s.k, i === 27 ? "happy" : "normal") : ""}</div>`).join("")}</div><figcaption>${s.name}</figcaption></figure>`).join("");
+
+document.getElementById("exprs").innerHTML =
+  `<div></div>${EXPRS.map(e => `<div class="h">${e.name}</div>`).join("")}` +
+  STYLES.map(s => `<div class="rowname">${s.k}</div>${EXPRS.map(e => `<div class="c">${cat(s.k, e.k)}</div>`).join("")}`).join("");
+
+const USE = [
+  ["normal", "棋盘上坐好的爆米花、首页头像"],
+  ["happy", "放对一只、连击时冒出来；通关弹窗"],
+  ["surprised", "放错一格，扣心的时候"],
+  ["sad", "心用完了，复活弹窗"],
+  ["smug", "零失误三星通关、破最快纪录"],
+  ["sleep", "很久没操作时，或者每日挑战已完成"]
+];
+document.getElementById("use").innerHTML = USE.map(([k, t]) => `<tr><td>${cat("B", k)}</td><td>${t}</td></tr>`).join("");
+</script>
+</body>
+</html>

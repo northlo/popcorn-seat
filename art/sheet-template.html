@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>爆米花形象草稿</title>
+<style>
+:root {
+  /* 布局：单列卡片，先比三种画风，再看表情，最后看放进棋盘的效果 */
+  --bg: #F2F2F7; --card: #FFFFFF; --ink: #1C1C1E; --soft: #8E8E93; --accent: #FF9F0A;
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+main { max-width: 760px; margin: 0 auto; padding: 20px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-size: 28px; font-weight: 800; letter-spacing: -.4px; margin: 4px 0 0; text-wrap: balance; }
+h2 { font-size: 17px; font-weight: 700; margin: 0 0 10px; }
+p.lead { margin: 0; color: var(--soft); font-size: 14px; }
+.card { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.05); }
+.feat { margin: 0; padding-left: 18px; font-size: 14px; }
+.feat li { margin: 2px 0; }
+.styles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.style { background: var(--bg); border-radius: 14px; padding: 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.style .big { width: 100%; max-width: 130px; }
+.style .big svg { width: 100%; height: auto; display: block; }
+.style b { font-size: 16px; }
+.style span { font-size: 12px; color: var(--soft); }
+.minis { display: flex; gap: 6px; align-items: center; }
+.tile { border-radius: 26%; display: grid; place-items: center; }
+.tile svg { width: 88%; height: 88%; display: block; }
+.exprs { display: grid; grid-template-columns: 64px repeat(6, 1fr); gap: 6px; align-items: center; }
+.exprs .h { font-size: 12px; color: var(--soft); text-align: center; }
+.exprs .rowname { font-size: 13px; font-weight: 600; }
+.exprs .c svg { width: 100%; height: auto; display: block; }
+.board { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; background: #fff; }
+.board .tile { aspect-ratio: 1; }
+.boards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.boards figure { margin: 0; }
+.boards figcaption { text-align: center; font-size: 12px; color: var(--soft); margin-top: 6px; }
+.use { width: 100%; border-collapse: collapse; font-size: 14px; }
+.use td { padding: 8px 4px; border-bottom: .5px solid #E5E5EA; vertical-align: middle; }
+.use tr:last-child td { border-bottom: 0; }
+.use td:first-child { width: 52px; }
+.use td:first-child svg { width: 44px; height: 44px; display: block; }
+@media (max-width: 520px) {
+  .exprs { grid-template-columns: 22px repeat(6, 1fr); gap: 3px; }
+  .styles { gap: 6px; }
+  .style { padding: 8px 4px; }
+  .style b { font-size: 14px; }
+  .minis .tile:last-child { display: none; }
+  .boards { grid-template-columns: 1fr; }
+  .boards figure { max-width: 300px; margin: 0 auto; width: 100%; }
+}
+</style>
+</head>
+<body>
+<main>
+  <div>
+    <h1>爆米花形象 · 第一版草稿</h1>
+    <p class="lead">照着你发的 9 张照片画的，三种画风先挑一种，再一起改细节。</p>
+  </div>
+
+  <section class="card">
+    <h2>从照片里抓的特征</h2>
+    <ul class="feat">
+      <li>圆滚滚的长毛大脸，两颊毛炸开</li>
+      <li>额头一道白色火焰状条纹，一直连到白鼻梁和白下巴</li>
+      <li>头顶正中一块深色斑，额头两侧有虎斑纹</li>
+      <li>琥珀色大圆眼，眼皮有点往下垂，经常一副“认真脸”</li>
+      <li>粉色小鼻子，嘴巴偶尔露一点舌尖</li>
+      <li>耳朵小、往前折、带耳毛；白胸口、白爪子</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>三种画风</h2>
+    <div class="styles" id="styles"></div>
+  </section>
+
+  <section class="card">
+    <h2>放进 7×7 棋盘的样子</h2>
+    <div class="boards" id="boards"></div>
+  </section>
+
+  <section class="card">
+    <h2>六种表情</h2>
+    <div class="exprs" id="exprs"></div>
+  </section>
+
+  <section class="card">
+    <h2>游戏里什么时候用哪种表情</h2>
+    <table class="use"><tbody id="use"></tbody></table>
+  </section>
+</main>
+
+<script>
+/*CATJS*/
+</script>
+<script>
+const { cat } = window.PopcornCat;
+const STYLES = [
+  { k: "A", name: "A 描边 Q 版", note: "有深色描边，小格子里最清楚" },
+  { k: "B", name: "B 扁平无描边", note: "最干净，最接近苹果风" },
+  { k: "C", name: "C 毛绒版", note: "一圈毛边，最像爆米花本猫" }
+];
+const EXPRS = [
+  { k: "normal", name: "认真脸" }, { k: "happy", name: "开心" }, { k: "surprised", name: "吃惊" },
+  { k: "sad", name: "委屈" }, { k: "smug", name: "得意" }, { k: "sleep", name: "睡觉" }
+];
+const COLORS = ["#FFB3C7", "#8EE3C8", "#FFD966", "#9CC8FF", "#FFBC85", "#C9B2FF", "#B6E88C"];
+
+document.getElementById("styles").innerHTML = STYLES.map(s => `
+  <div class="style"><div class="big">${cat(s.k, "normal")}</div><b>${s.name}</b><span>${s.note}</span>
+  <div class="minis">${[44, 32, 26].map((px, i) => `<div class="tile" style="width:${px}px;height:${px}px;background:${COLORS[i + 1]}">${cat(s.k, "normal")}</div>`).join("")}</div></div>`).join("");
+
+/* 一个 7×7 小棋盘：随便摆 7 只（只是看效果） */
+const spots = [2, 11, 15, 27, 31, 36, 46];
+const regionOf = i => [0,0,0,1,1,1,1, 0,0,2,2,1,1,3, 4,0,2,2,2,3,3, 4,4,4,2,5,3,3, 4,4,6,5,5,5,3, 6,6,6,6,5,5,3, 6,6,6,6,6,5,5][i];
+document.getElementById("boards").innerHTML = STYLES.map(s => `
+  <figure><div class="board">${Array.from({ length: 49 }, (_, i) => `<div class="tile" style="background:${COLORS[regionOf(i)]}">${spots.includes(i) ? cat(s.k, i === 27 ? "happy" : "normal") : ""}</div>`).join("")}</div><figcaption>${s.name}</figcaption></figure>`).join("");
+
+document.getElementById("exprs").innerHTML =
+  `<div></div>${EXPRS.map(e => `<div class="h">${e.name}</div>`).join("")}` +
+  STYLES.map(s => `<div class="rowname">${s.k}</div>${EXPRS.map(e => `<div class="c">${cat(s.k, e.k)}</div>`).join("")}`).join("");
+
+const USE = [
+  ["normal", "棋盘上坐好的爆米花、首页头像"],
+  ["happy", "放对一只、连击时冒出来；通关弹窗"],
+  ["surprised", "放错一格，扣心的时候"],
+  ["sad", "心用完了，复活弹窗"],
+  ["smug", "零失误三星通关、破最快纪录"],
+  ["sleep", "很久没操作时，或者每日挑战已完成"]
+];
+document.getElementById("use").innerHTML = USE.map(([k, t]) => `<tr><td>${cat("B", k)}</td><td>${t}</td></tr>`).join("");
+</script>
+</body>
+</html>
