@@ -115,7 +115,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 @keyframes fade { from { opacity: 1; } to { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .cell.pop .cat, .cell.shake, .cell.flash::after, .cell.hint::after, .chip, .cell.wave, .cell.dance .cat, .dialog.win, .dialog.win .big, .stars svg, .combo { animation: none; transition: none; } }
+@media (prefers-reduced-motion: reduce) { .hero img, .hero svg, .cell.pop .cat, .cell.shake, .cell.flash::after, .cell.hint::after, .chip, .cell.wave, .cell.dance .cat, .dialog.win, .dialog.win .big, .stars svg, .combo { animation: none; transition: none; } }
 .tools { display: flex; justify-content: center; gap: 28px; padding-top: 2px; }
 .tool { position: relative; width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--ink-soft); background: none; padding: 0; }
 .tool span.ic { width: 56px; height: 56px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; }
@@ -143,6 +143,12 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .dialog p { margin: 0; color: var(--ink-soft); font-size: 14px; }
 .dialog .big { width: 80px; height: 80px; margin: 0 auto; display: block; }
 .dialog img.belly { width: 210px; height: auto; margin: -4px auto -6px; display: block; }
+.hero { position: relative; width: 132px; height: 132px; margin: -6px auto 0; }
+.hero img { width: 132px; height: 132px; display: block; animation: trophyIn .7s cubic-bezier(.2, 1.5, .4, 1) both; }
+.hero svg { position: absolute; right: -14px; bottom: -4px; width: 56px; height: 52px; animation: trophyIn .7s .25s cubic-bezier(.2, 1.5, .4, 1) both; }
+.hero .tag { position: absolute; left: 50%; top: -6px; transform: translateX(-50%) rotate(-6deg); background: var(--heart); color: #fff; font-size: 12px; font-weight: 800; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.dialog img.mood { width: 112px; height: 112px; margin: -4px auto 0; display: block; }
+.combo img { width: 26px; height: 26px; vertical-align: -6px; margin: -6px 4px -4px -6px; }
 .dialog img.face { width: 96px; height: 96px; margin: 0 auto; display: block; filter: drop-shadow(0 2px 6px rgba(0,0,0,.15)); }
 .stats { display: flex; justify-content: center; gap: 22px; font-size: 12px; color: var(--ink-soft); }
 .stats b { display: block; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
@@ -218,7 +224,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
     <img id="brandImg" alt="爆米花">
     <div>
       <h1>爆米花找座位</h1>
-      <p>原型 v1.1 · 每日挑战和签到</p>
+      <p>原型 v1.2 · 爆米花有表情了</p>
     </div>
   </div>
   <div class="homebar">
@@ -560,7 +566,7 @@ function comboText(i, k) {
   const words = ["", "", "不错！", "很棒！", "太厉害了！", "完美！", "无敌了！"];
   const el = document.createElement("div");
   el.className = "combo";
-  el.innerHTML = `${words[Math.min(k, words.length - 1)]}<small>连击×${k}</small>`;
+  el.innerHTML = `${k >= 3 ? `<img src="${CAT_IMG.wowBig}" alt="">` : ""}${words[Math.min(k, words.length - 1)]}<small>连击×${k}</small>`;
   const [x, y] = cellCenter(i);
   el.style.left = Math.max(70, Math.min(innerWidth - 70, x)) + "px"; el.style.top = y + "px";
   document.body.appendChild(el);
@@ -653,7 +659,7 @@ function startGame(id, L, carry) {
     auto: new Array(n * n).fill(false),
     bad: new Array(n * n).fill(false),
     given: new Set(L.given || []),
-    colors: null,
+    colors: null, face: {}, faceTok: {},
     hearts: 3, mistakes: carry ? carry.mistakes : 0, combo: 0, tutorial: typeof id === "number" && id <= 3, hints: FREE_HINTS,
     undo: [], startT: Date.now() - (carry ? carry.elapsed * 1000 : 0), elapsed: carry ? carry.elapsed : 0, over: false
   };
@@ -688,12 +694,21 @@ function buildBoard() {
   for (let i = 0; i < n * n; i++) drawCell(i);
 }
 function cellEl(i) { return $("board").children[i]; }
+/* 棋盘上的爆米花换表情：ms 毫秒后换回平常的脸（不传 ms 就一直保持） */
+function setFace(i, face, ms) {
+  if (!G || G.st[i] !== 2) return;
+  const tok = (G.faceTok[i] = (G.faceTok[i] || 0) + 1);
+  G.face[i] = face;
+  const img = cellEl(i).querySelector("img.cat"); if (img) img.src = CAT_IMG[face];
+  if (ms) setTimeout(() => { if (G && G.faceTok[i] === tok && !G.over) setFace(i, "head"); }, ms);
+}
+function allCats() { const out = []; for (let j = 0; j < G.n * G.n; j++) if (G.st[j] === 2) out.push(j); return out; }
 function drawCell(i, anim) {
   const el = cellEl(i), s = G.st[i];
   el.classList.toggle("bad", G.bad[i]);
   el.classList.toggle("marked", s === 1);
   el.classList.toggle("cat", s === 2);
-  el.querySelector(".fg").innerHTML = s === 2 ? catImg(BOARD_FACES[Math.floor(i / G.n) % BOARD_FACES.length]) : s === 1 ? X_SVG : "";
+  el.querySelector(".fg").innerHTML = s === 2 ? catImg(G.face[i] || "head") : s === 1 ? X_SVG : "";
   const r = Math.floor(i / G.n) + 1, c = i % G.n + 1;
   el.setAttribute("aria-label", `第${r}行第${c}列，${s === 2 ? "爆米花" : s === 1 ? "已标×" : "空"}`);
   if (anim) { el.classList.remove(anim); void el.offsetWidth; el.classList.add(anim); }
@@ -754,14 +769,14 @@ function tryPlace(i) {
   if (conflictsWithCat(i)) {
     drawCell(i, "shake"); fx.mark(); buzz([20, 30, 20]);
     const who = neighborsOf(i).filter(j => G.st[j] === 2);
-    who.forEach(j => drawCell(j, "nudge"));
+    who.forEach(j => { drawCell(j, "nudge"); setFace(j, "wowBig", 900); });
     toast(i, "和这只爆米花冲突了，不扣心");
     return;
   }
   if (isAnswer(i)) {
     G.st[i] = 2; G.auto[i] = false;
     G.combo++;
-    drawCell(i, "pop");
+    drawCell(i, "pop"); setFace(i, "happy", 900);
     if (G.combo >= 2) { fx.combo(G.combo); comboText(i, G.combo); } else fx.good();
     const [cx, cy] = cellCenter(i);
     burst(cx, cy, { count: 10 + Math.min(4, G.combo) * 4, speed: 4 + Math.min(4, G.combo) });
@@ -779,6 +794,7 @@ function tryPlace(i) {
   } else {
     G.bad[i] = true; G.st[i] = 1; G.auto[i] = false; G.mistakes++; G.combo = 0;
     drawCell(i, "shake"); fx.bad();
+    allCats().forEach(j => setFace(j, "sadBig", 1000));
     if (!G.tutorial) {
       G.hearts--; renderHearts();
       if (G.hearts <= 0) return fail();
@@ -807,6 +823,7 @@ function checkWin() {
   const rw = rewardFor();
   save.cans += rw.total;
   const prev = save.best[G.id];
+  const record = prev && G.elapsed < prev;   // 重玩打破自己的最快纪录
   if (!prev || G.elapsed < prev) save.best[G.id] = Math.max(1, G.elapsed);
   persist();
   $("gameCans").textContent = save.cans;
@@ -818,7 +835,7 @@ function checkWin() {
   // 棋盘上的猫一只接一只跳起来
   const cats = [];
   for (let j = 0; j < G.n * G.n; j++) if (G.st[j] === 2) cats.push(j);
-  cats.forEach((j, k) => setTimeout(() => { if (!G) return; const el = cellEl(j); el.classList.remove("dance"); void el.offsetWidth; el.classList.add("dance");
+  cats.forEach((j, k) => setTimeout(() => { if (!G) return; setFace(j, "happy"); const el = cellEl(j); el.classList.remove("dance"); void el.offsetWidth; el.classList.add("dance");
     const [x, y] = cellCenter(j); burst(x, y, { count: 8, speed: 3.5 }); tone([SCALE[k % SCALE.length]], 0.1, "triangle", 0.08); }, 300 + k * 110));
   const stars = G.mistakes === 0 ? 3 : G.mistakes === 1 ? 2 : 1;
   setTimeout(() => {
@@ -826,8 +843,8 @@ function checkWin() {
     fx.win(); confettiRain(); fireworks(6, 280);
     const next = G.id < LEVELS.length;
     showDialog(`<div class="stars">${[0, 1, 2].map(k => `<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${k < stars ? "#FFCC00" : "#E5E5EA"};stroke:${k < stars ? "#F5A800" : "#D1D1D6"}"><use href="#star"/></svg>`).join("")}</div>
-      <svg class="big trophy" viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg>
-      <h3>都找到座位啦！</h3>
+      <div class="hero">${record ? '<span class="tag">新纪录</span>' : ""}<img src="${CAT_IMG[record ? "smugBig" : "happyBig"]}" alt=""><svg viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg></div>
+      <h3>${record ? "比上次还快！" : "都找到座位啦！"}</h3>
       <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div><div>连胜<b>${save.streak}</b></div></div>
       <div class="reward">${CAN_SVG}<div>猫罐头 <b id="canCount">+0</b><small>${notes.join(" · ") || "继续连胜有加成"}</small></div></div>
       ${next ? '<button class="btn" id="dNext">下一关</button>' : "<p>已经是最后一关了，厉害！</p>"}
@@ -846,7 +863,7 @@ function checkWin() {
 function celebrateCats(after) {
   const cats = [];
   for (let j = 0; j < G.n * G.n; j++) if (G.st[j] === 2) cats.push(j);
-  cats.forEach((j, k) => setTimeout(() => { if (!G) return; const el = cellEl(j); el.classList.remove("dance"); void el.offsetWidth; el.classList.add("dance");
+  cats.forEach((j, k) => setTimeout(() => { if (!G) return; setFace(j, "happy"); const el = cellEl(j); el.classList.remove("dance"); void el.offsetWidth; el.classList.add("dance");
     const [x, y] = cellCenter(j); burst(x, y, { count: 8, speed: 3.5 }); tone([SCALE[k % SCALE.length]], 0.1, "triangle", 0.08); }, 300 + k * 110));
   setTimeout(() => { if (G) after(); }, 300 + cats.length * 110 + 350);
 }
@@ -878,6 +895,7 @@ function showDailyResult(key, gift) {
   const streak = save.daily.last === key || key === todayKey() ? dailyStreakNow() : 0;
   const giftTxt = gift && gift.cans ? `<div class="reward">${CAN_SVG}<div>猫罐头 <b>+${gift.cans}</b><small>${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、复活心+1` : ""}</small></div></div>` : "";
   showDialog(`${starRow(starsOf(rec.m))}
+    <div class="hero"><img src="${CAT_IMG[rec.m === 0 ? "smugBig" : "happyBig"]}" alt=""><svg viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg></div>
     <h3>${m}月${d}日 每日挑战完成</h3>
     <div class="stats"><div>用时<b>${fmt(rec.t)}</b></div><div>失误<b>${rec.m}</b></div><div>连续打卡<b>${streak}天</b></div></div>
     ${giftTxt}
@@ -1035,7 +1053,7 @@ function fail() {
   G.over = true; clearInterval(timerId);
   setTimeout(() => {
     const has = save.revives > 0;
-    showDialog(`<svg class="big" viewBox="0 0 100 100" aria-hidden="true"><use href="#brokenHeart"/></svg>
+    showDialog(`<img class="mood" src="${CAT_IMG.sadBig}" alt="">
       <h3>心用完了</h3><p>${G.daily ? "复活后接着玩，计时不停。重来的话计时和失误也不清零。" : "复活就能拿回1颗心接着玩，连胜也保住。重新开始的话连胜会清零。"}</p>
       ${has ? `<button class="btn" id="dUse"><svg viewBox="0 0 24 24" style="width:20px;height:20px;vertical-align:-4px;margin-right:4px" aria-hidden="true"><use href="#i-revive"/></svg>用复活心（还有${save.revives}个）</button>` : ""}
       <button class="btn ${has ? "alt" : "dark"}" id="dRevive">看广告复活（原型直接复活）</button>
@@ -1058,14 +1076,14 @@ function goHome() {
 /* 没通关就离开或重来，连胜清零（先问一下） */
 function leaveGuard(action) {
   if (G && G.daily && !G.over) {
-    showDialog(`<h3>确定离开？</h3><p>每日挑战离开后，下次进来要从头做，计时也重新算。</p>
+    showDialog(`<img class="mood" src="${CAT_IMG.thinkBig}" alt=""><h3>确定离开？</h3><p>每日挑战离开后，下次进来要从头做，计时也重新算。</p>
       <button class="btn" id="dStay">继续玩</button><button class="btn alt" id="dLeave">确定</button>`);
     $("dStay").onclick = hideDialog;
     $("dLeave").onclick = () => { hideDialog(); action(); };
     return;
   }
   if (!G || G.over || G.daily || save.streak === 0) return action();
-  showDialog(`<h3>确定离开？</h3><p>这一关还没通过，离开或重来会让 ${save.streak} 连胜清零。</p>
+  showDialog(`<img class="mood" src="${CAT_IMG.thinkBig}" alt=""><h3>确定离开？</h3><p>这一关还没通过，离开或重来会让 ${save.streak} 连胜清零。</p>
     <button class="btn" id="dStay">继续玩</button><button class="btn alt" id="dLeave">确定</button>`);
   $("dStay").onclick = hideDialog;
   $("dLeave").onclick = () => { hideDialog(); breakStreak(); action(); };
@@ -1103,7 +1121,7 @@ $("hintBtn").onclick = () => {
 };
 /* 原型里“看广告”直接生效；微信版换成激励视频广告，看完才给奖励 */
 function watchAd(what, done) {
-  showDialog(`<h3>看个广告？</h3><p>${what}。</p><p style="font-size:12px">这一版没有真广告，点了直接给。</p>
+  showDialog(`<img class="mood" src="${CAT_IMG.thinkBig}" alt=""><h3>看个广告？</h3><p>${what}。</p><p style="font-size:12px">这一版没有真广告，点了直接给。</p>
     <button class="btn dark" id="adYes">看广告</button><button class="btn alt" id="adNo">算了</button>`);
   $("adYes").onclick = () => { hideDialog(); done(); };
   $("adNo").onclick = hideDialog;
