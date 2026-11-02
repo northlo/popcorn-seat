@@ -20,6 +20,7 @@
   --hard: #D45D6E;
   --green: #6DBE7B;
   --shadow: 0 0 0 1px var(--line);
+  --boardbg: #3A302C;   /* 棋盘底色：常驻深色，格子颜色更跳、缝隙像干净的分隔线 */
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color-scheme: light;
 }
@@ -31,9 +32,9 @@ button:active { opacity: .7; }
 button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset: 2px; }
 .screen { max-width: 480px; margin: 0 auto; padding: 12px 12px 28px; min-height: 100%; display: flex; flex-direction: column; gap: 12px; }
 .hidden { display: none !important; }
-.round { width: 44px; height: 44px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; padding: 0; flex: none; }
+.round { width: 44px; height: 44px; border-radius: 13px; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; padding: 0; flex: none; }
 .round svg { width: 22px; height: 22px; }
-.pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card); box-shadow: var(--shadow); border-radius: 999px; padding: 6px 12px; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card); box-shadow: var(--shadow); border-radius: 12px; padding: 6px 12px; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .pill svg { width: 20px; height: 20px; }
 
 /* 选关页 */
@@ -70,7 +71,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .left { padding: 2px 0 0; }
 .left p { margin: 0 0 6px; font-size: 12px; color: var(--ink-soft); text-align: center; }
 .chips { display: flex; flex-wrap: nowrap; justify-content: center; gap: 6px; }
-.chip { width: 26px; height: 26px; border-radius: 7px; position: relative; display: grid; place-items: center; transition: opacity .3s, transform .3s; flex: none; }
+.chip { width: 26px; height: 26px; border-radius: 6px; position: relative; display: grid; place-items: center; transition: opacity .3s, transform .3s; flex: none; }
 .chip svg { width: 68%; height: 68%; color: rgba(255,255,255,.9); }
 .chips.small { gap: 4px; }
 .chips.small .chip { width: 24px; height: 24px; border-radius: 7px; }
@@ -78,9 +79,13 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .rulebar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .rule { background: var(--card); border-radius: 12px; padding: 6px 4px; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--ink-soft); text-align: center; line-height: 1.2; }
 .rule svg { width: 20px; height: 20px; flex: none; }
-.tip { background: #FFF4E0; border-radius: 14px; padding: 10px 12px; font-size: 14px; }
+.tip { background: var(--card); box-shadow: var(--shadow); border-radius: 12px; padding: 10px 12px; font-size: 14px; }
 .tip b { color: var(--accent-ink); }
-.boardcard { background: var(--boardbg, var(--card)); border-radius: 18px; padding: 7px; }
+#game { position: relative; }
+.tip.float { position: absolute; left: 12px; right: 12px; z-index: 4; box-shadow: 0 0 0 1px var(--line), 0 8px 24px rgba(40, 25, 15, .14); animation: tipIn .25s ease-out; }
+.tip.float::after { content: "点一下收起"; display: block; margin-top: 4px; font-size: 11px; color: var(--ink-soft); text-align: right; }
+@keyframes tipIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.boardcard { position: relative; background: var(--boardbg); border-radius: 18px; padding: 7px; }
 .board { --n: 7; --gap: 6px; width: 100%; aspect-ratio: 1; display: grid; gap: var(--gap); grid-template-columns: repeat(var(--n), 1fr); grid-template-rows: repeat(var(--n), 1fr); touch-action: none; user-select: none; -webkit-user-select: none; }
 .cell { position: relative; border-radius: 16%; display: grid; place-items: center; overflow: hidden; }
 .cell .pat { position: absolute; width: 52%; height: 52%; left: 24%; top: 24%; color: rgba(40, 20, 10, .16); pointer-events: none; }
@@ -118,11 +123,13 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 @keyframes fade { from { opacity: 1; } to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .hero img, .hero svg, .cell.pop .cat, .cell.shake, .cell.flash::after, .cell.hint::after, .chip, .cell.wave, .cell.dance .cat, .dialog.win, .dialog.win .big, .stars svg, .combo { animation: none; transition: none; } }
-.tools { display: flex; justify-content: center; gap: 28px; padding-top: 2px; }
-.tool { position: relative; width: 64px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--ink-soft); background: none; padding: 0; }
-.tool span.ic { width: 56px; height: 56px; border-radius: 50%; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; }
-.tool svg { width: 25px; height: 25px; }
-.badge { position: absolute; top: -3px; right: 0; min-width: 22px; height: 22px; border-radius: 11px; background: var(--heart); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
+.tools { display: flex; justify-content: center; gap: 18px; padding-top: 2px; }
+.tool { position: relative; width: 62px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--ink-soft); background: none; padding: 0; }
+/* 工具按钮：和棋盘格子一样的扁平色块 + 白色图标 */
+.tool span.ic { width: 54px; height: 54px; border-radius: 15px; background: var(--tc, var(--accent)); display: grid; place-items: center; }
+.tool svg { width: 27px; height: 27px; }
+.tool:disabled { opacity: .45; }
+.badge { position: absolute; top: -5px; right: -2px; min-width: 22px; height: 20px; border-radius: 7px; box-shadow: 0 0 0 2px var(--bg); background: var(--heart); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
 .badge.ad { background: var(--ink); font-size: 10px; }
 .badge.free { background: var(--green); font-size: 10px; }
 .badge:not(.ad):not(.free) { background: var(--accent); font-size: 10px; }
@@ -171,8 +178,27 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .switch[aria-checked="true"] { background: var(--accent); }
 .switch[aria-checked="true"]::after { transform: translateX(20px); }
 /* 万圣节主题：淡紫底、南瓜橙强调色、夜色棋盘 */
-body.th-halloween { --bg: #F2ECF6; --fill: #E9E0F0; --accent: #F08A3C; --accent-ink: #B65A12; --boardbg: #2E2440; --ink-soft: #8F849C; }
+body.th-halloween { --bg: #F2ECF6; --fill: #E9E0F0; --accent: #F08A3C; --accent-ink: #B65A12; --ink-soft: #8F849C; }
 body.th-halloween .lv.hard { background: #F6DCE6; }
+/* 棋盘边框装饰（主题专属） */
+.deco { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.deco svg { position: absolute; }
+.deco .bat { animation: batFly 2.6s ease-in-out infinite; }
+.deco .bat2 { animation-delay: -1.3s; }
+.deco .spider { animation: spiderBob 3.2s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes batFly { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-5px) rotate(4deg); } }
+@keyframes spiderBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
+/* 老鼠道具 */
+.runner { position: fixed; z-index: 6; width: 40px; height: 40px; margin: -20px 0 0 -20px; pointer-events: none; transition: left .13s linear, top .13s linear; }
+.runner svg { width: 100%; height: 100%; display: block; }
+.runner.flip svg { transform: scaleX(-1); }
+.runner.bye { transition: left .5s ease-in, top .5s ease-in, opacity .5s; opacity: 0; }
+/* 提示讲解里的颜色小方块 */
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin: 0 2px; }
+.why { margin: 4px 0 0; padding-left: 18px; }
+.why li { margin: 2px 0; }
+.cell.focus::before { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 3px rgba(255,255,255,.95); animation: fade 2.2s forwards; pointer-events: none; z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .deco .bat, .deco .spider { animation: none; } .runner { transition: none; } }
 /* 皮肤 */
 .skinrow { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-bottom: .5px solid #E5E5EA; text-align: left; }
 .skinrow:last-child { border-bottom: 0; }
@@ -237,7 +263,7 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
   <div class="brand">
     <img id="brandImg" alt="">
     <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
-    <p>原型 v1.4 · 万圣节皮肤</p>
+    <p>原型 v1.5 · 110关、提示讲解、小老鼠</p>
   </div>
   <div class="homebar">
     <button class="pill" id="cansPill" title="商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use class="curuse" href="#can"/></svg><b id="homeCans">0</b></button>
@@ -278,11 +304,12 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
     <div class="rule"><svg viewBox="0 0 30 30" aria-hidden="true"><use href="#r-adj"/></svg>不能挨着</div>
   </div>
   <div class="tip hidden" id="tip"></div>
-  <div class="boardcard"><div class="board" id="board" role="grid" aria-label="棋盘"></div></div>
+  <div class="boardcard" id="boardcard"><div class="board" id="board" role="grid" aria-label="棋盘"></div><div class="deco" id="deco" aria-hidden="true"></div></div>
   <div class="tools">
-    <button class="tool" id="undoBtn" aria-label="撤回标×"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 L4 11.5 L9 16" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 11.5 H14 a5.5 5.5 0 0 1 0 11 H11" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round"/></svg></span>撤回</button>
-    <button class="tool" id="hintBtn" aria-label="提示"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 a6.5 6.5 0 0 1 3.8 11.8 V17 H8.2 V14.8 A6.5 6.5 0 0 1 12 3 Z" fill="#FFD36B" stroke="#1C1C1E" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 20 H15 M10 22.5 H14" stroke="#1C1C1E" stroke-width="1.8" stroke-linecap="round"/></svg></span>提示<span class="badge" id="hintBadge">3</span></button>
-    <button class="tool" id="restartBtn" aria-label="重新开始本关"><span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12 a7.5 7.5 0 1 1 -2.2 -5.3" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round"/><path d="M18 3 V7.5 H13.5" fill="none" stroke="#1C1C1E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>重来</button>
+    <button class="tool" id="undoBtn" aria-label="撤回标×"><span class="ic" style="--tc:var(--t0)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5 L4.5 11 L9 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 11 H14 a5 5 0 0 1 0 10 H11" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span>撤回</button>
+    <button class="tool" id="hintBtn" aria-label="提示"><span class="ic" style="--tc:var(--t1)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 a6.4 6.4 0 0 1 3.7 11.6 V16.6 H8.3 V14.4 A6.4 6.4 0 0 1 12 2.8 Z" fill="#fff"/><path d="M9.2 19.4 H14.8 M10.4 22 H13.6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></span>提示<span class="badge" id="hintBadge">3</span></button>
+    <button class="tool" id="mouseBtn" aria-label="老鼠"><span class="ic" style="--tc:var(--t2)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#mouseW"/></svg></span>老鼠<span class="badge" id="mouseBadge">0</span></button>
+    <button class="tool" id="restartBtn" aria-label="重新开始本关"><span class="ic" style="--tc:var(--t3)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12 a7.5 7.5 0 1 1 -2.2 -5.3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M18 3 V7.5 H13.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>重来</button>
   </div>
   <p class="note howto">点一下标×，再点一下放爆米花；按住拖动可以连续标×，从×上开始拖可以擦掉</p>
 </section>
@@ -371,7 +398,53 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
     <symbol id="i-gift" viewBox="0 0 36 36"><rect x="5" y="14" width="26" height="18" rx="4" fill="#F0A96C"/><rect x="3" y="9" width="30" height="7" rx="3" fill="#E8963A"/><rect x="15.5" y="9" width="5" height="23" fill="#FFF1DC"/><path d="M18 9 C14 3 8 4 10 8 C11 10 15 9.5 18 9 Z M18 9 C22 3 28 4 26 8 C25 10 21 9.5 18 9 Z" fill="#E0625F"/></symbol>
     <symbol id="i-shop" viewBox="0 0 36 36"><path d="M6 13 H30 L28 31 A2 2 0 0 1 26 33 H10 A2 2 0 0 1 8 31 Z" fill="#9B84D8"/><path d="M12 13 V10 a6 6 0 0 1 12 0 V13" fill="none" stroke="#6B57A8" stroke-width="2.4" stroke-linecap="round"/><g transform="translate(9 16) scale(.75)"><use href="#can"/></g></symbol>
     <symbol id="i-bulb" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="#FFF1C4"/><path d="M12 5 a5 5 0 0 1 2.9 9.1 V16 H9.1 V14.1 A5 5 0 0 1 12 5 Z" fill="#FFD36B" stroke="#3B302B" stroke-width="1.5" stroke-linejoin="round"/><path d="M9.8 18.3 H14.2" stroke="#3B302B" stroke-width="1.5" stroke-linecap="round"/></symbol>
-    <symbol id="i-revive" viewBox="0 0 24 24"><path d="M12 21 C5 15.5 2 12.4 2 8.6 C2 5.6 4.4 3.4 7.2 3.4 C9.2 3.4 10.9 4.5 12 6.2 C13.1 4.5 14.8 3.4 16.8 3.4 C19.6 3.4 22 5.6 22 8.6 C22 12.4 19 15.5 12 21 Z" fill="#E0625F"/><path d="M12 8.5 V15 M8.75 11.75 H15.25" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <!-- 天使之心：红心 + 两只小翅膀 + 光环 -->
+    <symbol id="i-revive" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="3.6" rx="4.6" ry="1.5" fill="none" stroke="#FFC83D" stroke-width="1.6"/>
+      <path d="M5.6 11.5 C2.5 10.2 .8 8 1 5.8 C3 7 4.6 7.2 5.8 7 C4.6 8.6 5 10 5.6 11.5 Z" fill="#BFD7F2"/>
+      <path d="M18.4 11.5 C21.5 10.2 23.2 8 23 5.8 C21 7 19.4 7.2 18.2 7 C19.4 8.6 19 10 18.4 11.5 Z" fill="#BFD7F2"/>
+      <path d="M12 21.5 C7 17.6 5 15.4 5 12.3 C5 10 6.8 8.3 8.9 8.3 C10.3 8.3 11.4 9 12 10.2 C12.6 9 13.7 8.3 15.1 8.3 C17.2 8.3 19 10 19 12.3 C19 15.4 17 17.6 12 21.5 Z" fill="#E0625F"/>
+      <ellipse cx="9.3" cy="11.6" rx="1.4" ry="1" fill="#fff" opacity=".55"/>
+    </symbol>
+    <!-- 小老鼠：彩色版（棋盘上跑、商店）和白色剪影（按钮） -->
+    <symbol id="mouse" viewBox="0 0 32 32">
+      <path d="M5 21 C2 21 1.5 25 4.5 26.5" fill="none" stroke="#E79AA5" stroke-width="1.8" stroke-linecap="round"/>
+      <ellipse cx="14" cy="20" rx="9.5" ry="7" fill="#A9A2B4"/>
+      <circle cx="21" cy="11.5" r="4.2" fill="#A9A2B4"/><circle cx="21" cy="11.5" r="2.4" fill="#F2B8C0"/>
+      <path d="M17 14 C21 12.5 27 15 29.5 19.5 C27 22.5 21 23 17 21 Z" fill="#BDB6C8"/>
+      <circle cx="24.5" cy="17.2" r="1.3" fill="#2E2440"/><circle cx="29.6" cy="19.6" r="1.3" fill="#E77E8E"/>
+    </symbol>
+    <symbol id="mouseW" viewBox="0 0 24 24">
+      <path d="M4 16 C1.5 16 1.4 19.5 3.8 20.5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+      <ellipse cx="10.5" cy="15" rx="7.2" ry="5.3" fill="#fff"/><circle cx="15.8" cy="8.6" r="3.2" fill="#fff"/>
+      <path d="M12.8 10.5 C15.8 9.4 20.3 11.2 22.2 14.6 C20.3 16.9 15.8 17.2 12.8 15.8 Z" fill="#fff"/>
+      <circle cx="18.4" cy="12.9" r="1" fill="var(--t2)"/>
+    </symbol>
+    <!-- 万圣节棋盘装饰 -->
+    <symbol id="d-pumpkin" viewBox="0 0 48 44">
+      <path d="M22 9 C22 5 24 2.5 27 2" fill="none" stroke="#4E8A3A" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="14" cy="26" rx="11" ry="15" fill="#E87A2A"/><ellipse cx="34" cy="26" rx="11" ry="15" fill="#E87A2A"/>
+      <ellipse cx="24" cy="26" rx="12" ry="16.5" fill="#F28C38"/>
+      <path d="M15 21 L19 25 L11 25 Z M33 21 L37 25 L29 25 Z" fill="#3A2408"/>
+      <path d="M13 31 Q24 40 35 31 L31 32.5 L29 30.5 L26.5 33 L24 30.5 L21.5 33 L19 30.5 L17 32.5 Z" fill="#3A2408"/>
+    </symbol>
+    <symbol id="d-bat" viewBox="0 0 48 26">
+      <path d="M24 9 C20 2 11 1 2 6 C7 8 8 12 7 15 C10 13 13 14 15 17 C17 14 20 14 22 16 L24 13 L26 16 C28 14 31 14 33 17 C35 14 38 13 41 15 C40 12 41 8 46 6 C37 1 28 2 24 9 Z" fill="#2E2440"/>
+      <circle cx="24" cy="10.5" r="4" fill="#2E2440"/><path d="M21.5 6.5 L22.5 3.5 L23.6 6.6 Z M26.5 6.5 L25.5 3.5 L24.4 6.6 Z" fill="#2E2440"/>
+      <circle cx="22.6" cy="10" r=".9" fill="#F4CF55"/><circle cx="25.4" cy="10" r=".9" fill="#F4CF55"/>
+    </symbol>
+    <symbol id="d-spider" viewBox="0 0 24 40">
+      <path d="M12 0 V17" stroke="#D8C2F2" stroke-width="1"/>
+      <path d="M12 23 L4 17 M12 23 L3 23 M12 25 L4 30 M12 25 L6 34 M12 23 L20 17 M12 23 L21 23 M12 25 L20 30 M12 25 L18 34" stroke="#2E2440" stroke-width="1.6" stroke-linecap="round"/>
+      <ellipse cx="12" cy="25" rx="5" ry="6" fill="#2E2440"/><circle cx="12" cy="19.5" r="3.4" fill="#2E2440"/>
+      <circle cx="10.8" cy="19.2" r=".9" fill="#fff"/><circle cx="13.2" cy="19.2" r=".9" fill="#fff"/>
+    </symbol>
+    <symbol id="d-web" viewBox="0 0 40 40">
+      <g fill="none" stroke="#D8C2F2" stroke-width="1.1" opacity=".75">
+        <path d="M0 0 L40 6 M0 0 L32 26 M0 0 L6 40 M0 0 L20 36"/>
+        <path d="M12 2 Q10 8 15 10 Q8 12 10 18 Q4 14 2 12"/><path d="M24 4 Q19 13 26 18 Q17 20 16 29 Q8 22 4 24"/>
+      </g>
+    </symbol>
     <!-- 规则小图：浅灰底小棋盘，一排或一列上色，中间一只（圆点），其余打叉 -->
     <symbol id="r-row" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><rect x="3" y="11" width="24" height="8" rx="3" fill="#FFE07A"/><circle cx="15" cy="15" r="2.8" fill="#1C1C1E"/><path d="M5.5 13.5 l3 3 m0 -3 l-3 3 M21.5 13.5 l3 3 m0 -3 l-3 3" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></symbol>
     <symbol id="r-col" viewBox="0 0 30 30"><rect x="1" y="1" width="28" height="28" rx="7" fill="#F2F2F7"/><rect x="11" y="3" width="8" height="24" rx="3" fill="#8EE3C8"/><circle cx="15" cy="15" r="2.8" fill="#1C1C1E"/><path d="M13.5 5.5 l3 3 m0 -3 l-3 3 M13.5 21.5 l3 3 m0 -3 l-3 3" stroke="#8E8E93" stroke-width="1.4" stroke-linecap="round"/></symbol>
@@ -408,7 +481,9 @@ const TIPS = {
 const THEMES = {
   normal: {
     colors: ["#9B84D8", "#AFD69B", "#CD7D7A", "#A9BDD9", "#DFC062", "#6075B6", "#F0A96C", "#62B2A8", "#E390C0", "#A87855", "#F2BCD2"],
-    logo: ["#CD7D7A", "#F0A96C", "#62B2A8", "#9B84D8", "#6075B6", "#E390C0"], bg: "#F6F2EE", board: "#FFFFFF",
+    names: ["紫色", "浅绿", "砖红", "雾蓝", "黄色", "深蓝", "橙色", "青绿", "粉色", "棕色", "浅粉"],
+    tools: ["#6075B6", "#F0A96C", "#9B84D8", "#62B2A8"],
+    logo: ["#CD7D7A", "#F0A96C", "#62B2A8", "#9B84D8", "#6075B6", "#E390C0"], bg: "#F6F2EE", board: "#3A302C", deco: "",
     cur: { sym: "can", name: "猫罐头", short: "罐头", shop: "罐头商店" },
     bits: ["#FFFFFF", "#FFE7A3", "#FFD966"], kind: () => "corn",
     rain: ["#FFB3C7", "#8EE3C8", "#FFD966", "#9CC8FF", "#FFBC85", "#C9B2FF", "#B6E88C", "#FFFFFF"], rainKind: j => j % 4 === 0 ? "corn" : j % 5 === 0 ? "star" : "paper",
@@ -416,7 +491,15 @@ const THEMES = {
   },
   halloween: {
     colors: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#A3ACBE"],
+    names: ["南瓜橙", "巫婆紫", "黏液绿", "糖果黄", "夜空蓝", "莓果红", "药水青", "幽灵紫", "焦糖色", "骨头白", "墓碑灰"],
+    tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#8FCB5A"],
     logo: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F28C38", "#8A5CC9", "#8FCB5A"], bg: "#F2ECF6", board: "#2E2440",
+    deco: `<svg viewBox="0 0 40 40" style="left:-1px;top:-1px;width:30px;height:30px"><use href="#d-web"/></svg>
+      <svg class="spider" viewBox="0 0 24 40" style="right:24%;top:-30px;width:18px;height:30px"><use href="#d-spider"/></svg>
+      <svg class="bat" viewBox="0 0 48 26" style="right:-8px;top:-18px;width:44px;height:24px"><use href="#d-bat"/></svg>
+      <svg class="bat bat2" viewBox="0 0 48 26" style="left:34%;top:-15px;width:30px;height:16px"><use href="#d-bat"/></svg>
+      <svg viewBox="0 0 48 44" style="left:-10px;bottom:-26px;width:44px;height:40px"><use href="#d-pumpkin"/></svg>
+      <svg viewBox="0 0 48 44" style="right:-6px;bottom:-22px;width:30px;height:27px"><use href="#d-pumpkin"/></svg>`,
     cur: { sym: "candy", name: "南瓜糖", short: "南瓜糖", shop: "糖果商店" },
     bits: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55"], kind: k => k % 3 === 0 ? "bat" : "candy",
     rain: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#2E2440"], rainKind: j => j % 3 === 0 ? "bat" : j % 3 === 1 ? "candy" : "paper",
@@ -424,8 +507,8 @@ const THEMES = {
   }
 };
 const SKINS = [
-  { id: "normal", name: "原味爆米花", desc: "爆米花本猫，暖白底配莫兰迪棋盘", price: 0, theme: "normal", faces: {} },
-  { id: "halloween", name: "捣蛋鬼爆米花", ltd: "万圣节限定", desc: "巫师帽加小斗篷；夜色棋盘，通关掉南瓜糖，特效变成糖果和小蝙蝠", price: 0, theme: "halloween",
+  { id: "normal", name: "爆米花", desc: "原原本本的爆米花，毛蓬蓬，脾气好，就是有点挑座位", price: 0, theme: "normal", faces: {} },
+  { id: "halloween", name: "捣蛋鬼爆米花", ltd: "万圣节限定", desc: "不给糖就捣蛋！戴上巫师帽，整块棋盘都跟着变成南瓜之夜", price: 0, theme: "halloween",
     faces: { head: "hw_head", headBig: "hw_headBig", happy: "hw_happy", happyBig: "hw_happyBig", happyCard: "hw_happyCard", smugBig: "hw_happyBig", smugCard: "hw_happyCard",
              wowBig: "hw_wowBig", sadBig: "hw_sadBig", thinkBig: "hw_headBig", lickBig: "hw_happyBig" } }
 ];
@@ -469,15 +552,15 @@ function assignColors(id, n, reg) {
 const FREE_HINTS = 1;          // 每关 1 次免费提示，之后用提示卡，没卡了看广告
 const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 24 };
 const DAILY_CANS = { 8: 25, 9: 30, 10: 40 };
-const PRICE = { hint1: 50, hint3: 135, revive: 80 };
+const PRICE = { hint1: 50, hint3: 135, revive: 80, mouse: 30 };
 const AD_HINTS_PER_DAY = 3;
 /* 7 天签到：断签不清零，接着往下领；第 7 天是大礼包，领完从第 1 天重新开始 */
-const SIGN_REWARDS = [{ cans: 20 }, { hint: 1 }, { cans: 30 }, { revive: 1 }, { cans: 40 }, { hint: 2 }, { cans: 80, hint: 2, revive: 1 }];
+const SIGN_REWARDS = [{ cans: 20 }, { hint: 1 }, { cans: 30 }, { revive: 1 }, { cans: 40 }, { mouse: 2 }, { cans: 80, hint: 2, revive: 1 }];
 
 /* 存档：只存在这个浏览器里，读不到也能正常玩 */
 const SAVE_KEY = "popcorn-proto-v4";
 let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: true, vibrate: true, rules: true, patterns: false,
-  hintCards: 3, revives: 1,                         // 新玩家送 3 张提示卡、1 个复活心
+  hintCards: 3, revives: 1, mice: 2,                // 新玩家送 3 张提示卡、1 个天使之心、2 只老鼠
   sign: { last: "", count: 0 },                     // 上次签到日期、本轮已领几天
   daily: { done: {}, streak: 0, last: "", best: 0 },// 每日挑战：每天成绩、连续打卡
   adHint: { day: "", n: 0 },
@@ -658,6 +741,10 @@ function applyTheme() {
   T = THEMES[skinOf(save.skin).theme] || THEMES.normal;
   REGION_COLORS = T.colors; LABS = REGION_COLORS.map(hexLab); CUR = T.cur;
   document.body.classList.toggle("th-halloween", skinOf(save.skin).theme === "halloween");
+  const root = document.documentElement.style;
+  root.setProperty("--boardbg", T.board);
+  T.tools.forEach((c, k) => root.setProperty("--t" + k, c));
+  $("deco").innerHTML = T.deco;
   document.querySelectorAll(".curuse").forEach(u => u.setAttribute("href", "#" + CUR.sym));
   $("shopName").textContent = CUR.shop;
   $("brandImg").src = F("headBig");
@@ -688,7 +775,7 @@ function renderHome() {
   $("signDot").classList.toggle("hidden", !canSign);
   $("signSub").textContent = canSign ? `第${save.sign.count % 7 + 1}天的礼物可以领` : "今天已领，明天再来";
   const newSkin = SKINS.find(k => !save.skins.includes(k.id));
-  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 复活心 ${save.revives}`;
+  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 天使之心 ${save.revives} · 老鼠 ${save.mice}`;
   $("shopDot").classList.toggle("hidden", !newSkin);
 }
 $("blocks").addEventListener("click", e => { const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id); });
@@ -740,11 +827,12 @@ function startGame(id, L, carry) {
   show("game");
   if (G.daily) { const [, m, d] = G.daily.split("-").map(Number); $("lvName").innerHTML = `每日挑战 · ${m}月${d}日`; }
   else $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}`;
+  $("tip").classList.remove("float");
   if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
   else $("tip").classList.add("hidden");
   $("rulebar").classList.toggle("hidden", !save.rules);
   $("gameCans").textContent = save.cans;
-  buildBoard(); renderHearts(); renderHint(); renderChips();
+  buildBoard(); renderHearts(); renderHint(); renderMouse(); renderChips();
   clearInterval(timerId); timerId = setInterval(tick, 500); tick();
 }
 function tick() {
@@ -764,7 +852,17 @@ function buildBoard() {
   }
   b.innerHTML = html;
   for (let i = 0; i < n * n; i++) drawCell(i);
+  fitBoardFrame();
 }
+/* 外框圆角 = 格子圆角 + 外框厚度，四个角和格子的角对齐（同心圆角） */
+function fitBoardFrame() {
+  if (!G) return;
+  const card = $("boardcard"), gap = G.n <= 8 ? 5 : G.n <= 10 ? 4 : 3, pad = gap + 3;
+  card.style.padding = pad + "px";
+  const c = cellEl(0); if (!c) return;
+  card.style.borderRadius = (c.getBoundingClientRect().width * 0.16 + pad).toFixed(1) + "px";
+}
+addEventListener("resize", fitBoardFrame);
 function cellEl(i) { return $("board").children[i]; }
 /* 棋盘上的爆米花换表情：ms 毫秒后换回平常的脸（不传 ms 就一直保持） */
 function setFace(i, face, ms) {
@@ -834,7 +932,13 @@ function setMark(i, val, batch) {
   drawCell(i);
   return true;
 }
-function flashTip(text) { $("tip").innerHTML = text; $("tip").classList.remove("hidden"); }
+/* 讲解框和规则条用同一个位置：讲解出来时先收起规则条，不把下面的按钮挤出屏幕；点一下讲解框或者在棋盘上操作就收起 */
+function flashTip(text) {
+  const t = $("tip"); t.innerHTML = text; t.classList.remove("hidden"); t.classList.add("float");
+  t.style.top = $("game").querySelector(".left").offsetTop + "px";
+}
+function hideTip() { const t = $("tip"); if (t.classList.contains("hidden")) return; t.classList.add("hidden"); t.classList.remove("float"); }
+$("tip").addEventListener("click", hideTip);
 
 function tryPlace(i) {
   if (G.over || G.st[i] === 2 || G.bad[i]) return;
@@ -914,7 +1018,7 @@ function checkWin() {
     if (!G) return;
     fx.win(); confettiRain(); fireworks(6, 280);
     const next = G.id < LEVELS.length;
-    showDialog(`<div class="stars">${[0, 1, 2].map(k => `<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${k < stars ? "#FFCC00" : "#E5E5EA"};stroke:${k < stars ? "#F5A800" : "#D1D1D6"}"><use href="#star"/></svg>`).join("")}</div>
+    showDialog(`<div class="stars">${[0, 1, 2].map(k => `<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${k < stars ? "#FFC83D" : "#E3DBD3"}"><use href="#star"/></svg>`).join("")}</div>
       <div class="hero">${record ? '<span class="tag">新纪录</span>' : ""}<img src="${F(record ? "smugBig" : "happyBig")}" alt=""><svg viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg></div>
       <h3>${record ? "比上次还快！" : "都找到座位啦！"}</h3>
       <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div><div>连胜<b>${save.streak}</b></div></div>
@@ -960,12 +1064,12 @@ function dailyWin() {
 }
 function starsOf(m) { return m === 0 ? 3 : m === 1 ? 2 : 1; }
 function starRow(stars) {
-  return `<div class="stars">${[0, 1, 2].map(k => `<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${k < stars ? "#FFCC00" : "#E5E5EA"};stroke:${k < stars ? "#F5A800" : "#D1D1D6"}"><use href="#star"/></svg>`).join("")}</div>`;
+  return `<div class="stars">${[0, 1, 2].map(k => `<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${k < stars ? "#FFC83D" : "#E3DBD3"}"><use href="#star"/></svg>`).join("")}</div>`;
 }
 function showDailyResult(key, gift) {
   const rec = save.daily.done[key], [, m, d] = key.split("-").map(Number);
   const streak = save.daily.last === key || key === todayKey() ? dailyStreakNow() : 0;
-  const giftTxt = gift && gift.cans ? `<div class="reward">${curSvg()}<div>${CUR.name} <b>+${gift.cans}</b><small>${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、复活心+1` : ""}</small></div></div>` : "";
+  const giftTxt = gift && gift.cans ? `<div class="reward">${curSvg()}<div>${CUR.name} <b>+${gift.cans}</b><small>${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、天使之心+1` : ""}</small></div></div>` : "";
   showDialog(`${starRow(starsOf(rec.m))}
     <div class="hero"><img src="${F(rec.m === 0 ? "smugBig" : "happyBig")}" alt=""><svg viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg></div>
     <h3>${m}月${d}日 每日挑战完成</h3>
@@ -1002,9 +1106,9 @@ async function makeScoreCard(key) {
   ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "#9A8F88"; ctx.font = `600 26px ${FONT}`; ctx.fillText(`每日挑战 · ${m}月${d}日 周${WD[wdOf(key)]} · ${P.n}×${P.n}`, W / 2, 334);
   // 棋盘：白底卡片 + 颜色马赛克（没有猫，不剧透）
-  const pw = 500, px = (W - pw) / 2, py = 362, pad = 18;
-  ctx.fillStyle = T.board; rr(ctx, px, py, pw, pw, 30); ctx.fill();
+  const pw = 500, px = (W - pw) / 2, py = 362, pad = 14;
   const bs = pw - pad * 2, gap = P.n <= 8 ? 7 : P.n <= 9 ? 6 : 5, cs = (bs - gap * (P.n - 1)) / P.n;
+  ctx.fillStyle = T.board; rr(ctx, px, py, pw, pw, cs * .18 + pad); ctx.fill();
   for (let i = 0; i < P.n * P.n; i++) {
     const r = Math.floor(i / P.n), cc = i % P.n;
     ctx.fillStyle = REGION_COLORS[colors[P.reg[i]]];
@@ -1051,13 +1155,15 @@ function giftIcons(g, size = 26) {
   if (g.cans) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#${CUR.sym}"/></svg>`);
   if (g.hint) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#i-bulb"/></svg>`);
   if (g.revive) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#i-revive"/></svg>`);
+  if (g.mouse) out.push(`<svg viewBox="0 0 32 32" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#mouse"/></svg>`);
   return out.join("");
 }
 function giftText(g, mul = 1) {
   const t = [];
   if (g.cans) t.push(`${CUR.short}×${g.cans * mul}`);
   if (g.hint) t.push(`提示卡×${g.hint * mul}`);
-  if (g.revive) t.push(`复活心×${g.revive * mul}`);
+  if (g.revive) t.push(`天使之心×${g.revive * mul}`);
+  if (g.mouse) t.push(`老鼠×${g.mouse * mul}`);
   return t.join(" ");
 }
 function openSign() {
@@ -1068,7 +1174,7 @@ function openSign() {
     const cls = ["sday", k === 6 ? "s7" : "", k < got ? "got" : "", can && k === cur ? "today" : ""].join(" ");
     return k === 6
       ? `<div class="${cls}"><div class="gifts">${giftIcons(g, 26)}</div><div>第7天<b style="display:block">大礼包</b></div></div>`
-      : `<div class="${cls}">第${k + 1}天${giftIcons(g, 28)}<b>${g.cans ? g.cans : "×" + (g.hint || g.revive)}</b></div>`;
+      : `<div class="${cls}">第${k + 1}天${giftIcons(g, 28)}<b>${g.cans ? g.cans : "×" + (g.hint || g.revive || g.mouse)}</b></div>`;
   }).join("");
   const g = SIGN_REWARDS[cur];
   showDialog(`<img class="mood" src="${F("lickBig")}" alt=""><h3>每日签到</h3>
@@ -1078,7 +1184,7 @@ function openSign() {
     ${can ? `<button class="btn dark" id="dDouble">看广告领双倍</button><button class="btn" id="dClaim">直接领取</button>` : `<button class="btn alt" id="dClose">好的</button>`}`);
   if (!can) { $("dClose").onclick = () => { hideDialog(); renderHome(); }; return; }
   const claim = mul => {
-    save.cans += (g.cans || 0) * mul; save.hintCards += (g.hint || 0) * mul; save.revives += (g.revive || 0) * mul;
+    save.cans += (g.cans || 0) * mul; save.hintCards += (g.hint || 0) * mul; save.revives += (g.revive || 0) * mul; save.mice += (g.mouse || 0) * mul;
     save.sign.count++; save.sign.last = today; persist();
     fx.win(); confettiRain();
     showDialog(`<div style="display:flex;justify-content:center;gap:8px">${giftIcons(g, 56)}</div>
@@ -1097,7 +1203,7 @@ function openShop(msg) {
   const today = todayKey();
   if (save.adHint.day !== today) save.adHint = { day: today, n: 0 };
   const adLeft = AD_HINTS_PER_DAY - save.adHint.n;
-  const row = (icon, name, sub, btn) => `<div class="shoprow"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${icon}"/></svg><div>${name}<small>${sub}</small></div>${btn}</div>`;
+  const row = (icon, name, sub, btn) => `<div class="shoprow"><svg viewBox="0 0 ${icon === "mouse" ? 32 : 24} ${icon === "mouse" ? 32 : 24}" aria-hidden="true"><use href="#${icon}"/></svg><div>${name}<small>${sub}</small></div>${btn}</div>`;
   const buyBtn = (id, price) => `<button class="buy" id="${id}" ${save.cans < price ? "disabled" : ""}>${curSvg()}${price}</button>`;
   const skinRows = SKINS.map(k => {
     const own = save.skins.includes(k.id), on = save.skin === k.id;
@@ -1107,23 +1213,25 @@ function openShop(msg) {
     return `<div class="skinrow"><img src="${CAT_IMG[k.faces.headBig || "headBig"]}" alt=""><div>${k.name}${k.ltd ? `<span class="ltd">${k.ltd}</span>` : ""}<small>${k.desc}</small></div>${btn}</div>`;
   }).join("");
   showDialog(`<img class="mood" src="${F("lickBig")}" alt=""><h3>${CUR.shop}</h3>
-    <div class="bag"><span class="pill">${curSvg()}${save.cans}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bulb"/></svg>${save.hintCards}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-revive"/></svg>${save.revives}</span></div>
+    <div class="bag"><span class="pill">${curSvg()}${save.cans}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bulb"/></svg>${save.hintCards}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-revive"/></svg>${save.revives}</span><span class="pill"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#mouse"/></svg>${save.mice}</span></div>
     ${msg ? `<p style="color:var(--accent-ink);font-weight:600">${msg}</p>` : ""}
     <p class="sec">皮肤</p>
     <div class="shoplist">${skinRows}</div>
     <p class="sec">道具</p>
     <div class="shoplist">
-      ${row("i-bulb", "提示卡 ×1", "每关免费提示用完后，用它找1个座位", buyBtn("bH1", PRICE.hint1))}
-      ${row("i-bulb", "提示卡 ×3", "多买省一点", buyBtn("bH3", PRICE.hint3))}
-      ${row("i-revive", "复活心 ×1", "心用完时直接复活，不用看广告", buyBtn("bRv", PRICE.revive))}
-      ${row("i-bulb", "免费提示卡 ×1", `看一段广告领，今天还能领 ${adLeft} 次`, `<button class="buy ad" id="bAd" ${adLeft <= 0 ? "disabled" : ""}>看广告</button>`)}
+      ${row("i-bulb", "提示卡", "爆米花凑到你耳边，悄悄说出一个座位，还告诉你为什么", buyBtn("bH1", PRICE.hint1))}
+      ${row("i-bulb", "提示卡 · 三张装", "多囤几张，卡关的时候心里不慌", buyBtn("bH3", PRICE.hint3))}
+      ${row("i-revive", "天使之心", "心碎了也别怕，天使会把它捡回来，接着玩", buyBtn("bRv", PRICE.revive))}
+      ${row("mouse", "小老鼠", "放它出去满棋盘乱窜，它总会撞见一只爆米花", buyBtn("bMs", PRICE.mouse))}
+      ${row("i-bulb", "广告赞助的提示卡", `看段小广告换一张，今天还剩 ${adLeft} 次`, `<button class="buy ad" id="bAd" ${adLeft <= 0 ? "disabled" : ""}>看广告</button>`)}
     </div>
     <p style="font-size:12px">皮肤和道具只能用${CUR.short}、签到、看广告获得，不花钱。</p>
     <button class="btn alt" id="dClose">关闭</button>`);
   const buy = (price, apply, label) => () => { if (save.cans < price) return; save.cans -= price; apply(); persist(); fx.good(); openShop(`买到了：${label}`); };
   $("bH1").onclick = buy(PRICE.hint1, () => save.hintCards += 1, "提示卡×1");
   $("bH3").onclick = buy(PRICE.hint3, () => save.hintCards += 3, "提示卡×3");
-  $("bRv").onclick = buy(PRICE.revive, () => save.revives += 1, "复活心×1");
+  $("bRv").onclick = buy(PRICE.revive, () => save.revives += 1, "天使之心×1");
+  $("bMs").onclick = buy(PRICE.mouse, () => save.mice += 1, "小老鼠×1");
   const wear = id => { save.skin = id; persist(); applyTheme(); renderHome(); fx.win(); confettiRain(); openShop(`换上了：${skinOf(id).name}`); };
   document.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => wear(b.dataset.wear));
   document.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
@@ -1143,7 +1251,7 @@ function fail() {
     const has = save.revives > 0;
     showDialog(`<img class="mood" src="${F("sadBig")}" alt="">
       <h3>心用完了</h3><p>${G.daily ? "复活后接着玩，计时不停。重来的话计时和失误也不清零。" : "复活就能拿回1颗心接着玩，连胜也保住。重新开始的话连胜会清零。"}</p>
-      ${has ? `<button class="btn" id="dUse"><svg viewBox="0 0 24 24" style="width:20px;height:20px;vertical-align:-4px;margin-right:4px" aria-hidden="true"><use href="#i-revive"/></svg>用复活心（还有${save.revives}个）</button>` : ""}
+      ${has ? `<button class="btn" id="dUse"><svg viewBox="0 0 24 24" style="width:20px;height:20px;vertical-align:-4px;margin-right:4px" aria-hidden="true"><use href="#i-revive"/></svg>用天使之心（还有${save.revives}个）</button>` : ""}
       <button class="btn ${has ? "alt" : "dark"}" id="dRevive">看广告复活（原型直接复活）</button>
       <button class="btn alt" id="dRetry">${G.daily ? "重来（计时继续）" : "重新开始本关"}</button>
       <button class="btn alt" id="dHome">回到选关</button>`);
@@ -1186,26 +1294,174 @@ $("undoBtn").onclick = () => {
   const batch = G.undo.pop();
   for (let k = batch.length - 1; k >= 0; k--) { const [i, st, au] = batch[k]; G.st[i] = st; G.auto[i] = au; drawCell(i); }
 };
-$("hintBtn").onclick = () => {
-  if (!G || G.over) return;
-  let best = -1, bestCount = 1e9;
-  for (let r = 0; r < G.n; r++) {
-    const i = r * G.n + G.sol[r];
-    if (G.st[i] === 2) continue;
-    let cnt = 0;
-    for (let j = 0; j < G.n * G.n; j++) if (G.reg[j] === G.reg[i] && G.st[j] === 0) cnt++;
-    if (cnt < bestCount) { bestCount = cnt; best = i; }
+/* ---------- 提示：按推理找出下一步，并讲清楚为什么 ----------
+   只用确定的信息推理：已经坐好的猫 + 放错过的格子 + 提示自己推出来的排除（不信玩家的×，因为玩家可能标错） */
+function groupName(kind, k) {
+  if (kind === "row") return `第${k + 1}行`;
+  if (kind === "col") return `第${k + 1}列`;
+  const ci = G.colors[k];
+  return `<i class="sw" style="background:${REGION_COLORS[ci]}"></i>${T.names[ci]}`;
+}
+function deduce() {
+  const n = G.n, N = n * n, R = i => Math.floor(i / n), C = i => i % n;
+  if (!G.elim) G.elim = new Set();
+  const hasCat = { row: new Set(), col: new Set(), reg: new Set() };
+  for (let i = 0; i < N; i++) if (G.st[i] === 2) { hasCat.row.add(R(i)); hasCat.col.add(C(i)); hasCat.reg.add(G.reg[i]); }
+  const why = [], newX = [];
+  const keyOf = { row: R, col: C, reg: i => G.reg[i] };
+  for (let round = 0; round < 60; round++) {
+    const cand = [];
+    for (let i = 0; i < N; i++) cand[i] = G.st[i] !== 2 && !G.bad[i] && !G.elim.has(i) && !conflictsWithCat(i);
+    const groups = [];
+    for (const kind of ["reg", "row", "col"]) for (let k = 0; k < n; k++) if (!hasCat[kind].has(k)) {
+      const cells = []; for (let i = 0; i < N; i++) if (cand[i] && keyOf[kind](i) === k) cells.push(i);
+      groups.push({ kind, k, cells });
+    }
+    // 1) 某一组只剩一格：就是它
+    const single = groups.filter(g => g.cells.length === 1).sort((a, b) => (a.kind === "reg" ? 0 : 1) - (b.kind === "reg" ? 0 : 1))[0];
+    if (single) return { cell: single.cells[0], group: single, why, newX, last: `${groupName(single.kind, single.k)}只剩这一格还能坐了` };
+    const elim = (cells, text, focus) => { cells.forEach(i => { G.elim.add(i); newX.push(i); }); why.push({ text, focus }); };
+    let done = false;
+    // 2) 一个颜色的座位都挤在同一行（列）：这一行（列）留给它，别的颜色在这一行（列）都不能坐
+    for (const g of groups.filter(g => g.kind === "reg")) {
+      for (const line of ["row", "col"]) {
+        const ks = new Set(g.cells.map(keyOf[line]));
+        if (ks.size !== 1) continue;
+        const k = [...ks][0], kill = [];
+        for (let i = 0; i < N; i++) if (cand[i] && keyOf[line](i) === k && G.reg[i] !== g.k) kill.push(i);
+        if (kill.length) { elim(kill, `${groupName("reg", g.k)}能坐的格子都在${groupName(line, k)}，所以${groupName(line, k)}要留给它，别的颜色在这一${line === "row" ? "行" : "列"}都不能坐`, g.cells); done = true; break; }
+      }
+      if (done) break;
+    }
+    if (done) continue;
+    // 3) 一行（列）能坐的格子全是同一个颜色：这只猫一定是这个颜色的，这个颜色在别处的格子都不能坐
+    for (const g of groups.filter(g => g.kind !== "reg")) {
+      const rs = new Set(g.cells.map(i => G.reg[i]));
+      if (rs.size !== 1) continue;
+      const rg = [...rs][0], kill = [];
+      for (let i = 0; i < N; i++) if (cand[i] && G.reg[i] === rg && keyOf[g.kind](i) !== g.k) kill.push(i);
+      if (kill.length) { elim(kill, `${groupName(g.kind, g.k)}能坐的格子全是${groupName("reg", rg)}，所以${groupName("reg", rg)}的猫一定在${groupName(g.kind, g.k)}，它在别处的格子都不能坐`, g.cells); done = true; break; }
+    }
+    if (done) continue;
+    // 3b) 两三个颜色的座位都挤在同样两三行（列）里：这几行（列）被它们占满，别的颜色在这几行（列）都不能坐
+    const regs = groups.filter(g => g.kind === "reg");
+    for (const line of ["row", "col"]) {
+      if (done) break;
+      for (const size of [2, 3]) {
+        if (done) break;
+        const pick = (start, chosen) => {
+          if (done) return;
+          if (chosen.length === size) {
+            const lines = new Set(); chosen.forEach(g => g.cells.forEach(i => lines.add(keyOf[line](i))));
+            if (lines.size !== size) return;
+            const own = new Set(chosen.map(g => g.k)), kill = [];
+            for (let i = 0; i < N; i++) if (cand[i] && lines.has(keyOf[line](i)) && !own.has(G.reg[i])) kill.push(i);
+            if (!kill.length) return;
+            const ln = [...lines].sort((x, y) => x - y).map(x => x + 1).join("、"), unit = line === "row" ? "行" : "列";
+            elim(kill, `${chosen.map(g => groupName("reg", g.k)).join("和")}能坐的格子都在第${ln}${unit}里，这${size === 2 ? "两" : "三"}${unit}正好被它们占满，别的颜色在这几${unit}都不能坐`, chosen.flatMap(g => g.cells));
+            done = true; return;
+          }
+          for (let t = start; t < regs.length; t++) pick(t + 1, chosen.concat([regs[t]]));
+        };
+        pick(0, []);
+      }
+    }
+    if (done) continue;
+    // 4) 试一下：如果这格坐了猫，会把某一组的座位全部挤掉，那这格就不能坐
+    for (let c = 0; c < N && !done; c++) {
+      if (!cand[c]) continue;
+      const rc = R(c), cc = C(c);
+      const blocked = i => i === c || R(i) === rc || C(i) === cc || G.reg[i] === G.reg[c] || (Math.abs(R(i) - rc) <= 1 && Math.abs(C(i) - cc) <= 1);
+      for (const g of groups) {
+        if (keyOf[g.kind](c) === g.k) continue;
+        if (g.cells.every(blocked)) { elim([c], `如果这一格坐了猫，它会把${groupName(g.kind, g.k)}剩下的座位全部挤掉，所以这一格不能坐`, [c, ...g.cells]); done = true; break; }
+      }
+    }
+    if (done) continue;
+    return { cell: -1, why, newX };
   }
-  if (best < 0) return;
-  const use = () => {
-    renderHint();
-    if (G.st[best] === 1) G.st[best] = 0;
-    drawCell(best, "hint");
-    tryPlace(best);
+  return { cell: -1, why, newX };
+}
+function useHint() {
+  const res = deduce();
+  let cell = res.cell;
+  if (cell < 0) { // 推不出来（要用更难的技巧）：直接给座位最少的那个颜色的答案
+    let best = 1e9;
+    for (let r = 0; r < G.n; r++) { const i = r * G.n + G.sol[r]; if (G.st[i] === 2) continue;
+      let cnt = 0; for (let j = 0; j < G.n * G.n; j++) if (G.reg[j] === G.reg[i] && G.st[j] === 0) cnt++;
+      if (cnt < best) { best = cnt; cell = i; } }
+  }
+  if (cell < 0) return;
+  // 推理过程中排除掉的格子，帮玩家标上×
+  for (const i of res.newX) if (G.st[i] === 0) { G.st[i] = 1; G.auto[i] = true; drawCell(i, "flash"); }
+  const steps = res.why.slice(-3);
+  const focus = res.cell >= 0 ? res.group.cells.concat(...steps.map(w => w.focus)) : [];
+  setTimeout(() => focus.forEach(i => { if (G && G.st[i] !== 2) drawCell(i, "focus"); }), 50);
+  const lines = steps.map(w => `<li>${w.text}</li>`);
+  const tail = res.cell >= 0
+    ? (steps.length ? `所以${res.last}。` : `${res.last}，就是它！`)
+    : "这一步要多想好几步，先帮你放上。可以回头看看，为什么只能是这里。";
+  flashTip(`<b>为什么坐这里？</b>${lines.length ? `<ol class="why">${lines.join("")}</ol>` : " "}${tail}`);
+  renderHint();
+  if (G.st[cell] === 1) G.st[cell] = 0;
+  drawCell(cell, "hint");
+  tryPlace(cell);
+}
+$("hintBtn").onclick = () => {
+  if (!G || G.over || G.busy) return;
+  if (G.hints > 0) { G.hints--; return useHint(); }
+  if (save.hintCards > 0) { save.hintCards--; persist(); return useHint(); }
+  watchAd("看完广告，爆米花帮你找1个座位，还会讲为什么", useHint);
+};
+
+/* ---------- 老鼠：在没打×的格子里乱跑，直到撞上一只爆米花的座位 ---------- */
+function renderMouse() {
+  const b = $("mouseBadge"); if (!b) return;
+  b.textContent = save.mice > 0 ? save.mice : "广告";
+  b.classList.toggle("ad", save.mice <= 0);
+}
+function runMouse() {
+  if (!G || G.over) return;
+  const n = G.n, N = n * n;
+  const targets = [];
+  for (let r = 0; r < n; r++) { const i = r * n + G.sol[r]; if (G.st[i] !== 2) targets.push(i); }
+  if (!targets.length) return;
+  const target = targets[Math.floor(Math.random() * targets.length)];
+  const free = []; for (let i = 0; i < N; i++) if (G.st[i] === 0 && !targets.includes(i)) free.push(i);
+  const path = [];
+  const hops = 9 + Math.floor(Math.random() * 6);
+  for (let k = 0; k < hops && free.length; k++) path.push(free[Math.floor(Math.random() * free.length)]);
+  path.push(target);
+  G.busy = true;
+  const el = document.createElement("div");
+  el.className = "runner"; el.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><use href="#mouse"/></svg>';
+  const br = $("board").getBoundingClientRect();
+  el.style.left = (br.left - 30) + "px"; el.style.top = (br.bottom - 10) + "px";
+  document.body.appendChild(el);
+  let x0 = br.left - 30, step = 0;
+  const hop = () => {
+    if (!G) { el.remove(); return; }
+    const [x, y] = cellCenter(path[step]);
+    el.classList.toggle("flip", x < x0); x0 = x;
+    el.style.left = x + "px"; el.style.top = y + "px";
+    tone([1300 + Math.random() * 500], 0.04, "triangle", 0.03);
+    step++;
+    if (step < path.length) setTimeout(hop, 150);
+    else setTimeout(() => {
+      G.busy = false;
+      if (G.st[target] === 1) G.st[target] = 0;
+      tryPlace(target);
+      toast(target, "小老鼠撞见了一只爆米花！");
+      el.classList.add("bye", "flip"); el.style.left = (innerWidth + 40) + "px";
+      setTimeout(() => el.remove(), 600);
+    }, 260);
   };
-  if (G.hints > 0) { G.hints--; return use(); }
-  if (save.hintCards > 0) { save.hintCards--; persist(); toast(best, `用了1张提示卡，还剩${save.hintCards}张`); return use(); }
-  watchAd("看完广告，爆米花帮你找1个座位", use);
+  setTimeout(hop, 60);
+}
+$("mouseBtn").onclick = () => {
+  if (!G || G.over || G.busy) return;
+  if (save.mice > 0) { save.mice--; persist(); renderMouse(); return runMouse(); }
+  watchAd("看完广告，放出一只小老鼠帮你找爆米花", runMouse);
 };
 /* 原型里“看广告”直接生效；微信版换成激励视频广告，看完才给奖励 */
 function watchAd(what, done) {
@@ -1237,7 +1493,7 @@ function openSettings() {
   $("sReset").onclick = () => {
     showDialog(`<h3>清空进度？</h3><p>通关记录、猫罐头、连胜、道具、签到和每日挑战记录都会清零。</p>
       <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">取消</button>`);
-    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0, hintCards: 3, revives: 1, sign: { last: "", count: 0 }, daily: { done: {}, streak: 0, last: "", best: 0 }, adHint: { day: "", n: 0 }, skin: "normal", skins: ["normal"] }); applyTheme(); persist(); hideDialog(); goHome(); };
+    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0, hintCards: 3, revives: 1, sign: { last: "", count: 0 }, daily: { done: {}, streak: 0, last: "", best: 0 }, adHint: { day: "", n: 0 }, skin: "normal", skins: ["normal"], mice: 2 }); applyTheme(); persist(); hideDialog(); goHome(); };
     $("dNo").onclick = openSettings;
   };
   $("sClose").onclick = hideDialog;
@@ -1304,7 +1560,8 @@ $("tabTime").onclick = () => { rankTab = "time"; renderRank(); };
     return c && b.contains(c) ? +c.dataset.i : -1;
   };
   b.addEventListener("pointerdown", e => {
-    if (!G || G.over) return;
+    if (!G || G.over || G.busy) return;
+    if (!TIPS[G.id]) hideTip();
     const i = idxAt(e.clientX, e.clientY); if (i < 0) return;
     e.preventDefault();
     try { b.setPointerCapture(e.pointerId); } catch (err) {}
