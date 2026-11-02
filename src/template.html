@@ -37,10 +37,12 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .pill svg { width: 20px; height: 20px; }
 
 /* 选关页 */
-.brand { display: flex; align-items: center; gap: 12px; padding: 8px 2px 0; }
-.brand img { width: auto; height: 64px; flex: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,.12)); }
-.brand h1 { font-size: 30px; font-weight: 800; letter-spacing: -.5px; margin: 0; line-height: 1.1; }
-.brand p { margin: 3px 0 0; color: var(--ink-soft); font-size: 13px; }
+/* 标题：每个字是一块棋盘色块，爆米花从色块后面探出头 */
+.brand { display: flex; flex-direction: column; align-items: center; padding: 4px 0 0; }
+.brand img { width: 96px; height: 96px; margin-bottom: -22px; position: relative; z-index: 0; }
+.logo { display: flex; gap: 6px; margin: 0; position: relative; z-index: 1; }
+.logo span { width: 46px; height: 50px; border-radius: 13px; display: grid; place-items: center; color: #fff; font-size: 27px; font-weight: 800; line-height: 1; }
+.brand p { margin: 8px 0 0; color: var(--ink-soft); font-size: 12px; }
 .homebar { display: flex; gap: 8px; align-items: center; }
 .homebar .grow { flex: 1; }
 .panel { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 14px; }
@@ -212,7 +214,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .buy svg { width: 16px; height: 16px; }
 .buy.ad { background: var(--ink); }
 .buy:disabled { background: #E3DBD3; color: #fff; cursor: default; }
-.cardimg { width: 100%; border-radius: 14px; display: block; box-shadow: 0 0 0 1px var(--line); -webkit-touch-callout: default; user-select: auto; }
+.cardimg { width: 100%; border-radius: 16px; display: block; -webkit-touch-callout: default; user-select: auto; }
 .copybox { width: 100%; font: inherit; font-size: 13px; border: 0; border-radius: 10px; padding: 10px; color: var(--ink); background: var(--bg); resize: none; }
 </style>
 </head>
@@ -221,11 +223,9 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 <!-- 选关页 -->
 <section class="screen" id="home">
   <div class="brand">
-    <img id="brandImg" alt="爆米花">
-    <div>
-      <h1>爆米花找座位</h1>
-      <p>原型 v1.2 · 爆米花有表情了</p>
-    </div>
+    <img id="brandImg" alt="">
+    <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
+    <p>原型 v1.3 · 彩色标题和新成绩卡</p>
   </div>
   <div class="homebar">
     <button class="pill" id="cansPill" title="猫罐头商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#can"/></svg><b id="homeCans">0</b></button>
@@ -376,7 +376,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 <script>
 const LEVELS = /*LEVELS*/[];
 const CAT_IMG = /*CATIMG*/{};
-const BOARD_FACES = ["head"]; // 棋盘上用卡通版爆米花头像
+const LOGO = [["爆", "#CD7D7A", -4], ["米", "#F0A96C", 3], ["花", "#62B2A8", -2], ["找", "#9B84D8", 4], ["座", "#6075B6", -3], ["位", "#E390C0", 2]];
 const SHARE_URL = "https://northlo.github.io/popcorn-seat/";
 const TIPS = {
   1: "<b>规则1</b>：每一行、每一列都要正好放1只爆米花。棋盘上已经坐好了1只，它所在的那一行、那一列就不能再放了，点一下格子标上×。确定某格是座位，就再点一下放上去。",
@@ -913,46 +913,47 @@ function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arc
 async function makeScoreCard(key) {
   const P = dailyPuzzle(key), rec = save.daily.done[key], [, m, d] = key.split("-").map(Number);
   const colors = assignColors(P.seed, P.n, P.reg);
-  const W = 720, H = 1000, c = document.createElement("canvas");
+  const W = 720, H = 1150, c = document.createElement("canvas");
   c.width = W; c.height = H;
   const ctx = c.getContext("2d"), F = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif';
   ctx.fillStyle = "#F6F2EE"; ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = "#FFFFFF"; rr(ctx, 32, 32, W - 64, H - 64, 36); ctx.fill();
-  const head = await loadImg(CAT_IMG.headBig);
-  if (head) { const h = 120, w = h * head.width / head.height; ctx.drawImage(head, 72, 66, w, h); }
-  ctx.fillStyle = "#3B302B"; ctx.textBaseline = "alphabetic";
-  ctx.font = `800 46px ${F}`; ctx.fillText("爆米花找座位", 222, 122);
-  ctx.fillStyle = "#9A8F88"; ctx.font = `500 26px ${F}`; ctx.fillText(`每日挑战 · ${m}月${d}日 周${WD[wdOf(key)]} · ${P.n}×${P.n}`, 224, 164);
-  // 棋盘颜色马赛克（没有猫，不剧透）
-  const bs = 440, bx = (W - bs) / 2, by = 222, gap = P.n <= 8 ? 7 : P.n <= 9 ? 6 : 5, cs = (bs - gap * (P.n - 1)) / P.n;
+  // 爆米花探头 + 彩色标题（和首页一样）
+  const face = await loadImg(CAT_IMG[rec.m === 0 ? "smugCard" : "happyCard"]);
+  if (face) ctx.drawImage(face, W / 2 - 95, 30, 190, 190);
+  const tw = 86, th = 94, tg = 12, tx0 = (W - (tw * 6 + tg * 5)) / 2, ty = 182;
+  LOGO.forEach(([ch, col, rot], k) => {
+    ctx.save(); ctx.translate(tx0 + k * (tw + tg) + tw / 2, ty + th / 2); ctx.rotate(rot * Math.PI / 180);
+    ctx.fillStyle = col; rr(ctx, -tw / 2, -th / 2, tw, th, 22); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.font = `800 52px ${F}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(ch, 0, 3);
+    ctx.restore();
+  });
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  ctx.fillStyle = "#9A8F88"; ctx.font = `600 26px ${F}`; ctx.fillText(`每日挑战 · ${m}月${d}日 周${WD[wdOf(key)]} · ${P.n}×${P.n}`, W / 2, 334);
+  // 棋盘：白底卡片 + 颜色马赛克（没有猫，不剧透）
+  const pw = 500, px = (W - pw) / 2, py = 362, pad = 18;
+  ctx.fillStyle = "#FFFFFF"; rr(ctx, px, py, pw, pw, 30); ctx.fill();
+  const bs = pw - pad * 2, gap = P.n <= 8 ? 7 : P.n <= 9 ? 6 : 5, cs = (bs - gap * (P.n - 1)) / P.n;
   for (let i = 0; i < P.n * P.n; i++) {
     const r = Math.floor(i / P.n), cc = i % P.n;
     ctx.fillStyle = REGION_COLORS[colors[P.reg[i]]];
-    rr(ctx, bx + cc * (cs + gap), by + r * (cs + gap), cs, cs, cs * .16); ctx.fill();
+    rr(ctx, px + pad + cc * (cs + gap), py + pad + r * (cs + gap), cs, cs, cs * .18); ctx.fill();
   }
-  // 中间盖一个“已完成”章
-  ctx.save(); ctx.translate(W / 2, by + bs / 2); ctx.rotate(-0.12);
-  ctx.fillStyle = "rgba(255,255,255,.92)"; rr(ctx, -150, -54, 300, 108, 54); ctx.fill();
-  ctx.fillStyle = "#E8963A"; ctx.font = `800 52px ${F}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("✓ 全部坐好", 0, 2);
-  ctx.restore();
-  // 成绩
-  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-  const stats = [["用时", fmt(rec.t)], ["失误", String(rec.m)], ["连续打卡", `${save.daily.last === key ? save.daily.streak : 1}天`]];
-  stats.forEach(([a, b], k) => {
-    const x = W / 2 + (k - 1) * 200;
-    ctx.fillStyle = "#3B302B"; ctx.font = `800 52px ${F}`; ctx.fillText(b, x, 778);
-    ctx.fillStyle = "#9A8F88"; ctx.font = `500 24px ${F}`; ctx.fillText(a, x, 814);
-  });
   // 星星
   const stars = starsOf(rec.m);
   for (let k = 0; k < 3; k++) {
-    const x = W / 2 + (k - 1) * 56, y = 698, R = 22;
-    ctx.beginPath(); for (let j = 0; j < 10; j++) { const rad = j % 2 ? R * .45 : R, a = -Math.PI / 2 + j * Math.PI / 5; ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad); }
-    ctx.closePath(); ctx.fillStyle = k < stars ? "#FFCC00" : "#E8E2DC"; ctx.fill();
+    const x = W / 2 + (k - 1) * 62, y = 920, R = k === 1 ? 30 : 25;
+    ctx.beginPath(); for (let j = 0; j < 10; j++) { const rad = j % 2 ? R * .45 : R, a = -Math.PI / 2 + j * Math.PI / 5; ctx.lineTo(x + Math.cos(a) * rad, y + (k === 1 ? -6 : 0) + Math.sin(a) * rad); }
+    ctx.closePath(); ctx.fillStyle = k < stars ? "#FFC83D" : "#E3DBD3"; ctx.fill();
   }
-  ctx.fillStyle = "#F6F2EE"; rr(ctx, 72, 840, W - 144, 92, 22); ctx.fill();
-  ctx.fillStyle = "#3B302B"; ctx.font = `700 30px ${F}`; ctx.fillText("今天的题所有人都一样，你能比我快吗？", W / 2, 884);
-  ctx.fillStyle = "#9A8F88"; ctx.font = `500 22px ${F}`; ctx.fillText(SHARE_URL.replace(/^https?:\/\//, "").replace(/\/$/, ""), W / 2, 916);
+  // 成绩
+  const streak = save.daily.last === key ? save.daily.streak : 1;
+  [["用时", fmt(rec.t)], ["失误", String(rec.m)], ["连续打卡", `${streak}天`]].forEach(([a, b], k) => {
+    const x = W / 2 + (k - 1) * 210;
+    ctx.fillStyle = "#3B302B"; ctx.font = `800 54px ${F}`; ctx.fillText(b, x, 1012);
+    ctx.fillStyle = "#9A8F88"; ctx.font = `500 24px ${F}`; ctx.fillText(a, x, 1046);
+  });
+  ctx.fillStyle = "#3B302B"; ctx.font = `700 28px ${F}`; ctx.fillText("今天的题所有人都一样，你能比我快吗？", W / 2, 1100);
+  ctx.fillStyle = "#B3A9A2"; ctx.font = `500 21px ${F}`; ctx.fillText(SHARE_URL.replace(/^https?:\/\//, "").replace(/\/$/, ""), W / 2, 1130);
   return c;
 }
 async function openScoreCard(key) {
@@ -963,8 +964,7 @@ async function openScoreCard(key) {
   let file = null;
   try { const blob = await new Promise(r => c.toBlob(r, "image/png")); file = new File([blob], `爆米花-每日挑战-${key}.png`, { type: "image/png" }); } catch (e) {}
   const canFile = file && navigator.canShare && navigator.canShare({ files: [file] });
-  showDialog(`<h3>我的成绩卡</h3>
-    <img class="cardimg" src="${url}" alt="每日挑战成绩卡：用时${fmt(rec.t)}，失误${rec.m}次">
+  showDialog(`<img class="cardimg" src="${url}" alt="每日挑战成绩卡：用时${fmt(rec.t)}，失误${rec.m}次">
     <p>长按图片可以保存，或者直接发给朋友。</p>
     ${canFile ? '<button class="btn" id="dShareImg">分享图片</button>' : ""}
     <div class="row2"><button class="btn alt" id="dShareTxt">分享文字</button><button class="btn alt" id="dClose">关闭</button></div>`);
@@ -999,7 +999,7 @@ function openSign() {
       : `<div class="${cls}">第${k + 1}天${giftIcons(g, 28)}<b>${g.cans ? g.cans : "×" + (g.hint || g.revive)}</b></div>`;
   }).join("");
   const g = SIGN_REWARDS[cur];
-  showDialog(`<h3>每日签到</h3>
+  showDialog(`<img class="mood" src="${CAT_IMG.lickBig}" alt=""><h3>每日签到</h3>
     <p>${can ? `今天领第${cur + 1}天：${giftText(g)}` : "今天已经领过了，明天再来。"}</p>
     <div class="signgrid">${cells}</div>
     <p style="font-size:12px">断签不清零，接着往下领；领满7天重新开始。</p>
@@ -1027,7 +1027,7 @@ function openShop(msg) {
   const adLeft = AD_HINTS_PER_DAY - save.adHint.n;
   const row = (icon, name, sub, btn) => `<div class="shoprow"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${icon}"/></svg><div>${name}<small>${sub}</small></div>${btn}</div>`;
   const buyBtn = (id, price) => `<button class="buy" id="${id}" ${save.cans < price ? "disabled" : ""}>${CAN_SVG}${price}</button>`;
-  showDialog(`<h3>罐头商店</h3>
+  showDialog(`<img class="mood" src="${CAT_IMG.lickBig}" alt=""><h3>罐头商店</h3>
     <div class="bag"><span class="pill">${CAN_SVG}${save.cans}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bulb"/></svg>${save.hintCards}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-revive"/></svg>${save.revives}</span></div>
     ${msg ? `<p style="color:var(--accent-ink);font-weight:600">${msg}</p>` : ""}
     <div class="shoplist">
@@ -1036,7 +1036,7 @@ function openShop(msg) {
       ${row("i-revive", "复活心 ×1", "心用完时直接复活，不用看广告", buyBtn("bRv", PRICE.revive))}
       ${row("i-bulb", "免费提示卡 ×1", `看一段广告领，今天还能领 ${adLeft} 次`, `<button class="buy ad" id="bAd" ${adLeft <= 0 ? "disabled" : ""}>看广告</button>`)}
     </div>
-    <p style="font-size:12px">爆米花皮肤和棋盘主题也会放在这里，用罐头解锁，等新表情画好就上。</p>
+    <p style="font-size:12px">爆米花皮肤和棋盘主题也会放在这里，用罐头解锁，下一步就做。</p>
     <button class="btn alt" id="dClose">关闭</button>`);
   const buy = (price, apply, label) => () => { if (save.cans < price) return; save.cans -= price; apply(); persist(); fx.good(); openShop(`买到了：${label}`); };
   $("bH1").onclick = buy(PRICE.hint1, () => save.hintCards += 1, "提示卡×1");
@@ -1257,6 +1257,7 @@ document.addEventListener("touchend", e => {
 }, { passive: false });
 
 $("brandImg").src = CAT_IMG.headBig;
+$("logo").innerHTML = LOGO.map(([ch, col, rot]) => `<span aria-hidden="true" style="background:${col};transform:rotate(${rot}deg)">${ch}</span>`).join("");
 renderHome();
 // 每天第一次打开：玩过的人自动弹签到（第一次来的新玩家先玩，不打扰）
 if (save.sign.last !== todayKey() && (save.sign.count > 0 || Object.keys(save.best).length > 0)) setTimeout(openSign, 400);
