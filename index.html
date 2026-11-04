@@ -296,7 +296,7 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
   <div class="brand">
     <img id="brandImg" alt="">
     <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
-    <p>原型 v1.6 · 200关、新提示、双击放猫</p>
+    <p>原型 v1.7 · 新配色、南瓜灯</p>
   </div>
   <div class="homebar">
     <button class="pill" id="cansPill" title="商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use class="curuse" href="#can"/></svg><b id="homeCans">0</b></button>
@@ -458,18 +458,32 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
       <circle cx="18.4" cy="12.9" r="1" fill="var(--t2)"/>
     </symbol>
     <!-- 万圣节棋盘装饰 -->
-    <symbol id="d-pumpkin" viewBox="0 0 60 52">
-      <path d="M31 13 C32 8 34 5 37.5 4" fill="none" stroke="#5E7A35" stroke-width="2.4" stroke-linecap="round"/>
-      <path d="M37 6.5 C42 2.5 47 4.5 46 8.5 C43 9.5 39.5 8.5 37 6.5 Z" fill="#7FA34A"/>
-      <path d="M33 11 C36 12.5 37 15.5 35 17.5 C33.5 18.8 31.5 17.6 32.2 16" fill="none" stroke="#7FA34A" stroke-width="1.4" stroke-linecap="round"/>
-      <ellipse cx="15.5" cy="32" rx="12.5" ry="16" fill="#D96A26"/>
-      <ellipse cx="44.5" cy="32" rx="12.5" ry="16" fill="#D96A26"/>
-      <ellipse cx="22.5" cy="32.5" rx="11.5" ry="17.5" fill="#EC8236"/>
-      <ellipse cx="37.5" cy="32.5" rx="11.5" ry="17.5" fill="#EC8236"/>
-      <ellipse cx="30" cy="33" rx="10" ry="18.5" fill="#F59A45"/>
-      <path d="M22.5 16 C19 24 19 41 22.5 49.5 M37.5 16 C41 24 41 41 37.5 49.5" fill="none" stroke="#C85A1E" stroke-width=".9" opacity=".6"/>
-      <ellipse cx="26.5" cy="24" rx="2.4" ry="5" fill="#fff" opacity=".22"/>
-      <path d="M27 15.5 C27.5 12.5 29 11.5 30.5 11.6 C32 11.7 33.2 12.8 33 15.5 Z" fill="#6B5A2E"/>
+    <radialGradient id="pkLobe" cx="45%" cy="38%" r="65%"><stop offset="0" stop-color="#FFB766"/><stop offset=".55" stop-color="#EE7D26"/><stop offset="1" stop-color="#A9440F"/></radialGradient>
+    <radialGradient id="pkLobeD" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#E98A3A"/><stop offset=".6" stop-color="#C85A1A"/><stop offset="1" stop-color="#7E300B"/></radialGradient>
+    <radialGradient id="pkFire" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#FFF6B0"/><stop offset=".45" stop-color="#FFB02E"/><stop offset="1" stop-color="#E5361C"/></radialGradient>
+    <linearGradient id="pkStem" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5A4A22"/><stop offset=".5" stop-color="#8A7536"/><stop offset="1" stop-color="#4A3B1A"/></linearGradient>
+    <filter id="pkBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <!-- 南瓜灯：有体积感的南瓜 + 雕出来的眼睛鼻子嘴，里面透出红橙色的火光，会轻轻闪 -->
+    <symbol id="d-pumpkin" viewBox="0 0 64 58">
+      <path d="M34 12 C35 7 37.5 4 41 3" fill="none" stroke="#5E7A35" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M40 5 C45 1.5 51 3.5 50 7.5 C46.5 8.8 42.5 7.8 40 5 Z" fill="#6E8F3C"/>
+      <ellipse cx="15" cy="35" rx="13" ry="18" fill="url(#pkLobeD)"/>
+      <ellipse cx="49" cy="35" rx="13" ry="18" fill="url(#pkLobeD)"/>
+      <ellipse cx="23" cy="35.5" rx="12.5" ry="19.5" fill="url(#pkLobe)"/>
+      <ellipse cx="41" cy="35.5" rx="12.5" ry="19.5" fill="url(#pkLobe)"/>
+      <ellipse cx="32" cy="36" rx="11" ry="20.5" fill="url(#pkLobe)"/>
+      <path d="M23 17 C19 26 19 46 23 55 M41 17 C45 26 45 46 41 55 M32 15.5 V56" fill="none" stroke="#8A3A0E" stroke-width=".8" opacity=".45"/>
+      <ellipse cx="26" cy="25" rx="2.6" ry="5.5" fill="#fff" opacity=".18"/>
+      <path d="M29 16 C29.5 12.5 31 11.3 32.8 11.4 C34.6 11.5 35.8 12.8 35.6 16 Z" fill="url(#pkStem)"/>
+      <g fill="#FF3A12" filter="url(#pkBlur)" opacity=".85">
+        <path d="M15 31 L26 31 L22.5 22.5 Z M38 31 L49 31 L41.5 22.5 Z M30 35 L34 35 L32 31 Z"/>
+        <path d="M14 39 Q32 54 50 39 L46.5 40 L44.5 43.5 L41.5 40.8 L38.5 44.6 L35.5 41.5 L32 45.5 L28.5 41.5 L25.5 44.6 L22.5 40.8 L19.5 43.5 L17.5 40 Z"/>
+        <animate attributeName="opacity" values=".55;.95;.7;1;.6;.85" dur="1.8s" repeatCount="indefinite"/>
+      </g>
+      <g fill="url(#pkFire)" stroke="#5A2006" stroke-width=".7" stroke-linejoin="round">
+        <path d="M15 31 L26 31 L22.5 22.5 Z M38 31 L49 31 L41.5 22.5 Z M30 35 L34 35 L32 31 Z"/>
+        <path d="M14 39 Q32 54 50 39 L46.5 40 L44.5 43.5 L41.5 40.8 L38.5 44.6 L35.5 41.5 L32 45.5 L28.5 41.5 L25.5 44.6 L22.5 40.8 L19.5 43.5 L17.5 40 Z"/>
+      </g>
     </symbol>
     <symbol id="d-bat" viewBox="0 0 48 26">
       <path d="M24 9 C20 2 11 1 2 6 C7 8 8 12 7 15 C10 13 13 14 15 17 C17 14 20 14 22 16 L24 13 L26 16 C28 14 31 14 33 17 C35 14 38 13 41 15 C40 12 41 8 46 6 C37 1 28 2 24 9 Z" fill="#2E2440"/>
@@ -505,6 +519,7 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
     <symbol id="p8" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16 C4.5 11 8 8.5 12 8.5 C15.5 8.5 18.5 11 19.5 15 L4.5 16 Z"/><circle cx="9.5" cy="7.5" r="2.2"/><path d="M19.5 15 C21.5 15.5 21.5 18.5 19 19 C16.5 19.5 15 18 13 19"/></g></symbol><!-- 玩具老鼠 -->
     <symbol id="p9" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9 H20 V19.5 H4 Z"/><path d="M4 9 L2.5 5.5 H10 L12 9 M20 9 L21.5 5.5 H14 L12 9"/><path d="M9 13 H15"/></g></symbol><!-- 纸箱 -->
     <symbol id="p10" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5 C5 18 4.5 9.5 12 3.5 C19.5 9.5 19 18 12 20.5 Z"/><path d="M12 6.5 V20.5 M12 11 L8.6 8.6 M12 11 L15.4 8.6 M12 15 L8.4 12.7 M12 15 L15.6 12.7"/></g></symbol><!-- 猫薄荷 -->
+    <symbol id="p11" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20 C6 15.8 3.5 12.8 3.5 9.4 C3.5 6.8 5.6 4.8 8.1 4.8 C9.8 4.8 11.2 5.7 12 7.1 C12.8 5.7 14.2 4.8 15.9 4.8 C18.4 4.8 20.5 6.8 20.5 9.4 C20.5 12.8 18 15.8 12 20 Z"/></g></symbol><!-- 小爱心 -->
   </defs>
 </svg>
 
@@ -523,25 +538,27 @@ const TIPS = {
 /* 主题：棋盘配色、标题色块、货币、特效。皮肤 = 一套爆米花造型 + 一个主题 */
 const THEMES = {
   normal: {
-    colors: ["#9B84D8", "#AFD69B", "#CD7D7A", "#A9BDD9", "#DFC062", "#6075B6", "#F0A96C", "#62B2A8", "#E390C0", "#A87855", "#F2BCD2"],
-    names: ["紫色", "浅绿", "砖红", "雾蓝", "黄色", "深蓝", "橙色", "青绿", "粉色", "棕色", "浅粉"],
-    tools: ["#6075B6", "#F0A96C", "#9B84D8", "#62B2A8"], topDeco: "",
-    logo: ["#CD7D7A", "#F0A96C", "#62B2A8", "#9B84D8", "#6075B6", "#E390C0"], bg: "#F6F2EE", board: "#3A302C", deco: "",
+    /* 固定 12 色：色相分散、明度有深有浅、饱和度适中；任意两色色差 ΔE ≥ 34，前 7 色（7×7 用）≥ 37 */
+    colors: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#DF6BBC", "#8CCBEB"],
+    names: ["橙色", "紫色", "草绿", "黄色", "蓝色", "莓红", "青绿", "淡紫", "焦糖", "奶白", "玫粉", "天蓝"],
+    tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#5FC2B0"], topDeco: "",
+    logo: ["#E5647A", "#F28C38", "#5FC2B0", "#8A5CC9", "#4A8FD8", "#DF6BBC"], bg: "#F6F2EE", board: "#3A302C", deco: "",
     cur: { sym: "can", name: "猫罐头", short: "罐头", shop: "罐头商店" },
     bits: ["#FFFFFF", "#FFE7A3", "#FFD966"], kind: () => "corn",
     rain: ["#FFB3C7", "#8EE3C8", "#FFD966", "#9CC8FF", "#FFBC85", "#C9B2FF", "#B6E88C", "#FFFFFF"], rainKind: j => j % 4 === 0 ? "corn" : j % 5 === 0 ? "star" : "paper",
     fw: [["#FF6363", "#FFD25A", "#FFFFFF"], ["#5FA8FF", "#36C3CC", "#FFFFFF"], ["#B38BFF", "#FF8FB3", "#FFFFFF"], ["#A6DA4E", "#FFD25A", "#FFFFFF"], ["#FF9A4D", "#FF6363", "#FFD25A"]]
   },
   halloween: {
-    colors: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#A3ACBE"],
-    names: ["南瓜橙", "巫婆紫", "黏液绿", "糖果黄", "夜空蓝", "莓果红", "药水青", "幽灵紫", "焦糖色", "骨头白", "墓碑灰"],
+    colors: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#DF6BBC", "#8CCBEB"],
+    names: ["南瓜橙", "巫婆紫", "黏液绿", "糖果黄", "夜空蓝", "莓果红", "药水青", "幽灵紫", "焦糖色", "骨头白", "魔法粉", "月光蓝"],
     tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#8FCB5A"],
     logo: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F28C38", "#8A5CC9", "#8FCB5A"], bg: "#F2ECF6", board: "#2E2440",
-    deco: `<svg viewBox="0 0 40 40" style="left:-1px;top:-1px;width:28px;height:28px"><use href="#d-web"/></svg>
-      <svg viewBox="0 0 60 52" style="left:-12px;bottom:-24px;width:46px;height:40px"><use href="#d-pumpkin"/></svg>
-      <svg viewBox="0 0 60 52" style="right:-8px;bottom:-18px;width:32px;height:28px;transform:scaleX(-1)"><use href="#d-pumpkin"/></svg>`,
-    topDeco: `<svg class="bat" viewBox="0 0 48 26" style="left:62px;top:14px;width:34px;height:18px"><use href="#d-bat"/></svg>
-      <svg class="bat bat2" viewBox="0 0 48 26" style="right:64px;top:30px;width:24px;height:13px"><use href="#d-bat"/></svg>`,
+    deco: `<svg viewBox="0 0 40 40" style="left:-1px;top:-1px;width:26px;height:26px"><use href="#d-web"/></svg>
+      <svg class="bat" viewBox="0 0 48 26" style="right:-6px;top:-13px;width:36px;height:20px"><use href="#d-bat"/></svg>
+      <svg class="bat bat2" viewBox="0 0 48 26" style="left:14px;top:-11px;width:26px;height:14px"><use href="#d-bat"/></svg>
+      <svg viewBox="0 0 64 58" style="left:-12px;bottom:-26px;width:50px;height:45px"><use href="#d-pumpkin"/></svg>
+      <svg viewBox="0 0 64 58" style="right:-8px;bottom:-20px;width:36px;height:33px"><use href="#d-pumpkin"/></svg>`,
+    topDeco: "",
     cur: { sym: "candy", name: "南瓜糖", short: "南瓜糖", shop: "糖果商店" },
     bits: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55"], kind: k => k % 3 === 0 ? "bat" : "candy",
     rain: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#2E2440"], rainKind: j => j % 3 === 0 ? "bat" : j % 3 === 1 ? "candy" : "paper",
@@ -582,7 +599,7 @@ function assignColors(id, n, reg) {
   for (let t = 0; t < 600; t++) {
     const pool = [...Array(REGION_COLORS.length).keys()];
     // 小棋盘优先用前几种差别最大的颜色
-    const pick = pool.slice(0, Math.max(n, 7));
+    const pick = pool.slice(0, n <= 7 ? 7 : Math.min(REGION_COLORS.length, n + 1));
     for (let k = pick.length - 1; k > 0; k--) { const j = Math.floor(rnd() * (k + 1)); [pick[k], pick[j]] = [pick[j], pick[k]]; }
     const perm = pick.slice(0, n);
     let mn = 1e9, sum = 0;
