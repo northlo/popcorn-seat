@@ -59,7 +59,7 @@ plan.forEach((s, i) => {
 });
 const givenOf = lv => { const sz = Array(lv.n).fill(0); lv.reg.forEach(g => sz[g]++); let best = 0;
   for (let r = 1; r < lv.n; r++) if (sz[lv.reg[r * lv.n + lv.sol[r]]] > sz[lv.reg[best * lv.n + lv.sol[best]]]) best = r; return best * lv.n + lv.sol[best]; };
-const levels = out.map(({ lv, hard }, i) => ({ id: i + 1, n: lv.n, hard, reg: lv.reg.join(','), sol: lv.sol.join(','), score: lv.score, tech: lv.used, given: (hard || i < 30) ? [givenOf(lv)] : [] }));
+const levels = out.map(({ lv, hard }, i) => ({ id: i + 1, n: lv.n, hard, reg: lv.reg.join(','), sol: lv.sol.join(','), score: lv.score, tech: lv.used, given: (!hard && i < 30) ? [givenOf(lv)] : [] }));   // 只有前 30 关的普通关开局送一只，困难关不送
 fs.writeFileSync(__dirname + '/levels.json', JSON.stringify(levels));
 console.log('levels', levels.length);
 for (let b = 0; b < BLOCKS; b++) console.log(String(b * 10 + 1).padStart(3), levels.slice(b * 10, b * 10 + 10).map(l => `${l.n}${l.hard ? 'H' : ''}:${l.score}`).join(' '));
