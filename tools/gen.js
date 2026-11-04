@@ -368,7 +368,7 @@ function sawtooth(levels) {
   return out;
 }
 
-module.exports = { setStraight: v => { STRAIGHT = v; }, makeLevel, pickLevels, sawtooth, countSolutions, logicSolve };
+module.exports = { setStraight: v => { STRAIGHT = v; }, makeLevel, pickLevels, sawtooth, countSolutions, logicSolve, solveAll, score };
 
 if (require.main === module) {
   const t0 = Date.now();

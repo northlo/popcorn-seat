@@ -137,7 +137,7 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .howto { text-align: center; }
 
 /* 排行榜 */
-.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: var(--fill); border-radius: 10px; padding: 2px; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; background: var(--fill); border-radius: 10px; padding: 2px; }
 .tabs button { border-radius: 8px; padding: 7px; font-size: 14px; font-weight: 500; background: transparent; }
 .tabs button[aria-selected="true"] { background: var(--card); box-shadow: 0 1px 4px rgba(0,0,0,.12); font-weight: 600; }
 .rank { width: 100%; border-collapse: collapse; font-size: 15px; font-variant-numeric: tabular-nums; }
@@ -241,6 +241,26 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
 .skinrow .ltd { display: inline-block; font-size: 10px; font-weight: 700; color: #fff; background: var(--accent); border-radius: 6px; padding: 1px 5px; margin-left: 4px; vertical-align: 2px; }
 .buy.on { background: var(--fill); color: var(--ink-soft); }
 .sec { font-size: 13px; font-weight: 700; color: var(--ink-soft); text-align: left; margin: 2px 2px -4px; }
+/* 金罐头关 */
+.lv.goldlv { background: linear-gradient(160deg, #FFEBA8, #F2C14E); color: #7A5200; }
+.lv.goldlv small { color: #8A6100; font-weight: 700; }
+.lvinfo b em.goldtag { background: linear-gradient(160deg, #F7CF5A, #E0A21E); }
+body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180, 50, .55); }
+.btn.gold { background: linear-gradient(160deg, #F7CF5A, #E0A21E); color: #fff; }
+/* 今日竞速 */
+.race { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-align: left; width: 100%; }
+.race svg { width: 38px; height: 38px; flex: none; }
+.race div { flex: 1; }
+.race b { display: block; font-size: 16px; }
+.race span { font-size: 12px; color: var(--ink-soft); }
+.race .rk { flex: none; text-align: center; font-size: 11px; color: var(--ink-soft); }
+.race .rk strong { display: block; font-size: 22px; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+.rank tr.me td { color: var(--accent-ink); font-weight: 700; }
+.rank td.no { width: 30px; color: var(--ink-soft); font-weight: 700; }
+.rank td.pr { font-size: 11px; color: var(--ink-soft); text-align: right; }
+.prizes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+.prizes div { background: var(--bg); border-radius: 10px; padding: 6px 2px; text-align: center; font-size: 11px; color: var(--ink-soft); }
+.prizes b { display: block; font-size: 13px; color: var(--ink); }
 /* 每日挑战卡片 */
 .daily { display: flex; flex-direction: column; gap: 10px; }
 .daily .top { display: flex; align-items: center; gap: 12px; }
@@ -296,7 +316,7 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
   <div class="brand">
     <img id="brandImg" alt="">
     <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
-    <p>原型 v1.8 · 白底棋盘、12种图案</p>
+    <p>原型 v1.9 · 金罐头关、今日竞速</p>
   </div>
   <div class="homebar">
     <button class="pill" id="cansPill" title="商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use class="curuse" href="#can"/></svg><b id="homeCans">0</b></button>
@@ -307,6 +327,7 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
     <button class="round" id="setHome" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-gear"/></svg></button>
   </div>
   <div class="panel daily" id="dailyCard"></div>
+  <button class="panel race" id="raceCard"></button>
   <div class="tiles">
     <button class="tile" id="signTile"><svg viewBox="0 0 36 36" aria-hidden="true"><use href="#i-gift"/></svg><div><b>每日签到</b><span id="signSub">第1天</span></div><i class="dot hidden" id="signDot"></i></button>
     <button class="tile" id="shopTile"><i class="dot hidden" id="shopDot"></i><svg viewBox="0 0 36 36" aria-hidden="true"><use href="#i-shop"/></svg><div><b id="shopName">罐头商店</b><span id="bagSub">提示卡 0 · 复活心 0</span></div></button>
@@ -353,11 +374,12 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
 <section class="screen hidden" id="rank">
   <div class="topbar">
     <button class="round" id="rankBack" aria-label="返回"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" fill="none" stroke="#1C1C1E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <div class="lvinfo"><b>排行榜</b><span>好友排名等微信版接入</span></div>
+    <div class="lvinfo"><b>排行榜</b><span>竞速和好友排名在微信版接真人</span></div>
     <button class="round" id="rankShare" aria-label="分享"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-share"/></svg></button>
   </div>
   <div class="tabs" role="tablist">
-    <button role="tab" id="tabCans" aria-selected="true">猫罐头</button>
+    <button role="tab" id="tabRace" aria-selected="true">今日竞速</button>
+    <button role="tab" id="tabCans" aria-selected="false">我的成绩</button>
     <button role="tab" id="tabTime" aria-selected="false">最快通关</button>
   </div>
   <div class="panel" id="rankBody"></div>
@@ -407,6 +429,21 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
       <ellipse cx="12" cy="8.5" rx="6.6" ry="2.4" fill="#C3C8D0"/>
       <ellipse cx="13.6" cy="8.3" rx="2.4" ry="1.1" fill="none" stroke="#8D939D" stroke-width=".9"/>
       <path d="M7.6 16.3 C9 14.6 11.6 14.6 13 16.3 C11.6 18 9 18 7.6 16.3 Z M13 16.3 L15 15 V17.6 Z" fill="#FFFFFF"/>
+    </symbol>
+    <!-- 爆米花桶（竞速积分） -->
+    <symbol id="popbox" viewBox="0 0 24 24">
+      <path d="M5 9.5 H19 L17.4 21.5 H6.6 Z" fill="#FFFFFF"/>
+      <path d="M5 9.5 H7.8 L8.6 21.5 H6.6 Z M10.6 9.5 H13.4 L13.2 21.5 H10.8 Z M16.2 9.5 H19 L17.4 21.5 H15.4 Z" fill="#E0564F"/>
+      <g fill="#FFF4D6" stroke="#E8B04A" stroke-width=".6"><circle cx="7" cy="8.6" r="2.4"/><circle cx="10.4" cy="6.8" r="2.6"/><circle cx="14" cy="7" r="2.6"/><circle cx="17.2" cy="8.6" r="2.3"/><circle cx="12.2" cy="4.4" r="2.2"/></g>
+    </symbol>
+    <!-- 金罐头 -->
+    <symbol id="goldcan" viewBox="0 0 24 24">
+      <path d="M3.5 8.5 V17.5 C3.5 19.4 7.3 20.9 12 20.9 C16.7 20.9 20.5 19.4 20.5 17.5 V8.5 Z" fill="#F2B632"/>
+      <path d="M3.5 10.2 C3.5 12.1 7.3 13.6 12 13.6 C16.7 13.6 20.5 12.1 20.5 10.2 V9.2 C20.5 11.1 16.7 12.6 12 12.6 C7.3 12.6 3.5 11.1 3.5 9.2 Z" fill="#C98B16"/>
+      <ellipse cx="12" cy="8.5" rx="8.5" ry="3.4" fill="#FFE08A"/><ellipse cx="12" cy="8.5" rx="6.6" ry="2.4" fill="#F7C94E"/>
+      <ellipse cx="13.6" cy="8.3" rx="2.4" ry="1.1" fill="none" stroke="#B57D10" stroke-width=".9"/>
+      <path d="M7.6 16.3 C9 14.6 11.6 14.6 13 16.3 C11.6 18 9 18 7.6 16.3 Z M13 16.3 L15 15 V17.6 Z" fill="#FFF8DC"/>
+      <path d="M17.5 4 L18.2 5.6 L19.8 6.3 L18.2 7 L17.5 8.6 L16.8 7 L15.2 6.3 L16.8 5.6 Z M5.5 3 L6 4.1 L7.1 4.6 L6 5.1 L5.5 6.2 L5 5.1 L3.9 4.6 L5 4.1 Z" fill="#FFD54A"/>
     </symbol>
     <symbol id="candy" viewBox="0 0 24 24">
       <path d="M7.2 12 L1.8 7.2 L3.2 12 L1.8 16.8 Z" fill="#8A5CC9"/><path d="M16.8 12 L22.2 7.2 L20.8 12 L22.2 16.8 Z" fill="#8A5CC9"/>
@@ -613,7 +650,13 @@ function assignColors(id, n, reg) {
   }
   return best;
 }
-const FREE_HINTS = 1;          // 每关 1 次免费提示，之后用提示卡，没卡了看广告
+const FREE_HINTS = 1;
+/* 金罐头关：每组里固定一关（第 11 关起），第一次玩时可以接受挑战：只有 1 颗心，不能用提示、老鼠、天使之心，奖励 ×3 */
+const GOLD_POS = [6, 3, 8];
+const isGold = id => typeof id === "number" && id > 10 && !LEVELS[id - 1].hard && (id - 1) % 10 === GOLD_POS[Math.floor((id - 1) / 10) % 3];
+const goldOpen = id => isGold(id) && !save.best[id] && !save.goldLost[id];
+/* 爆米花积分：第一次通关 = 星数 × 棋盘分；困难 ×1.5，金罐头 ×2，连胜每关 +10%（最多翻倍）；重玩只给三分之一 */
+const SIZE_PTS = { 7: 2, 8: 3, 9: 4, 10: 5, 11: 6 };          // 每关 1 次免费提示，之后用提示卡，没卡了看广告
 const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 24 };
 const DAILY_CANS = { 8: 25, 9: 30, 10: 40 };
 const PRICE = { hint1: 50, hint3: 135, revive: 80, mouse: 30 };
@@ -628,7 +671,9 @@ let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: t
   sign: { last: "", count: 0 },                     // 上次签到日期、本轮已领几天
   daily: { done: {}, streak: 0, last: "", best: 0 },// 每日挑战：每天成绩、连续打卡
   adHint: { day: "", n: 0 },
-  skin: "normal", skins: ["normal"], lv: 2 };
+  skin: "normal", skins: ["normal"], lv: 2,
+  goldLost: {},                                     // 放弃或挑战失败的金罐头关
+  pop: 0, race: { day: "", pts: 0 }, raceLog: [] };   // 爆米花积分、今日竞速
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (s) {
   // 关卡在 v2 重新编排过：旧的通关记录对不上新关卡，清掉一次；图案改成线条后默认打开
   if (s.lv !== 2) { s.best = {}; s.patterns = true; s.lv = 2; }
@@ -832,14 +877,16 @@ function renderHome() {
     for (let id = b * 10 + 1; id <= Math.min(LEVELS.length, b * 10 + 10); id++) ids.push(id);
     const btns = ids.map(id => {
       const L = LEVELS[id - 1], best = save.best[id];
-      const cls = ["lv", L.hard ? "hard" : "", best ? "done" : ""].join(" ");
-      const sub = best ? fmt(best) : L.hard ? "困难" : L.n + "×" + L.n;
+      const gold = goldOpen(id);
+      const cls = ["lv", L.hard ? "hard" : "", best ? "done" : "", gold ? "goldlv" : ""].join(" ");
+      const sub = best ? fmt(best) : L.hard ? "困难" : gold ? "金罐头" : L.n + "×" + L.n;
       return `<button class="${cls}" data-id="${id}" aria-label="第${id}关，${L.n}×${L.n}${L.hard ? "，困难" : ""}${best ? "，已通关" : ""}">${id}<small>${sub}</small></button>`;
     }).join("");
     html.push(`<div class="block"><h2>第${b + 1}组 · 第${b * 10 + 1}–${b * 10 + ids.length}关</h2><div class="levels">${btns}</div></div>`);
   }
   $("blocks").innerHTML = html.join("");
   renderDailyCard();
+  renderRaceCard();
   const today = todayKey(), canSign = save.sign.last !== today;
   $("signDot").classList.toggle("hidden", !canSign);
   $("signSub").textContent = canSign ? `第${save.sign.count % 7 + 1}天的礼物可以领` : "今天已领，明天再来";
@@ -870,9 +917,19 @@ function renderDailyCard() {
 /* ---------- 游戏 ---------- */
 let G = null, timerId = null;
 
-function startLevel(id) {
+function startLevel(id, mode) {
   const L = LEVELS[id - 1];
-  startGame(id, { n: L.n, hard: !!L.hard, reg: L.reg.split(",").map(Number), sol: L.sol.split(",").map(Number), given: L.given || [], seed: id });
+  if (goldOpen(id) && !mode) {
+    showDialog(`<svg class="big" viewBox="0 0 24 24" style="width:84px;height:84px" aria-hidden="true"><use href="#goldcan"/></svg>
+      <h3>金罐头关！</h3>
+      <p>敢不敢挑战？只有<b>1颗心</b>，不能用提示、老鼠和天使之心。<br>通关奖励<b>罐头×3、爆米花×2</b>。</p>
+      <p style="font-size:12px">放弃或者挑战失败，这一关就变回普通关。</p>
+      <button class="btn gold" id="gYes">接受挑战</button><button class="btn alt" id="gNo">普通玩</button>`);
+    $("gYes").onclick = () => { hideDialog(); startLevel(id, "gold"); };
+    $("gNo").onclick = () => { hideDialog(); save.goldLost[id] = 1; persist(); startLevel(id, "normal"); };
+    return;
+  }
+  startGame(id, { n: L.n, hard: !!L.hard, reg: L.reg.split(",").map(Number), sol: L.sol.split(",").map(Number), given: L.given || [], seed: id, gold: mode === "gold" });
 }
 /* 每日挑战：重来不清零计时和失误，不然就能先试一遍再刷成绩 */
 function startDaily(key, carry) {
@@ -888,14 +945,16 @@ function startGame(id, L, carry) {
     bad: new Array(n * n).fill(false),
     given: new Set(L.given || []),
     colors: null, face: {}, faceTok: {},
-    hearts: 3, mistakes: carry ? carry.mistakes : 0, combo: 0, tutorial: typeof id === "number" && id <= 3, hints: FREE_HINTS,
+    gold: !!L.gold, hearts: L.gold ? 1 : 3, mistakes: carry ? carry.mistakes : 0, combo: 0, tutorial: typeof id === "number" && id <= 3, hints: FREE_HINTS,
     undo: [], startT: Date.now() - (carry ? carry.elapsed * 1000 : 0), elapsed: carry ? carry.elapsed : 0, over: false
   };
   for (const i of G.given) G.st[i] = 2;
   G.colors = assignColors(L.seed, n, G.reg);
   show("game");
   if (G.daily) { const [, m, d] = G.daily.split("-").map(Number); $("lvName").innerHTML = `每日挑战 · ${m}月${d}日`; }
-  else $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}`;
+  else $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}${G.gold ? '<em class="goldtag">金罐头</em>' : ""}`;
+  document.body.classList.toggle("goldmode", G.gold);
+  ["hintBtn", "mouseBtn"].forEach(b => $(b).disabled = G.gold);
   $("tip").classList.remove("float");
   if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
   else $("tip").classList.add("hidden");
@@ -957,7 +1016,7 @@ function drawCell(i, anim) {
 }
 function renderHearts() {
   const h = [];
-  for (let k = 0; k < 3; k++) {
+  for (let k = 0; k < (G.gold ? 1 : 3); k++) {
     const on = G.tutorial || k < G.hearts;
     h.push(`<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:${on ? "#E0625F" : "#E6DED6"}"><use href="#heart"/></svg>`);
   }
@@ -1057,9 +1116,12 @@ function rewardFor() {
   const streakBonus = Math.min(0.5, Math.max(0, save.streak - 1) * 0.1);
   const perfect = G.mistakes === 0 ? 0.2 : 0;
   const first = !save.best[G.id];
-  let total = Math.round(base * (1 + streakBonus + perfect));
+  let total = Math.round(base * (1 + streakBonus + perfect) * (G.gold ? 3 : 1));
   if (!first) total = Math.max(1, Math.round(total * 0.2));
-  return { total, base, streakBonus, perfect, first };
+  const stars = starsOf(G.mistakes);
+  let pop = stars * (SIZE_PTS[G.n] || 3) * (G.hard ? 1.5 : 1) * (G.gold ? 2 : 1) * Math.min(2, 1 + Math.max(0, save.streak - 1) * 0.1);
+  pop = Math.max(1, Math.round(first ? pop : pop / 3));
+  return { total, base, streakBonus, perfect, first, pop };
 }
 function checkWin() {
   if (G.st.filter(v => v === 2).length < G.n) return;
@@ -1069,6 +1131,7 @@ function checkWin() {
   save.bestStreak = Math.max(save.bestStreak, save.streak);
   const rw = rewardFor();
   save.cans += rw.total;
+  addPop(rw.pop);
   const prev = save.best[G.id];
   const record = prev && G.elapsed < prev;   // 重玩打破自己的最快纪录
   if (!prev || G.elapsed < prev) save.best[G.id] = Math.max(1, G.elapsed);
@@ -1079,6 +1142,7 @@ function checkWin() {
   if (G.hard) notes.push("困难关翻倍");
   if (rw.streakBonus) notes.push(`连胜${save.streak}关 +${Math.round(rw.streakBonus * 100)}%`);
   if (rw.perfect) notes.push("零失误 +20%");
+  if (G.gold) notes.unshift("金罐头 ×3");
   // 棋盘上的猫一只接一只跳起来
   const cats = [];
   for (let j = 0; j < G.n * G.n; j++) if (G.st[j] === 2) cats.push(j);
@@ -1094,6 +1158,7 @@ function checkWin() {
       <h3>${record ? "比上次还快！" : "都找到座位啦！"}</h3>
       <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div><div>连胜<b>${save.streak}</b></div></div>
       <div class="reward">${curSvg()}<div>${CUR.name} <b id="canCount">+0</b><small>${notes.join(" · ") || "继续连胜有加成"}</small></div></div>
+      <div class="reward"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#popbox"/></svg><div>爆米花 <b>+${rw.pop}</b><small>${starsOf(G.mistakes)}星 × ${SIZE_PTS[G.n] || 3}${G.hard ? " × 困难1.5" : ""}${G.gold ? " × 金罐头2" : ""}${save.streak > 1 ? ` × 连胜${Math.min(2, 1 + (save.streak - 2) * 0.1).toFixed(1)}` : ""}${rw.first ? "" : " · 重玩三分之一"} · 今日竞速 ${save.race.pts}</small></div></div>
       ${next ? '<button class="btn" id="dNext">下一关</button>' : "<p>已经是最后一关了，厉害！</p>"}
       <div class="row2"><button class="btn alt" id="dShare">分享成绩</button><button class="btn alt" id="dHome">回到选关</button></div>`);
     if (next) $("dNext").onclick = () => { hideDialog(); startLevel(G.id + 1); };
@@ -1128,6 +1193,7 @@ function dailyWin() {
     gift.cans = Math.round(DAILY_CANS[G.n] * (G.mistakes === 0 ? 1.2 : 1));
     if (D.last === key && D.streak % 7 === 0) { gift.hint = 1; gift.revive = 1; }   // 连续打卡满 7 天的倍数，加送道具
     save.cans += gift.cans; save.hintCards += gift.hint; save.revives += gift.revive;
+    gift.pop = Math.round(starsOf(G.mistakes) * (SIZE_PTS[G.n] || 3) * 1.5); addPop(gift.pop);
     persist();
     $("gameCans").textContent = save.cans;
   }
@@ -1140,7 +1206,7 @@ function starRow(stars) {
 function showDailyResult(key, gift) {
   const rec = save.daily.done[key], [, m, d] = key.split("-").map(Number);
   const streak = save.daily.last === key || key === todayKey() ? dailyStreakNow() : 0;
-  const giftTxt = gift && gift.cans ? `<div class="reward">${curSvg()}<div>${CUR.name} <b>+${gift.cans}</b><small>${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、天使之心+1` : ""}</small></div></div>` : "";
+  const giftTxt = gift && gift.cans ? `<div class="reward">${curSvg()}<div>${CUR.name} <b>+${gift.cans}</b><small>${gift.pop ? `爆米花 +${gift.pop} · ` : ""}${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、天使之心+1` : ""}</small></div></div>` : "";
   showDialog(`${starRow(starsOf(rec.m))}
     <div class="hero"><img src="${F(rec.m === 0 ? "smugBig" : "happyBig")}" alt=""><svg viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg></div>
     <h3>${m}月${d}日 每日挑战完成</h3>
@@ -1318,6 +1384,15 @@ $("cansPill").onclick = () => openShop();
 function breakStreak() { if (save.streak) { save.streak = 0; persist(); } }
 function fail() {
   G.over = true; clearInterval(timerId);
+  if (G.gold) {
+    save.goldLost[G.id] = 1; persist();
+    return setTimeout(() => {
+      showDialog(`<img class="mood" src="${F("sadBig")}" alt=""><h3>金罐头飞走了</h3><p>这次没守住。这一关变回普通关，3颗心，提示和道具都能用了。</p>
+        <button class="btn" id="dRetry">再来一次（普通关）</button><button class="btn alt" id="dHome">回到选关</button>`);
+      $("dRetry").onclick = () => { hideDialog(); breakStreak(); startLevel(G.id); };
+      $("dHome").onclick = () => { hideDialog(); breakStreak(); goHome(); };
+    }, 400);
+  }
   setTimeout(() => {
     const has = save.revives > 0;
     showDialog(`<img class="mood" src="${F("sadBig")}" alt="">
@@ -1337,7 +1412,7 @@ function fail() {
   }, 400);
 }
 function goHome() {
-  clearInterval(timerId); G = null;
+  clearInterval(timerId); G = null; document.body.classList.remove("goldmode");
   renderHome(); show("home");
 }
 /* 没通关就离开或重来，连胜清零（先问一下） */
@@ -1358,7 +1433,7 @@ function leaveGuard(action) {
 $("backBtn").onclick = () => leaveGuard(goHome);
 $("restartBtn").onclick = () => {
   if (G && G.daily) { if (!G.over) startDaily(G.daily, { elapsed: G.elapsed, mistakes: G.mistakes }); return; }
-  leaveGuard(() => startLevel(G.id));
+  leaveGuard(() => startLevel(G.id, G.gold ? "gold" : undefined));
 };
 $("undoBtn").onclick = () => {
   if (!G || G.over || !G.undo.length) return;
@@ -1435,7 +1510,7 @@ function nextStepCore(blocked) {
     if (found) {
       const unit = line === "row" ? "行" : "列", ln = [...found.lines].sort((x, y) => x - y).map(x => x + 1).join("、");
       return { lit: found.chosen.flatMap(g => g.cells).concat(found.kill), mark: found.kill,
-        text: `${found.chosen.map(g => groupName("reg", g.k)).join("、")}这${size}种颜色共同占据第${ln}${unit}，这${size}${unit}的猫都被它们包了，可以排除这几${unit}中的其他格子。` };
+        text: `${found.chosen.map(g => groupName("reg", g.k)).join("、")}的空位全挤在第${ln}${unit}里：这${size}${unit}正好要坐${size}只猫，全让它们${size === 2 ? "俩" : "几个"}占了，别的颜色在这几${unit}就没座位了。` };
     }
   }
   // 6) 试放：放这里会把某一组的座位全挤掉
@@ -1638,13 +1713,85 @@ $("shareHome").onclick = () => share(`我在玩《爆米花找座位》，帮猫
 $("rankShare").onclick = () => share(`我在《爆米花找座位》攒了${save.cans}个猫罐头，最高连胜${save.bestStreak}关，来比比？`);
 
 /* ---------- 排行榜（现在只有本机成绩） ---------- */
-let rankTab = "cans";
+/* ---------- 今日竞速：每天 0 点开一场，30 人一组，比当天攒的爆米花 ----------
+   原型里没有服务器，另外 29 位是按日期生成的模拟对手（成绩随一天的时间慢慢涨）；微信版换成真人分组 */
+const RACE_SIZE = 30;
+const RACE_PRIZES = [
+  { to: 1, label: "第1名", gift: { hint: 3, mouse: 2, revive: 1 } },
+  { to: 3, label: "第2–3名", gift: { hint: 2, mouse: 1, revive: 1 } },
+  { to: 10, label: "第4–10名", gift: { hint: 1, mouse: 1 } },
+  { to: 30, label: "其他", gift: { cans: 30 } }];
+const BOT_NAMES = ["橘座大人", "奶茶猫", "芝麻汤圆", "布丁妈", "小鱼干收集者", "猫薄荷上头", "三花喵", "煤球", "年糕", "豆包爸爸", "雪球", "可乐", "糯米", "土豆", "饭团", "毛毛", "咪咪", "阿福", "团子", "栗子", "包子", "麻薯", "花卷", "大黄", "小白", "奥利奥", "椰子", "芋圆", "麦芽糖", "棉花糖", "黑豆", "咖啡", "果冻", "馒头", "饼干"];
+function raceBots(day) {
+  const r = rngOf(dayNum(day) * 7919 + 17), names = BOT_NAMES.slice().sort(() => r() - .5);
+  return Array.from({ length: RACE_SIZE - 1 }, (_, k) => {
+    const heavy = r() < .25, fin = Math.round(heavy ? 90 + r() * 260 : 8 + r() * 90);
+    return { name: names[k], fin, start: r() * .75, dur: .08 + r() * .35 };
+  });
+}
+function rngOf(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function dayFrac(day) { const now = new Date(); return day < todayKey() ? 1 : (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400; }
+function raceBoard(day, myPts) {
+  const t = dayFrac(day);
+  const rows = raceBots(day).map(b => ({ name: b.name, pts: Math.round(b.fin * Math.max(0, Math.min(1, (t - b.start) / b.dur))) }));
+  rows.push({ name: "我", pts: myPts, me: true });
+  rows.sort((a, b) => b.pts - a.pts || (a.me ? -1 : b.me ? 1 : 0));
+  return rows;
+}
+function prizeFor(rank) { return RACE_PRIZES.find(p => rank <= p.to); }
+function addPop(n) { rollRace(); save.pop += n; save.race.pts += n; persist(); }
+/* 换天了：结算昨天那场（打过的才结算），返回结算结果 */
+function rollRace() {
+  const today = todayKey();
+  if (save.race.day === today) return null;
+  let res = null;
+  if (save.race.day && save.race.pts > 0) {
+    const rows = raceBoard(save.race.day, save.race.pts), rank = rows.findIndex(x => x.me) + 1, pz = prizeFor(rank);
+    const g = pz.gift;
+    save.cans += g.cans || 0; save.hintCards += g.hint || 0; save.mice += g.mouse || 0; save.revives += g.revive || 0;
+    res = { day: save.race.day, rank, pts: save.race.pts, prize: pz };
+    save.raceLog = [res].concat(save.raceLog || []).slice(0, 14);
+  }
+  save.race = { day: today, pts: 0 };
+  persist();
+  return res;
+}
+function showRaceResult(res, then) {
+  const [, m, d] = res.day.split("-").map(Number);
+  showDialog(`<img class="mood" src="${F(res.rank <= 3 ? "smugBig" : "happyBig")}" alt="">
+    <h3>${m}月${d}日竞速结算</h3>
+    <div class="stats"><div>名次<b>第${res.rank}名</b></div><div>爆米花<b>${res.pts}</b></div></div>
+    <div class="reward">${giftIcons(res.prize.gift, 28)}<div>${res.prize.label}奖励<small>${giftText(res.prize.gift)}，已经放进背包</small></div></div>
+    <button class="btn" id="dOk">好的</button>`);
+  $("dialog").classList.add("win");
+  $("dOk").onclick = () => { hideDialog(); renderHome(); if (then) then(); };
+}
+function renderRaceCard() {
+  rollRace();
+  const rows = raceBoard(save.race.day, save.race.pts), rank = rows.findIndex(x => x.me) + 1;
+  const now = new Date(), left = 24 * 60 - now.getHours() * 60 - now.getMinutes();
+  $("raceCard").innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#popbox"/></svg>
+    <div><b>今日竞速</b><span>${RACE_SIZE}人一组，比今天攒的爆米花 · 还有${Math.floor(left / 60)}小时${left % 60}分结算</span></div>
+    <div class="rk"><strong>${save.race.pts ? rank : "–"}</strong>${save.race.pts ? `名 · ${save.race.pts}` : "还没开始"}</div>`;
+}
+$("raceCard").onclick = () => { rankTab = "race"; renderRank(); show("rank"); };
+
+let rankTab = "race";
 function renderRank() {
+  $("tabRace").setAttribute("aria-selected", rankTab === "race");
   $("tabCans").setAttribute("aria-selected", rankTab === "cans");
   $("tabTime").setAttribute("aria-selected", rankTab === "time");
-  if (rankTab === "cans") {
+  if (rankTab === "race") {
+    rollRace();
+    const rows = raceBoard(save.race.day, save.race.pts);
+    $("rankBody").innerHTML = `<div class="prizes">${RACE_PRIZES.map(p => `<div><b>${p.label}</b>${giftText(p.gift).replace(/ /g, "<br>")}</div>`).join("")}</div>
+      <table class="rank"><tbody>${rows.map((x, k) => `<tr class="${x.me ? "me" : ""}"><td class="no">${k + 1}</td><td>${x.name}</td><td>${x.pts}</td></tr>`).join("")}</tbody></table>
+      <p class="note" style="margin-top:8px">每天0点结算，第二天打开游戏时发奖励。通关得爆米花：星数×棋盘分，困难×1.5、金罐头×2、连胜最多翻倍；每日挑战也算。原型里的对手是模拟的，微信版换成真人。</p>`;
+  } else if (rankTab === "cans") {
     $("rankBody").innerHTML = `<table class="rank"><tbody>
       <tr class="me"><td>我</td><td>${CUR.name}</td><td>${save.cans}</td></tr>
+      <tr><td></td><td>累计爆米花</td><td>${save.pop}</td></tr>
+      ${(save.raceLog || []).length ? `<tr><td></td><td>竞速最好名次</td><td>第${Math.min(...save.raceLog.map(r => r.rank))}名</td></tr>` : ""}
       <tr><td></td><td>当前连胜</td><td>${save.streak}</td></tr>
       <tr><td></td><td>最高连胜</td><td>${save.bestStreak}</td></tr>
       <tr><td></td><td>每日挑战最长连续打卡</td><td>${save.daily.best || 0} 天</td></tr>
@@ -1666,6 +1813,7 @@ function renderRank() {
 $("rankBtn").onclick = () => { renderRank(); show("rank"); };
 $("rankBack").onclick = goHome;
 $("tabCans").onclick = () => { rankTab = "cans"; renderRank(); };
+$("tabRace").onclick = () => { rankTab = "race"; renderRank(); };
 $("tabTime").onclick = () => { rankTab = "time"; renderRank(); };
 
 /* ---------- 点击和拖动 ---------- */
@@ -1735,6 +1883,7 @@ document.addEventListener("touchend", e => {
 }, { passive: false });
 
 applyTheme();
+const PENDING_RACE = rollRace();   // 先结算昨天的竞速，再画首页
 renderHome();
 /* 开场动画：大约 2 秒，点一下可以跳过 */
 (function splash() {
@@ -1752,7 +1901,10 @@ renderHome();
   setTimeout(close, reduceMotion ? 300 : 2300);
 })();
 // 每天第一次打开：玩过的人自动弹签到（第一次来的新玩家先玩，不打扰）；等开场动画放完
-if (save.sign.last !== todayKey() && (save.sign.count > 0 || Object.keys(save.best).length > 0)) setTimeout(openSign, 2700);
+const wantSign = save.sign.last !== todayKey() && (save.sign.count > 0 || Object.keys(save.best).length > 0);
+const raceRes = PENDING_RACE;
+if (raceRes) setTimeout(() => showRaceResult(raceRes, wantSign ? openSign : null), 2700);
+else if (wantSign) setTimeout(openSign, 2700);
 </script>
 </body>
 </html>
