@@ -20,7 +20,7 @@
   --hard: #D45D6E;
   --green: #6DBE7B;
   --shadow: 0 0 0 1px var(--line);
-  --boardbg: #3A302C;   /* 棋盘底色：常驻深色，格子颜色更跳、缝隙像干净的分隔线 */
+  --boardbg: #433A36;   /* 棋盘底色：常驻深色，格子颜色更跳、缝隙像干净的分隔线 */
   --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
   color-scheme: light;
 }
@@ -296,7 +296,7 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
   <div class="brand">
     <img id="brandImg" alt="">
     <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
-    <p>原型 v1.7 · 新配色、南瓜灯</p>
+    <p>原型 v1.7 · 护眼配色、南瓜灯</p>
   </div>
   <div class="homebar">
     <button class="pill" id="cansPill" title="商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use class="curuse" href="#can"/></svg><b id="homeCans">0</b></button>
@@ -538,18 +538,19 @@ const TIPS = {
 /* 主题：棋盘配色、标题色块、货币、特效。皮肤 = 一套爆米花造型 + 一个主题 */
 const THEMES = {
   normal: {
-    /* 固定 12 色：色相分散、明度有深有浅、饱和度适中；任意两色色差 ΔE ≥ 34，前 7 色（7×7 用）≥ 37 */
-    colors: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#DF6BBC", "#8CCBEB"],
+    /* 固定 12 色：色相分散、明度有深有浅。默认用“护眼”版：在鲜艳版基础上把饱和度降两成、明暗差收一成，
+       长时间盯着不累；设置里可以切回鲜艳版 */
+    colors: ["#E8914E", "#8D66BF", "#97C66B", "#EBCB6A", "#6191CD", "#DA7180", "#71BEAF", "#D2C0E7", "#B58766", "#E9DFCD", "#D477B7", "#95C7E1"], vivid: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#DF6BBC", "#8CCBEB"],
     names: ["橙色", "紫色", "草绿", "黄色", "蓝色", "莓红", "青绿", "淡紫", "焦糖", "奶白", "玫粉", "天蓝"],
     tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#5FC2B0"], topDeco: "",
-    logo: ["#E5647A", "#F28C38", "#5FC2B0", "#8A5CC9", "#4A8FD8", "#DF6BBC"], bg: "#F6F2EE", board: "#3A302C", deco: "",
+    logo: ["#E5647A", "#F28C38", "#5FC2B0", "#8A5CC9", "#4A8FD8", "#DF6BBC"], bg: "#F6F2EE", board: "#433A36", deco: "",
     cur: { sym: "can", name: "猫罐头", short: "罐头", shop: "罐头商店" },
     bits: ["#FFFFFF", "#FFE7A3", "#FFD966"], kind: () => "corn",
     rain: ["#FFB3C7", "#8EE3C8", "#FFD966", "#9CC8FF", "#FFBC85", "#C9B2FF", "#B6E88C", "#FFFFFF"], rainKind: j => j % 4 === 0 ? "corn" : j % 5 === 0 ? "star" : "paper",
     fw: [["#FF6363", "#FFD25A", "#FFFFFF"], ["#5FA8FF", "#36C3CC", "#FFFFFF"], ["#B38BFF", "#FF8FB3", "#FFFFFF"], ["#A6DA4E", "#FFD25A", "#FFFFFF"], ["#FF9A4D", "#FF6363", "#FFD25A"]]
   },
   halloween: {
-    colors: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#DF6BBC", "#8CCBEB"],
+    colors: ["#E8914E", "#8D66BF", "#97C66B", "#EBCB6A", "#6191CD", "#DA7180", "#71BEAF", "#D2C0E7", "#B58766", "#E9DFCD", "#D477B7", "#95C7E1"], vivid: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#F2E6CF", "#DF6BBC", "#8CCBEB"],
     names: ["南瓜橙", "巫婆紫", "黏液绿", "糖果黄", "夜空蓝", "莓果红", "药水青", "幽灵紫", "焦糖色", "骨头白", "魔法粉", "月光蓝"],
     tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#8FCB5A"],
     logo: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F28C38", "#8A5CC9", "#8FCB5A"], bg: "#F2ECF6", board: "#2E2440",
@@ -802,7 +803,7 @@ const curSvg = (size) => `<svg viewBox="0 0 24 24" aria-hidden="true"${size ? ` 
 /* 换皮肤：棋盘配色、标题、货币图标、页面底色一起换 */
 function applyTheme() {
   T = THEMES[skinOf(save.skin).theme] || THEMES.normal;
-  REGION_COLORS = T.colors; LABS = REGION_COLORS.map(hexLab); CUR = T.cur;
+  REGION_COLORS = save.vivid ? T.vivid : T.colors; LABS = REGION_COLORS.map(hexLab); CUR = T.cur;
   document.body.classList.toggle("th-halloween", skinOf(save.skin).theme === "halloween");
   const root = document.documentElement.style;
   root.setProperty("--boardbg", T.board);
@@ -1589,6 +1590,7 @@ function openSettings() {
     ${row("sVib", "震动反馈", save.vibrate, canVibrate ? "放对、放错、通关时震一下" : "这台手机的浏览器不支持，微信版里才有")}
     ${row("sAuto", "放下后自动标×", save.autoX)}
     ${row("sRules", "显示规则卡片", save.rules)}
+    ${row("sVivid", "鲜艳配色", save.vivid, "默认是护眼的柔和配色，长时间盯着不累；喜欢更鲜艳的可以打开")}
     ${row("sPat", "格子里显示图案", save.patterns, "每种颜色固定配一个猫咪小物件，颜色分不清时看图案")}
     </div>
     <button class="btn alt" id="sTech">解题技巧</button>
@@ -1607,6 +1609,7 @@ function openSettings() {
     $("dNo").onclick = openSettings;
   };
   $("sClose").onclick = hideDialog;
+  $("sVivid").onclick = () => { save.vivid = !save.vivid; persist(); applyTheme(); if (G) { buildBoard(); renderChips(); } openSettings(); };
   $("sTech").onclick = openTechniques;
 }
 $("setBtn").onclick = openSettings;
