@@ -90,11 +90,21 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 .cell { position: relative; border-radius: 16%; display: grid; place-items: center; overflow: hidden; }
 /* 格子图案：同色系深一号的实心小纹理（每种颜色像一块不同的布），占格子七成多 */
 .cell .pat { position: absolute; width: 74%; height: 74%; left: 13%; top: 13%; pointer-events: none; }
-.cell .x { position: relative; width: 52%; height: 52%; pointer-events: none; filter: drop-shadow(0 1px 1px rgba(60, 30, 20, .22)); }
+.cell .x { position: relative; width: 50%; height: 50%; pointer-events: none; filter: drop-shadow(0 1px 1px rgba(60, 30, 20, .22)); }
 .cell.bad .x line { stroke: #8E2424; }
 .cell .cat { position: relative; width: 94%; height: 94%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,.16)); -webkit-user-drag: none; }
 .cell.marked .pat, .cell.cat .pat { opacity: 0; }
 .cell.pop .cat { animation: pop .28s ease-out; }
+/* 坐好的爆米花：一直轻轻“呼吸”，每只节奏错开；偶尔晃一晃、蹦一下（换表情由脚本控制） */
+.cell.cat .cat { animation: breathe 2.8s ease-in-out infinite; animation-delay: var(--bd, 0s); transform-origin: 50% 85%; }
+@keyframes breathe { 0%,100% { transform: scale(1, 1); } 50% { transform: scale(1.03, .975) translateY(1.5%); } }
+.cell.cat.wiggle .cat { animation: wiggle .9s ease-in-out; }
+@keyframes wiggle { 0%,100% { transform: rotate(0); } 20% { transform: rotate(-9deg); } 45% { transform: rotate(7deg); } 70% { transform: rotate(-4deg); } }
+.cell.cat.hop .cat { animation: hop .6s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes hop { 0%,100% { transform: translateY(0); } 40% { transform: translateY(-14%) scale(1.04); } }
+.cell.cat.pop .cat { animation: pop .28s ease-out; }
+.cell.cat.nudge .cat { animation: nudge .5s ease-in-out; }
+.cell.cat.dance .cat { animation: dance .55s ease-in-out 2; }
 .cell.shake { animation: shake .35s; }
 .cell.flash::after { content: ""; position: absolute; inset: 0; background: rgba(255,255,255,.75); animation: fade .6s forwards; pointer-events: none; }
 .cell.hint::after { content: ""; position: absolute; inset: 0; border: 3px solid var(--accent); border-radius: inherit; animation: fade 1.6s forwards; pointer-events: none; }
@@ -123,11 +133,11 @@ button:focus-visible { outline: 3px solid rgba(255, 159, 10, .5); outline-offset
 @keyframes pop { 0% { transform: scale(.3); } 70% { transform: scale(1.1); } 100% { transform: scale(1); } }
 @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 @keyframes fade { from { opacity: 1; } to { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .hero img, .hero svg, .cell.pop .cat, .cell.shake, .cell.flash::after, .cell.hint::after, .chip, .cell.wave, .cell.dance .cat, .dialog.win, .dialog.win .big, .stars svg, .combo { animation: none; transition: none; } }
-.tools { display: flex; justify-content: center; gap: 18px; padding-top: 2px; }
+@media (prefers-reduced-motion: reduce) { .cell.cat .cat, .hero img, .hero svg, .cell.pop .cat, .cell.shake, .cell.flash::after, .cell.hint::after, .chip, .cell.wave, .cell.dance .cat, .dialog.win, .dialog.win .big, .stars svg, .combo { animation: none; transition: none; } }
+.tools { display: flex; justify-content: center; gap: 8px; padding-top: 2px; }
 .tool { position: relative; width: 62px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--ink-soft); background: none; padding: 0; }
 /* 工具按钮：和棋盘格子一样的扁平色块 + 白色图标 */
-.tool span.ic { width: 54px; height: 54px; border-radius: 15px; background: var(--tc, var(--accent)); display: grid; place-items: center; }
+.tool span.ic { width: 52px; height: 52px; border-radius: 15px; background: var(--tc, var(--accent)); display: grid; place-items: center; }
 .tool svg { width: 27px; height: 27px; }
 .tool:disabled { opacity: .45; }
 .badge { position: absolute; top: -5px; right: -2px; min-width: 22px; height: 20px; border-radius: 7px; box-shadow: 0 0 0 2px var(--bg); background: var(--heart); color: #fff; font-size: 12px; font-weight: 700; display: grid; place-items: center; padding: 0 6px; font-variant-numeric: tabular-nums; }
@@ -198,7 +208,7 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
 .board.dim .cell { transition: filter .2s; }
 .board.dim .cell:not(.lit):not(.px):not(.pc):not(.pclr) { filter: brightness(.38) saturate(.55); }
 .cell.px::after, .cell.pclr::after { content: ""; position: absolute; inset: 18%; pointer-events: none;
-  background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4.5 4.5 L15.5 15.5 M15.5 4.5 L4.5 15.5' stroke='%23fff' stroke-width='4.2' stroke-linecap='round'/%3E%3Cpath d='M4.5 4.5 L15.5 15.5 M15.5 4.5 L4.5 15.5' stroke='%23E8963A' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E"); animation: pulse 1s ease-in-out infinite; }
+  background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4.5 4.5 L15.5 15.5 M15.5 4.5 L4.5 15.5' stroke='%23fff' stroke-width='5.4' stroke-linecap='round'/%3E%3Cpath d='M4.5 4.5 L15.5 15.5 M15.5 4.5 L4.5 15.5' stroke='%23E8963A' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E"); animation: pulse 1s ease-in-out infinite; }
 .cell.pclr::after { opacity: .5; }
 .cell.pc::after { content: ""; position: absolute; inset: 4%; background: var(--ghost) no-repeat center/contain; opacity: .6; animation: pulse 1s ease-in-out infinite; pointer-events: none; }
 @keyframes pulse { 0%,100% { transform: scale(.92); } 50% { transform: scale(1.04); } }
@@ -316,7 +326,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
   <div class="brand">
     <img id="brandImg" alt="">
     <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
-    <p>原型 v1.9 · 新画风爆米花</p>
+    <p>原型 v2.0 · 会动的爆米花、猫猫头</p>
   </div>
   <div class="homebar">
     <button class="pill" id="cansPill" title="商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use class="curuse" href="#can"/></svg><b id="homeCans">0</b></button>
@@ -363,6 +373,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
   <div class="tools">
     <button class="tool" id="undoBtn" aria-label="撤回标×"><span class="ic" style="--tc:var(--t0)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5 L4.5 11 L9 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 11 H14 a5 5 0 0 1 0 10 H11" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span>撤回</button>
     <button class="tool" id="hintBtn" aria-label="提示"><span class="ic" style="--tc:var(--t1)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 a6.4 6.4 0 0 1 3.7 11.6 V16.6 H8.3 V14.4 A6.4 6.4 0 0 1 12 2.8 Z" fill="#fff"/><path d="M9.2 19.4 H14.8 M10.4 22 H13.6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></span>提示<span class="badge" id="hintBadge">3</span></button>
+    <button class="tool" id="pawBtn" aria-label="猫猫头"><span class="ic" style="--tc:var(--t4)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#cathead"/></svg></span>猫猫头<span class="badge" id="pawBadge">0</span></button>
     <button class="tool" id="mouseBtn" aria-label="老鼠"><span class="ic" style="--tc:var(--t2)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#mouseW"/></svg></span>老鼠<span class="badge" id="mouseBadge">0</span></button>
     <button class="tool" id="restartBtn" aria-label="重新开始本关"><span class="ic" style="--tc:var(--t3)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12 a7.5 7.5 0 1 1 -2.2 -5.3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M18 3 V7.5 H13.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>重来</button>
   </div>
@@ -378,7 +389,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
     <button class="round" id="rankShare" aria-label="分享"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-share"/></svg></button>
   </div>
   <div class="tabs" role="tablist">
-    <button role="tab" id="tabRace" aria-selected="true">今日竞速</button>
+    <button role="tab" id="tabRace" aria-selected="true">24小时竞速</button>
     <button role="tab" id="tabCans" aria-selected="false">我的成绩</button>
     <button role="tab" id="tabTime" aria-selected="false">最快通关</button>
   </div>
@@ -492,6 +503,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
       <path d="M17 14 C21 12.5 27 15 29.5 19.5 C27 22.5 21 23 17 21 Z" fill="#BDB6C8"/>
       <circle cx="24.5" cy="17.2" r="1.3" fill="#2E2440"/><circle cx="29.6" cy="19.6" r="1.3" fill="#E77E8E"/>
     </symbol>
+    <symbol id="cathead" viewBox="0 0 24 24"><path d="M3.5 20.5 C2.5 14.5 3.6 9.5 5.6 7.4 L4.8 2.6 L9.8 5.6 C11.2 5.3 12.8 5.3 14.2 5.6 L19.2 2.6 L18.4 7.4 C20.4 9.5 21.5 14.5 20.5 20.5 Z" fill="#fff"/><circle cx="9" cy="13" r="1.4" fill="var(--t4)"/><circle cx="15" cy="13" r="1.4" fill="var(--t4)"/><path d="M11 16 H13 L12 17.2 Z" fill="var(--t4)"/></symbol>
     <symbol id="mouseW" viewBox="0 0 24 24">
       <path d="M4 16 C1.5 16 1.4 19.5 3.8 20.5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
       <ellipse cx="10.5" cy="15" rx="7.2" ry="5.3" fill="#fff"/><circle cx="15.8" cy="8.6" r="3.2" fill="#fff"/>
@@ -583,7 +595,7 @@ const THEMES = {
        长时间盯着不累；设置里可以切回鲜艳版 */
     colors: ["#E8914E", "#8D66BF", "#97C66B", "#EBCB6A", "#6191CD", "#DA7180", "#71BEAF", "#D2C0E7", "#B58766", "#CDC3AC", "#D477B7", "#95C7E1"], vivid: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#D6C7A6", "#DF6BBC", "#8CCBEB"],
     names: ["橙色", "紫色", "草绿", "黄色", "蓝色", "莓红", "青绿", "淡紫", "焦糖", "沙色", "玫粉", "天蓝"],
-    tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#5FC2B0"], topDeco: "",
+    tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#5FC2B0", "#DA7180"], topDeco: "",
     logo: ["#E5647A", "#F28C38", "#5FC2B0", "#8A5CC9", "#4A8FD8", "#DF6BBC"], bg: "#F6F2EE", board: "#FFFFFF", deco: "",
     cur: { sym: "can", name: "猫罐头", short: "罐头", shop: "罐头商店" },
     bits: ["#FFFFFF", "#FFE7A3", "#FFD966"], kind: () => "corn",
@@ -593,7 +605,7 @@ const THEMES = {
   halloween: {
     colors: ["#E8914E", "#8D66BF", "#97C66B", "#EBCB6A", "#6191CD", "#DA7180", "#71BEAF", "#D2C0E7", "#B58766", "#CDC3AC", "#D477B7", "#95C7E1"], vivid: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F4CF55", "#4A8FD8", "#E5647A", "#5FC2B0", "#D8C2F2", "#B9835A", "#D6C7A6", "#DF6BBC", "#8CCBEB"],
     names: ["南瓜橙", "巫婆紫", "黏液绿", "糖果黄", "夜空蓝", "莓果红", "药水青", "幽灵紫", "焦糖色", "沙土色", "魔法粉", "月光蓝"],
-    tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#8FCB5A"],
+    tools: ["#4A8FD8", "#F28C38", "#8A5CC9", "#8FCB5A", "#E5647A"],
     logo: ["#F28C38", "#8A5CC9", "#8FCB5A", "#F28C38", "#8A5CC9", "#8FCB5A"], bg: "#F2ECF6", board: "#2E2440",
     deco: `<svg viewBox="0 0 40 40" style="left:-1px;top:-1px;width:26px;height:26px"><use href="#d-web"/></svg>
       <svg class="bat" viewBox="0 0 48 26" style="right:-6px;top:-13px;width:36px;height:20px"><use href="#d-bat"/></svg>
@@ -659,7 +671,7 @@ const goldOpen = id => isGold(id) && !save.best[id] && !save.goldLost[id];
 const SIZE_PTS = { 7: 2, 8: 3, 9: 4, 10: 5, 11: 6 };          // 每关 1 次免费提示，之后用提示卡，没卡了看广告
 const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 24 };
 const DAILY_CANS = { 8: 25, 9: 30, 10: 40 };
-const PRICE = { hint1: 50, hint3: 135, revive: 80, mouse: 30 };
+const PRICE = { hint1: 50, hint3: 135, revive: 80, mouse: 30, paw: 60 };
 const AD_HINTS_PER_DAY = 3;
 /* 7 天签到：断签不清零，接着往下领；第 7 天是大礼包，领完从第 1 天重新开始 */
 const SIGN_REWARDS = [{ cans: 20 }, { hint: 1 }, { cans: 30 }, { revive: 1 }, { cans: 40 }, { mouse: 2 }, { cans: 80, hint: 2, revive: 1 }];
@@ -673,7 +685,8 @@ let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: t
   adHint: { day: "", n: 0 },
   skin: "normal", skins: ["normal"], lv: 2,
   goldLost: {},                                     // 放弃或挑战失败的金罐头关
-  pop: 0, race: { day: "", pts: 0 }, raceLog: [] };   // 爆米花积分、今日竞速
+  pop: 0, race: { start: 0, pts: 0 }, raceLog: [],   // 爆米花积分、24小时竞速
+  paws: 1 };                                         // 猫猫头道具
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (s) {
   // 关卡在 v2 重新编排过：旧的通关记录对不上新关卡，清掉一次；图案改成线条后默认打开
   if (s.lv !== 2) { s.best = {}; s.patterns = true; s.lv = 2; }
@@ -847,7 +860,7 @@ const catSvg = (sym = "cat") => `<svg class="cat" viewBox="0 0 40 40" aria-hidde
 /* 按当前皮肤取表情图：皮肤没画的表情用原味版 */
 const F = k => CAT_IMG[skinOf(save.skin).faces[k] || k];
 const catImg = (face, cls = "cat") => `<img class="${cls}" src="${F(face)}" alt="" draggable="false">`;
-const X_SVG = '<svg class="x" viewBox="0 0 20 20" aria-hidden="true"><line x1="4.5" y1="4.5" x2="15.5" y2="15.5" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round"/><line x1="15.5" y1="4.5" x2="4.5" y2="15.5" stroke="#FFFFFF" stroke-width="3.6" stroke-linecap="round"/></svg>';
+const X_SVG = '<svg class="x" viewBox="0 0 20 20" aria-hidden="true"><line x1="4.8" y1="4.8" x2="15.2" y2="15.2" stroke="#FFFFFF" stroke-width="4.8" stroke-linecap="round"/><line x1="15.2" y1="4.8" x2="4.8" y2="15.2" stroke="#FFFFFF" stroke-width="4.8" stroke-linecap="round"/></svg>';
 const curSvg = (size) => `<svg viewBox="0 0 24 24" aria-hidden="true"${size ? ` style="width:${size}px;height:${size}px"` : ""}><use href="#${CUR.sym}"/></svg>`;
 /* 换皮肤：棋盘配色、标题、货币图标、页面底色一起换 */
 function applyTheme() {
@@ -891,7 +904,7 @@ function renderHome() {
   $("signDot").classList.toggle("hidden", !canSign);
   $("signSub").textContent = canSign ? `第${save.sign.count % 7 + 1}天的礼物可以领` : "今天已领，明天再来";
   const newSkin = SKINS.find(k => !save.skins.includes(k.id));
-  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 天使之心 ${save.revives} · 老鼠 ${save.mice}`;
+  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 老鼠 ${save.mice} · 猫猫头 ${save.paws}`;
   $("shopDot").classList.toggle("hidden", !newSkin);
 }
 $("blocks").addEventListener("click", e => { const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id); });
@@ -954,13 +967,13 @@ function startGame(id, L, carry) {
   if (G.daily) { const [, m, d] = G.daily.split("-").map(Number); $("lvName").innerHTML = `每日挑战 · ${m}月${d}日`; }
   else $("lvName").innerHTML = `第${id}关${G.hard ? "<em>困难</em>" : ""}${G.gold ? '<em class="goldtag">金罐头</em>' : ""}`;
   document.body.classList.toggle("goldmode", G.gold);
-  ["hintBtn", "mouseBtn"].forEach(b => $(b).disabled = G.gold);
+  ["hintBtn", "mouseBtn", "pawBtn"].forEach(b => $(b).disabled = G.gold);
   $("tip").classList.remove("float");
   if (TIPS[id]) { $("tip").innerHTML = TIPS[id]; $("tip").classList.remove("hidden"); }
   else $("tip").classList.add("hidden");
   $("rulebar").classList.toggle("hidden", !save.rules);
   $("gameCans").textContent = save.cans;
-  buildBoard(); renderHearts(); renderHint(); renderMouse(); renderChips();
+  buildBoard(); renderHearts(); renderHint(); renderMouse(); renderPaw(); renderChips();
   clearInterval(timerId); timerId = setInterval(tick, 500); tick();
 }
 function tick() {
@@ -1003,6 +1016,17 @@ function setFace(i, face, ms) {
   const img = cellEl(i).querySelector("img.cat"); if (img) img.src = F(face);
   if (ms) setTimeout(() => { if (G && G.faceTok[i] === tok && !G.over) setFace(i, "head"); }, ms);
 }
+/* 小动作：每隔几秒挑一只闲着的爆米花，舔舔嘴、东张西望、眨眨眼、晃一晃或者蹦一下 */
+setInterval(() => {
+  if (!G || G.over || G.busy || reduceMotion || document.hidden) return;
+  const idle = allCats().filter(i => (G.face[i] || "head") === "head");
+  if (!idle.length) return;
+  const i = idle[Math.floor(Math.random() * idle.length)], el = cellEl(i), r = Math.random();
+  if (r < .25) setFace(i, "lickBig", 1100);
+  else if (r < .45) setFace(i, "thinkBig", 1400);
+  else if (r < .6) setFace(i, "smugBig", 900);
+  else { const cls = r < .82 ? "wiggle" : "hop"; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 1000); }
+}, 2600);
 function allCats() { const out = []; for (let j = 0; j < G.n * G.n; j++) if (G.st[j] === 2) out.push(j); return out; }
 function drawCell(i, anim) {
   const el = cellEl(i), s = G.st[i];
@@ -1010,6 +1034,7 @@ function drawCell(i, anim) {
   el.classList.toggle("marked", s === 1);
   el.classList.toggle("cat", s === 2);
   el.querySelector(".fg").innerHTML = s === 2 ? catImg(G.face[i] || "head") : s === 1 ? X_SVG : "";
+  if (s === 2) el.style.setProperty("--bd", (-(i * 0.37) % 2.8).toFixed(2) + "s");
   const r = Math.floor(i / G.n) + 1, c = i % G.n + 1;
   el.setAttribute("aria-label", `第${r}行第${c}列，${s === 2 ? "爆米花" : s === 1 ? "已标×" : "空"}`);
   if (anim) { el.classList.remove(anim); void el.offsetWidth; el.classList.add(anim); }
@@ -1158,7 +1183,7 @@ function checkWin() {
       <h3>${record ? "比上次还快！" : "都找到座位啦！"}</h3>
       <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div><div>连胜<b>${save.streak}</b></div></div>
       <div class="reward">${curSvg()}<div>${CUR.name} <b id="canCount">+0</b><small>${notes.join(" · ") || "继续连胜有加成"}</small></div></div>
-      <div class="reward"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#popbox"/></svg><div>爆米花 <b>+${rw.pop}</b><small>${starsOf(G.mistakes)}星 × ${SIZE_PTS[G.n] || 3}${G.hard ? " × 困难1.5" : ""}${G.gold ? " × 金罐头2" : ""}${save.streak > 1 ? ` × 连胜${Math.min(2, 1 + (save.streak - 2) * 0.1).toFixed(1)}` : ""}${rw.first ? "" : " · 重玩三分之一"} · 今日竞速 ${save.race.pts}</small></div></div>
+      <div class="reward"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#popbox"/></svg><div>爆米花 <b>+${rw.pop}</b><small>${starsOf(G.mistakes)}星 × ${SIZE_PTS[G.n] || 3}${G.hard ? " × 困难1.5" : ""}${G.gold ? " × 金罐头2" : ""}${save.streak > 1 ? ` × 连胜${Math.min(2, 1 + (save.streak - 2) * 0.1).toFixed(1)}` : ""}${rw.first ? "" : " · 重玩三分之一"} · 本场竞速 ${save.race.pts}</small></div></div>
       ${next ? '<button class="btn" id="dNext">下一关</button>' : "<p>已经是最后一关了，厉害！</p>"}
       <div class="row2"><button class="btn alt" id="dShare">分享成绩</button><button class="btn alt" id="dHome">回到选关</button></div>`);
     if (next) $("dNext").onclick = () => { hideDialog(); startLevel(G.id + 1); };
@@ -1293,6 +1318,7 @@ function giftIcons(g, size = 26) {
   if (g.hint) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#i-bulb"/></svg>`);
   if (g.revive) out.push(`<svg viewBox="0 0 24 24" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#i-revive"/></svg>`);
   if (g.mouse) out.push(`<svg viewBox="0 0 32 32" style="width:${size}px;height:${size}px" aria-hidden="true"><use href="#mouse"/></svg>`);
+  if (g.paw) out.push(`<img src="${F("happy")}" style="width:${size}px;height:${size}px" alt="">`);
   return out.join("");
 }
 function giftText(g, mul = 1) {
@@ -1301,6 +1327,7 @@ function giftText(g, mul = 1) {
   if (g.hint) t.push(`提示卡×${g.hint * mul}`);
   if (g.revive) t.push(`天使之心×${g.revive * mul}`);
   if (g.mouse) t.push(`老鼠×${g.mouse * mul}`);
+  if (g.paw) t.push(`猫猫头×${g.paw * mul}`);
   return t.join(" ");
 }
 function openSign() {
@@ -1321,7 +1348,7 @@ function openSign() {
     ${can ? `<button class="btn dark" id="dDouble">看广告领双倍</button><button class="btn" id="dClaim">直接领取</button>` : `<button class="btn alt" id="dClose">好的</button>`}`);
   if (!can) { $("dClose").onclick = () => { hideDialog(); renderHome(); }; return; }
   const claim = mul => {
-    save.cans += (g.cans || 0) * mul; save.hintCards += (g.hint || 0) * mul; save.revives += (g.revive || 0) * mul; save.mice += (g.mouse || 0) * mul;
+    save.cans += (g.cans || 0) * mul; save.hintCards += (g.hint || 0) * mul; save.revives += (g.revive || 0) * mul; save.mice += (g.mouse || 0) * mul; save.paws += (g.paw || 0) * mul;
     save.sign.count++; save.sign.last = today; persist();
     fx.win(); confettiRain();
     showDialog(`<div style="display:flex;justify-content:center;gap:8px">${giftIcons(g, 56)}</div>
@@ -1359,6 +1386,7 @@ function openShop(msg) {
       ${row("i-bulb", "提示卡", "爆米花凑到你耳边，悄悄说出一个座位，还告诉你为什么", buyBtn("bH1", PRICE.hint1))}
       ${row("i-bulb", "提示卡 · 三张装", "多囤几张，卡关的时候心里不慌", buyBtn("bH3", PRICE.hint3))}
       ${row("i-revive", "天使之心", "心碎了也别怕，天使会把它捡回来，接着玩", buyBtn("bRv", PRICE.revive))}
+      <div class="shoprow"><img src="${F("happy")}" style="width:30px;height:30px;flex:none" alt=""><div>猫猫头<small>喊一声，一只爆米花自己跳到座位上坐好</small></div>${buyBtn("bPw", PRICE.paw)}</div>
       ${row("mouse", "小老鼠", "放它出去满棋盘乱窜，它总会撞见一只爆米花", buyBtn("bMs", PRICE.mouse))}
       ${row("i-bulb", "广告赞助的提示卡", `看段小广告换一张，今天还剩 ${adLeft} 次`, `<button class="buy ad" id="bAd" ${adLeft <= 0 ? "disabled" : ""}>看广告</button>`)}
     </div>
@@ -1369,6 +1397,7 @@ function openShop(msg) {
   $("bH3").onclick = buy(PRICE.hint3, () => save.hintCards += 3, "提示卡×3");
   $("bRv").onclick = buy(PRICE.revive, () => save.revives += 1, "天使之心×1");
   $("bMs").onclick = buy(PRICE.mouse, () => save.mice += 1, "小老鼠×1");
+  $("bPw").onclick = buy(PRICE.paw, () => save.paws += 1, "猫猫头×1");
   const wear = id => { save.skin = id; persist(); applyTheme(); renderHome(); fx.win(); confettiRain(); openShop(`换上了：${skinOf(id).name}`); };
   document.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => wear(b.dataset.wear));
   document.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
@@ -1646,6 +1675,23 @@ function runMouse() {
   };
   setTimeout(hop, 60);
 }
+/* ---------- 猫猫头：直接随机请出一只坐对位置的爆米花 ---------- */
+function renderPaw() { const b = $("pawBadge"); b.textContent = save.paws > 0 ? save.paws : "广告"; b.classList.toggle("ad", save.paws <= 0); }
+function usePaw() {
+  if (!G || G.over) return;
+  const left = []; for (let r = 0; r < G.n; r++) { const i = r * G.n + G.sol[r]; if (G.st[i] !== 2) left.push(i); }
+  if (!left.length) return;
+  const i = left[Math.floor(Math.random() * left.length)];
+  if (G.st[i] === 1) G.st[i] = 0;
+  const [x, y] = cellCenter(i);
+  burst(x, y, { count: 22, speed: 6, kind: "star", colors: ["#FFD966", "#FFFFFF", "#FFB3C7"], size: [6, 10] });
+  tryPlace(i); toast(i, "喵～爆米花自己找到座位了");
+}
+$("pawBtn").onclick = () => {
+  if (!G || G.over || G.busy) return;
+  if (save.paws > 0) { save.paws--; persist(); renderPaw(); return usePaw(); }
+  watchAd("看完广告，直接请出一只爆米花坐好", usePaw);
+};
 $("mouseBtn").onclick = () => {
   if (!G || G.over || G.busy) return;
   if (save.mice > 0) { save.mice--; persist(); renderMouse(); return runMouse(); }
@@ -1684,7 +1730,7 @@ function openSettings() {
   $("sReset").onclick = () => {
     showDialog(`<h3>清空进度？</h3><p>通关记录、猫罐头、连胜、道具、签到和每日挑战记录都会清零。</p>
       <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">取消</button>`);
-    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0, hintCards: 3, revives: 1, sign: { last: "", count: 0 }, daily: { done: {}, streak: 0, last: "", best: 0 }, adHint: { day: "", n: 0 }, skin: "normal", skins: ["normal"], mice: 2 }); applyTheme(); persist(); hideDialog(); goHome(); };
+    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0, hintCards: 3, revives: 1, sign: { last: "", count: 0 }, daily: { done: {}, streak: 0, last: "", best: 0 }, adHint: { day: "", n: 0 }, skin: "normal", skins: ["normal"], mice: 2, paws: 1, pop: 0, race: { start: 0, pts: 0 }, raceLog: [], goldLost: {} }); applyTheme(); persist(); hideDialog(); goHome(); };
     $("dNo").onclick = openSettings;
   };
   $("sClose").onclick = hideDialog;
@@ -1713,66 +1759,66 @@ $("shareHome").onclick = () => share(`我在玩《爆米花找座位》，帮猫
 $("rankShare").onclick = () => share(`我在《爆米花找座位》攒了${save.cans}个猫罐头，最高连胜${save.bestStreak}关，来比比？`);
 
 /* ---------- 排行榜（现在只有本机成绩） ---------- */
-/* ---------- 今日竞速：每天 0 点开一场，30 人一组，比当天攒的爆米花 ----------
-   原型里没有服务器，另外 29 位是按日期生成的模拟对手（成绩随一天的时间慢慢涨）；微信版换成真人分组 */
-const RACE_SIZE = 30;
+/* ---------- 24小时竞速：从你这一场拿到第一颗爆米花开始计时，24 小时内和同时开赛的 29 个人比 ----------
+   原型里没有服务器，对手是按开赛时间生成的模拟玩家（成绩随这 24 小时慢慢涨）；微信版换成同时开赛的真人 */
+const RACE_SIZE = 30, RACE_MS = 24 * 3600 * 1000;
 const RACE_PRIZES = [
-  { to: 1, label: "第1名", gift: { hint: 3, mouse: 2, revive: 1 } },
+  { to: 1, label: "第1名", gift: { hint: 3, mouse: 2, paw: 1, revive: 1 } },
   { to: 3, label: "第2–3名", gift: { hint: 2, mouse: 1, revive: 1 } },
   { to: 10, label: "第4–10名", gift: { hint: 1, mouse: 1 } },
   { to: 30, label: "其他", gift: { cans: 30 } }];
 const BOT_NAMES = ["橘座大人", "奶茶猫", "芝麻汤圆", "布丁妈", "小鱼干收集者", "猫薄荷上头", "三花喵", "煤球", "年糕", "豆包爸爸", "雪球", "可乐", "糯米", "土豆", "饭团", "毛毛", "咪咪", "阿福", "团子", "栗子", "包子", "麻薯", "花卷", "大黄", "小白", "奥利奥", "椰子", "芋圆", "麦芽糖", "棉花糖", "黑豆", "咖啡", "果冻", "馒头", "饼干"];
-function raceBots(day) {
-  const r = rngOf(dayNum(day) * 7919 + 17), names = BOT_NAMES.slice().sort(() => r() - .5);
+function rngOf(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function raceBots(start) {
+  const r = rngOf(Math.floor(start / 60000) * 7919 + 17), names = BOT_NAMES.slice().sort(() => r() - .5);
   return Array.from({ length: RACE_SIZE - 1 }, (_, k) => {
     const heavy = r() < .25, fin = Math.round(heavy ? 90 + r() * 260 : 8 + r() * 90);
     return { name: names[k], fin, start: r() * .75, dur: .08 + r() * .35 };
   });
 }
-function rngOf(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
-function dayFrac(day) { const now = new Date(); return day < todayKey() ? 1 : (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400; }
-function raceBoard(day, myPts) {
-  const t = dayFrac(day);
-  const rows = raceBots(day).map(b => ({ name: b.name, pts: Math.round(b.fin * Math.max(0, Math.min(1, (t - b.start) / b.dur))) }));
+function raceBoard(start, myPts, at) {
+  const t = start ? Math.min(1, ((at || Date.now()) - start) / RACE_MS) : 0;
+  const rows = start ? raceBots(start).map(b => ({ name: b.name, pts: Math.round(b.fin * Math.max(0, Math.min(1, (t - b.start) / b.dur))) })) : [];
   rows.push({ name: "我", pts: myPts, me: true });
   rows.sort((a, b) => b.pts - a.pts || (a.me ? -1 : b.me ? 1 : 0));
   return rows;
 }
 function prizeFor(rank) { return RACE_PRIZES.find(p => rank <= p.to); }
-function addPop(n) { rollRace(); save.pop += n; save.race.pts += n; persist(); }
-/* 换天了：结算昨天那场（打过的才结算），返回结算结果 */
+function addPop(n) {
+  rollRace();
+  if (!save.race.start) save.race = { start: Date.now(), pts: 0 };   // 第一颗爆米花：开赛，匹配同时开赛的人
+  save.pop += n; save.race.pts += n; persist();
+}
+/* 这一场满 24 小时了：结算，等下一颗爆米花再开新的一场 */
 function rollRace() {
-  const today = todayKey();
-  if (save.race.day === today) return null;
-  let res = null;
-  if (save.race.day && save.race.pts > 0) {
-    const rows = raceBoard(save.race.day, save.race.pts), rank = rows.findIndex(x => x.me) + 1, pz = prizeFor(rank);
-    const g = pz.gift;
-    save.cans += g.cans || 0; save.hintCards += g.hint || 0; save.mice += g.mouse || 0; save.revives += g.revive || 0;
-    res = { day: save.race.day, rank, pts: save.race.pts, prize: pz };
-    save.raceLog = [res].concat(save.raceLog || []).slice(0, 14);
-  }
-  save.race = { day: today, pts: 0 };
+  if (!save.race || save.race.day !== undefined) save.race = { start: 0, pts: 0 };   // 旧版按天的存档
+  if (!save.race.start || Date.now() - save.race.start < RACE_MS) return null;
+  const rows = raceBoard(save.race.start, save.race.pts, save.race.start + RACE_MS), rank = rows.findIndex(x => x.me) + 1, pz = prizeFor(rank);
+  const g = pz.gift;
+  save.cans += g.cans || 0; save.hintCards += g.hint || 0; save.mice += g.mouse || 0; save.revives += g.revive || 0; save.paws += g.paw || 0;
+  const res = { start: save.race.start, rank, pts: save.race.pts, prize: pz };
+  save.raceLog = [res].concat(save.raceLog || []).slice(0, 14);
+  save.race = { start: 0, pts: 0 };
   persist();
   return res;
 }
 function showRaceResult(res, then) {
-  const [, m, d] = res.day.split("-").map(Number);
+  const d = new Date(res.start);
   showDialog(`<img class="mood" src="${F(res.rank <= 3 ? "smugBig" : "happyBig")}" alt="">
-    <h3>${m}月${d}日竞速结算</h3>
+    <h3>竞速结算</h3><p>${d.getMonth() + 1}月${d.getDate()}日 ${pad2(d.getHours())}:${pad2(d.getMinutes())} 开赛的那一场</p>
     <div class="stats"><div>名次<b>第${res.rank}名</b></div><div>爆米花<b>${res.pts}</b></div></div>
     <div class="reward">${giftIcons(res.prize.gift, 28)}<div>${res.prize.label}奖励<small>${giftText(res.prize.gift)}，已经放进背包</small></div></div>
     <button class="btn" id="dOk">好的</button>`);
   $("dialog").classList.add("win");
   $("dOk").onclick = () => { hideDialog(); renderHome(); if (then) then(); };
 }
+function raceLeft() { const ms = save.race.start + RACE_MS - Date.now(), m = Math.max(0, Math.floor(ms / 60000)); return `${Math.floor(m / 60)}小时${m % 60}分`; }
 function renderRaceCard() {
-  rollRace();
-  const rows = raceBoard(save.race.day, save.race.pts), rank = rows.findIndex(x => x.me) + 1;
-  const now = new Date(), left = 24 * 60 - now.getHours() * 60 - now.getMinutes();
+  const res = rollRace(); if (res) setTimeout(() => showRaceResult(res), 300);
+  const on = !!save.race.start, rows = raceBoard(save.race.start, save.race.pts), rank = rows.findIndex(x => x.me) + 1;
   $("raceCard").innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#popbox"/></svg>
-    <div><b>今日竞速</b><span>${RACE_SIZE}人一组，比今天攒的爆米花 · 还有${Math.floor(left / 60)}小时${left % 60}分结算</span></div>
-    <div class="rk"><strong>${save.race.pts ? rank : "–"}</strong>${save.race.pts ? `名 · ${save.race.pts}` : "还没开始"}</div>`;
+    <div><b>24小时竞速</b><span>${on ? `${RACE_SIZE}人一组 · 还剩${raceLeft()}结算` : "通关一关就开赛，和同时开赛的人比24小时内谁的爆米花多"}</span></div>
+    <div class="rk"><strong>${on ? rank : "–"}</strong>${on ? `名 · ${save.race.pts}` : "未开赛"}</div>`;
 }
 $("raceCard").onclick = () => { rankTab = "race"; renderRank(); show("rank"); };
 
@@ -1783,10 +1829,10 @@ function renderRank() {
   $("tabTime").setAttribute("aria-selected", rankTab === "time");
   if (rankTab === "race") {
     rollRace();
-    const rows = raceBoard(save.race.day, save.race.pts);
+    const rows = raceBoard(save.race.start, save.race.pts);
     $("rankBody").innerHTML = `<div class="prizes">${RACE_PRIZES.map(p => `<div><b>${p.label}</b>${giftText(p.gift).replace(/ /g, "<br>")}</div>`).join("")}</div>
       <table class="rank"><tbody>${rows.map((x, k) => `<tr class="${x.me ? "me" : ""}"><td class="no">${k + 1}</td><td>${x.name}</td><td>${x.pts}</td></tr>`).join("")}</tbody></table>
-      <p class="note" style="margin-top:8px">每天0点结算，第二天打开游戏时发奖励。通关得爆米花：星数×棋盘分，困难×1.5、金罐头×2、连胜最多翻倍；每日挑战也算。原型里的对手是模拟的，微信版换成真人。</p>`;
+      <p class="note" style="margin-top:8px">${save.race.start ? `这一场还剩${raceLeft()}结算。` : "还没开赛，通关一关就开始计时。"}满24小时结算，打开游戏时发奖励，然后等你下一颗爆米花开新的一场。通关得爆米花：星数×棋盘分，困难×1.5、金罐头×2、连胜最多翻倍；每日挑战也算。原型里的对手是模拟的，微信版换成真人。</p>`;
   } else if (rankTab === "cans") {
     $("rankBody").innerHTML = `<table class="rank"><tbody>
       <tr class="me"><td>我</td><td>${CUR.name}</td><td>${save.cans}</td></tr>
