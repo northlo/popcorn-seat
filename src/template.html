@@ -199,7 +199,15 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
 .deco .spider { animation: spiderBob 3.2s ease-in-out infinite; transform-origin: 50% 0; }
 @keyframes batFly { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-5px) rotate(4deg); } }
 @keyframes spiderBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
-/* 老鼠道具 */
+/* 逗猫棒：格子一个个蹦出来 */
+.cell.whack { z-index: 3; animation: whackUp .22s cubic-bezier(.3, 1.7, .5, 1) forwards; box-shadow: 0 0 0 3px #fff, 0 8px 22px rgba(60, 40, 20, .35); cursor: pointer; }
+.cell.whack::after { content: ""; position: absolute; inset: -6px; border-radius: inherit; border: 3px solid var(--accent); animation: whackRing var(--wt, 1s) linear forwards; pointer-events: none; }
+@keyframes whackUp { from { transform: scale(1); } to { transform: scale(1.32); } }
+@keyframes whackRing { from { clip-path: inset(0 0 0 0); opacity: 1; } to { clip-path: inset(0 0 100% 0); opacity: .3; } }
+.cell.whackout { animation: whackDown .18s ease-in forwards; z-index: 3; }
+@keyframes whackDown { from { transform: scale(1.32); } to { transform: scale(1); } }
+.board.whacking .cell:not(.whack):not(.whackout) { filter: brightness(.8); }
+/* 老鼠道具（旧） */
 .runner { position: fixed; z-index: 6; width: 40px; height: 40px; margin: -20px 0 0 -20px; pointer-events: none; transition: left .13s linear, top .13s linear; }
 .runner svg { width: 100%; height: 100%; display: block; }
 .runner.flip svg { transform: scaleX(-1); }
@@ -207,8 +215,8 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
 /* 提示：暗掉无关格子，预览要打×的格子和要放的猫 */
 .board.dim .cell { transition: filter .2s; }
 .board.dim .cell:not(.lit):not(.px):not(.pc):not(.pclr) { filter: brightness(.38) saturate(.55); }
-.cell.px::after, .cell.pclr::after { content: ""; position: absolute; inset: 18%; pointer-events: none;
-  background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4.5 4.5 L15.5 15.5 M15.5 4.5 L4.5 15.5' stroke='%23fff' stroke-width='5.4' stroke-linecap='round'/%3E%3Cpath d='M4.5 4.5 L15.5 15.5 M15.5 4.5 L4.5 15.5' stroke='%23E8963A' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E"); animation: pulse 1s ease-in-out infinite; }
+.cell.px::after, .cell.pclr::after { content: ""; position: absolute; inset: 25%; pointer-events: none; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.25));
+  background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4.8 4.8 L15.2 15.2 M15.2 4.8 L4.8 15.2' stroke='%23fff' stroke-width='4.8' stroke-linecap='round'/%3E%3C/svg%3E"); animation: pulse 1s ease-in-out infinite; }
 .cell.pclr::after { opacity: .5; }
 .cell.pc::after { content: ""; position: absolute; inset: 4%; background: var(--ghost) no-repeat center/contain; opacity: .6; animation: pulse 1s ease-in-out infinite; pointer-events: none; }
 @keyframes pulse { 0%,100% { transform: scale(.92); } 50% { transform: scale(1.04); } }
@@ -326,7 +334,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
   <div class="brand">
     <img id="brandImg" alt="">
     <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
-    <p>原型 v2.0 · 会动的爆米花、猫猫头</p>
+    <p>原型 v2.1 · 逗猫棒、商人爆米花</p>
   </div>
   <div class="homebar">
     <button class="pill" id="cansPill" title="商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use class="curuse" href="#can"/></svg><b id="homeCans">0</b></button>
@@ -340,7 +348,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
   <button class="panel race" id="raceCard"></button>
   <div class="tiles">
     <button class="tile" id="signTile"><svg viewBox="0 0 36 36" aria-hidden="true"><use href="#i-gift"/></svg><div><b>每日签到</b><span id="signSub">第1天</span></div><i class="dot hidden" id="signDot"></i></button>
-    <button class="tile" id="shopTile"><i class="dot hidden" id="shopDot"></i><svg viewBox="0 0 36 36" aria-hidden="true"><use href="#i-shop"/></svg><div><b id="shopName">罐头商店</b><span id="bagSub">提示卡 0 · 复活心 0</span></div></button>
+    <button class="tile" id="shopTile"><i class="dot hidden" id="shopDot"></i><img id="shopImg" alt="" style="width:40px;height:40px;flex:none;margin:-4px 0"><div><b id="shopName">罐头商店</b><span id="bagSub">提示卡 0 · 复活心 0</span></div></button>
   </div>
   <div class="panel"><div class="blocks" id="blocks"></div></div>
   <p class="note">每组10关，第10关是困难关（罐头翻倍）。前30关7到10格轮换着来；50关以后从8格起步，越往后大棋盘越多，中间穿插小一点的关卡让脑子歇一歇。前30关和所有困难关，开局先坐好1只爆米花。正式版的广告这一版点了直接生效。进度只存在这台手机的浏览器里。</p>
@@ -374,7 +382,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
     <button class="tool" id="undoBtn" aria-label="撤回标×"><span class="ic" style="--tc:var(--t0)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5 L4.5 11 L9 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 11 H14 a5 5 0 0 1 0 10 H11" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span>撤回</button>
     <button class="tool" id="hintBtn" aria-label="提示"><span class="ic" style="--tc:var(--t1)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 a6.4 6.4 0 0 1 3.7 11.6 V16.6 H8.3 V14.4 A6.4 6.4 0 0 1 12 2.8 Z" fill="#fff"/><path d="M9.2 19.4 H14.8 M10.4 22 H13.6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></span>提示<span class="badge" id="hintBadge">3</span></button>
     <button class="tool" id="pawBtn" aria-label="猫猫头"><span class="ic" style="--tc:var(--t4)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#cathead"/></svg></span>猫猫头<span class="badge" id="pawBadge">0</span></button>
-    <button class="tool" id="mouseBtn" aria-label="老鼠"><span class="ic" style="--tc:var(--t2)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#mouseW"/></svg></span>老鼠<span class="badge" id="mouseBadge">0</span></button>
+    <button class="tool" id="mouseBtn" aria-label="逗猫棒"><span class="ic" style="--tc:var(--t2)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#mouseW"/></svg></span>逗猫棒<span class="badge" id="mouseBadge">0</span></button>
     <button class="tool" id="restartBtn" aria-label="重新开始本关"><span class="ic" style="--tc:var(--t3)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12 a7.5 7.5 0 1 1 -2.2 -5.3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M18 3 V7.5 H13.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>重来</button>
   </div>
   <div class="applybar hidden" id="applyBar"><button class="btn" id="applyBtn">应用</button><button class="applyx" id="applyClose" aria-label="关闭提示">×</button></div>
@@ -495,20 +503,18 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
       <path d="M12 21.5 C7 17.6 5 15.4 5 12.3 C5 10 6.8 8.3 8.9 8.3 C10.3 8.3 11.4 9 12 10.2 C12.6 9 13.7 8.3 15.1 8.3 C17.2 8.3 19 10 19 12.3 C19 15.4 17 17.6 12 21.5 Z" fill="#E0625F"/>
       <ellipse cx="9.3" cy="11.6" rx="1.4" ry="1" fill="#fff" opacity=".55"/>
     </symbol>
-    <!-- 小老鼠：彩色版（棋盘上跑、商店）和白色剪影（按钮） -->
+    <!-- 逗猫棒：彩色版（商店、礼物）和白色版（按钮） -->
     <symbol id="mouse" viewBox="0 0 32 32">
-      <path d="M5 21 C2 21 1.5 25 4.5 26.5" fill="none" stroke="#E79AA5" stroke-width="1.8" stroke-linecap="round"/>
-      <ellipse cx="14" cy="20" rx="9.5" ry="7" fill="#A9A2B4"/>
-      <circle cx="21" cy="11.5" r="4.2" fill="#A9A2B4"/><circle cx="21" cy="11.5" r="2.4" fill="#F2B8C0"/>
-      <path d="M17 14 C21 12.5 27 15 29.5 19.5 C27 22.5 21 23 17 21 Z" fill="#BDB6C8"/>
-      <circle cx="24.5" cy="17.2" r="1.3" fill="#2E2440"/><circle cx="29.6" cy="19.6" r="1.3" fill="#E77E8E"/>
+      <path d="M5 28 L18.5 14.5" stroke="#B58766" stroke-width="2.6" stroke-linecap="round"/>
+      <path d="M18.5 14.5 C17 9 19.5 4.5 26 3.5 C27 10 23.5 14 18.5 14.5 Z" fill="#E5647A"/>
+      <path d="M18.5 14.5 C22.5 13 26 14 28.5 17.5 C24 19.5 20.5 18.5 18.5 14.5 Z" fill="#F4CF55"/>
+      <path d="M18.5 14.5 C16 11 16 7 18 4 C20.5 7.5 20.8 11.5 18.5 14.5 Z" fill="#8A5CC9"/>
+      <circle cx="18.5" cy="14.5" r="1.8" fill="#fff"/>
     </symbol>
     <symbol id="cathead" viewBox="0 0 24 24"><path d="M3.5 20.5 C2.5 14.5 3.6 9.5 5.6 7.4 L4.8 2.6 L9.8 5.6 C11.2 5.3 12.8 5.3 14.2 5.6 L19.2 2.6 L18.4 7.4 C20.4 9.5 21.5 14.5 20.5 20.5 Z" fill="#fff"/><circle cx="9" cy="13" r="1.4" fill="var(--t4)"/><circle cx="15" cy="13" r="1.4" fill="var(--t4)"/><path d="M11 16 H13 L12 17.2 Z" fill="var(--t4)"/></symbol>
     <symbol id="mouseW" viewBox="0 0 24 24">
-      <path d="M4 16 C1.5 16 1.4 19.5 3.8 20.5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
-      <ellipse cx="10.5" cy="15" rx="7.2" ry="5.3" fill="#fff"/><circle cx="15.8" cy="8.6" r="3.2" fill="#fff"/>
-      <path d="M12.8 10.5 C15.8 9.4 20.3 11.2 22.2 14.6 C20.3 16.9 15.8 17.2 12.8 15.8 Z" fill="#fff"/>
-      <circle cx="18.4" cy="12.9" r="1" fill="var(--t2)"/>
+      <path d="M3.5 21 L13.5 11" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M13.5 11 C12.2 6.6 14.4 3.2 19.6 2.6 C20.2 7.8 17.4 10.8 13.5 11 Z M13.5 11 C16.6 9.8 19.4 10.6 21.4 13.4 C17.8 15 15 14.2 13.5 11 Z" fill="#fff"/>
     </symbol>
     <!-- 万圣节棋盘装饰 -->
     <radialGradient id="pkLobe" cx="45%" cy="38%" r="65%"><stop offset="0" stop-color="#FFB766"/><stop offset=".55" stop-color="#EE7D26"/><stop offset="1" stop-color="#A9440F"/></radialGradient>
@@ -663,7 +669,7 @@ function assignColors(id, n, reg) {
   return best;
 }
 const FREE_HINTS = 1;
-/* 金罐头关：每组里固定一关（第 11 关起），第一次玩时可以接受挑战：只有 1 颗心，不能用提示、老鼠、天使之心，奖励 ×3 */
+/* 金罐头关：每组里固定一关（第 11 关起），第一次玩时可以接受挑战：只有 1 颗心，不能用提示、逗猫棒、天使之心，奖励 ×3 */
 const GOLD_POS = [6, 3, 8];
 const isGold = id => typeof id === "number" && id > 10 && !LEVELS[id - 1].hard && (id - 1) % 10 === GOLD_POS[Math.floor((id - 1) / 10) % 3];
 const goldOpen = id => isGold(id) && !save.best[id] && !save.goldLost[id];
@@ -679,7 +685,7 @@ const SIGN_REWARDS = [{ cans: 20 }, { hint: 1 }, { cans: 30 }, { revive: 1 }, { 
 /* 存档：只存在这个浏览器里，读不到也能正常玩 */
 const SAVE_KEY = "popcorn-proto-v4";
 let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: true, vibrate: true, rules: true, patterns: true,
-  hintCards: 3, revives: 1, mice: 2,                // 新玩家送 3 张提示卡、1 个天使之心、2 只老鼠
+  hintCards: 3, revives: 1, mice: 2,                // 新玩家送 3 张提示卡、1 个天使之心、2 根逗猫棒（存档里沿用 mice 这个名字）
   sign: { last: "", count: 0 },                     // 上次签到日期、本轮已领几天
   daily: { done: {}, streak: 0, last: "", best: 0 },// 每日挑战：每天成绩、连续打卡
   adHint: { day: "", n: 0 },
@@ -875,6 +881,7 @@ function applyTheme() {
   document.querySelectorAll(".curuse").forEach(u => u.setAttribute("href", "#" + CUR.sym));
   $("shopName").textContent = CUR.shop;
   $("brandImg").src = F("headBig");
+  $("shopImg").src = CAT_IMG.merchant;
   $("logo").innerHTML = logoTiles().map(([ch, col, rot]) => `<span aria-hidden="true" style="background:${col};transform:rotate(${rot}deg)">${ch}</span>`).join("");
 }
 function fmt(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
@@ -904,7 +911,7 @@ function renderHome() {
   $("signDot").classList.toggle("hidden", !canSign);
   $("signSub").textContent = canSign ? `第${save.sign.count % 7 + 1}天的礼物可以领` : "今天已领，明天再来";
   const newSkin = SKINS.find(k => !save.skins.includes(k.id));
-  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 老鼠 ${save.mice} · 猫猫头 ${save.paws}`;
+  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 逗猫棒 ${save.mice} · 猫猫头 ${save.paws}`;
   $("shopDot").classList.toggle("hidden", !newSkin);
 }
 $("blocks").addEventListener("click", e => { const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id); });
@@ -935,7 +942,7 @@ function startLevel(id, mode) {
   if (goldOpen(id) && !mode) {
     showDialog(`<svg class="big" viewBox="0 0 24 24" style="width:84px;height:84px" aria-hidden="true"><use href="#goldcan"/></svg>
       <h3>金罐头关！</h3>
-      <p>敢不敢挑战？只有<b>1颗心</b>，不能用提示、老鼠和天使之心。<br>通关奖励<b>罐头×3、爆米花×2</b>。</p>
+      <p>敢不敢挑战？只有<b>1颗心</b>，不能用提示、道具和天使之心。<br>通关奖励<b>罐头×3、爆米花×2</b>。</p>
       <p style="font-size:12px">放弃或者挑战失败，这一关就变回普通关。</p>
       <button class="btn gold" id="gYes">接受挑战</button><button class="btn alt" id="gNo">普通玩</button>`);
     $("gYes").onclick = () => { hideDialog(); startLevel(id, "gold"); };
@@ -1326,7 +1333,7 @@ function giftText(g, mul = 1) {
   if (g.cans) t.push(`${CUR.short}×${g.cans * mul}`);
   if (g.hint) t.push(`提示卡×${g.hint * mul}`);
   if (g.revive) t.push(`天使之心×${g.revive * mul}`);
-  if (g.mouse) t.push(`老鼠×${g.mouse * mul}`);
+  if (g.mouse) t.push(`逗猫棒×${g.mouse * mul}`);
   if (g.paw) t.push(`猫猫头×${g.paw * mul}`);
   return t.join(" ");
 }
@@ -1376,7 +1383,7 @@ function openShop(msg) {
       : `<button class="buy" data-buy="${k.id}" ${save.cans < k.price ? "disabled" : ""}>${curSvg()}${k.price}</button>`;
     return `<div class="skinrow"><img src="${CAT_IMG[k.faces.headBig || "headBig"]}" alt=""><div>${k.name}${k.ltd ? `<span class="ltd">${k.ltd}</span>` : ""}<small>${k.desc}</small></div>${btn}</div>`;
   }).join("");
-  showDialog(`<img class="mood" src="${F("lickBig")}" alt=""><h3>${CUR.shop}</h3>
+  showDialog(`<img class="mood" src="${CAT_IMG.merchantBig}" alt=""><h3>${CUR.shop}</h3>
     <div class="bag"><span class="pill">${curSvg()}${save.cans}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-bulb"/></svg>${save.hintCards}</span><span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-revive"/></svg>${save.revives}</span><span class="pill"><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#mouse"/></svg>${save.mice}</span></div>
     ${msg ? `<p style="color:var(--accent-ink);font-weight:600">${msg}</p>` : ""}
     <p class="sec">皮肤</p>
@@ -1387,7 +1394,7 @@ function openShop(msg) {
       ${row("i-bulb", "提示卡 · 三张装", "多囤几张，卡关的时候心里不慌", buyBtn("bH3", PRICE.hint3))}
       ${row("i-revive", "天使之心", "心碎了也别怕，天使会把它捡回来，接着玩", buyBtn("bRv", PRICE.revive))}
       <div class="shoprow"><img src="${F("happy")}" style="width:30px;height:30px;flex:none" alt=""><div>猫猫头<small>喊一声，一只爆米花自己跳到座位上坐好</small></div>${buyBtn("bPw", PRICE.paw)}</div>
-      ${row("mouse", "小老鼠", "放它出去满棋盘乱窜，它总会撞见一只爆米花", buyBtn("bMs", PRICE.mouse))}
+      ${row("mouse", "逗猫棒", "挥一挥，棋盘上蹦出3到5个格子，眼疾手快点中它们，里面一定藏着一只爆米花", buyBtn("bMs", PRICE.mouse))}
       ${row("i-bulb", "广告赞助的提示卡", `看段小广告换一张，今天还剩 ${adLeft} 次`, `<button class="buy ad" id="bAd" ${adLeft <= 0 ? "disabled" : ""}>看广告</button>`)}
     </div>
     <p style="font-size:12px">皮肤和道具只能用${CUR.short}、签到、看广告获得，不花钱。</p>
@@ -1396,7 +1403,7 @@ function openShop(msg) {
   $("bH1").onclick = buy(PRICE.hint1, () => save.hintCards += 1, "提示卡×1");
   $("bH3").onclick = buy(PRICE.hint3, () => save.hintCards += 3, "提示卡×3");
   $("bRv").onclick = buy(PRICE.revive, () => save.revives += 1, "天使之心×1");
-  $("bMs").onclick = buy(PRICE.mouse, () => save.mice += 1, "小老鼠×1");
+  $("bMs").onclick = buy(PRICE.mouse, () => save.mice += 1, "逗猫棒×1");
   $("bPw").onclick = buy(PRICE.paw, () => save.paws += 1, "猫猫头×1");
   const wear = id => { save.skin = id; persist(); applyTheme(); renderHome(); fx.win(); confettiRain(); openShop(`换上了：${skinOf(id).name}`); };
   document.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => wear(b.dataset.wear));
@@ -1625,7 +1632,9 @@ function openTechniques() {
   $("dOk").onclick = hideDialog;
 }
 
-/* ---------- 老鼠：随机踩格子，踩到没猫的格子就把它擦成×，最多 5 格之内一定翻出一只猫 ---------- */
+/* ---------- 逗猫棒（打地鼠）：随机蹦出 3–5 个格子，一个接一个，每个只停一会儿；
+   单击点中就揭晓：是座位就坐上爆米花，不是就打×；没点中就错过了。蹦出来的格子里一定有一只爆米花 ---------- */
+const WHACK_MS = 1050, WHACK_GAP = 260;
 function renderMouse() {
   const b = $("mouseBadge"); if (!b) return;
   b.textContent = save.mice > 0 ? save.mice : "广告";
@@ -1633,47 +1642,54 @@ function renderMouse() {
 }
 function runMouse() {
   if (!G || G.over) return;
-  const n = G.n, N = n * n, targets = [];
-  for (let r = 0; r < n; r++) { const i = r * n + G.sol[r]; if (G.st[i] !== 2) targets.push(i); }
-  if (!targets.length) return;
+  const n = G.n, N = n * n, left = [];
+  for (let r = 0; r < n; r++) { const i = r * n + G.sol[r]; if (G.st[i] !== 2) left.push(i); }
+  if (!left.length) return;
   const empties = []; for (let i = 0; i < N; i++) if (G.st[i] === 0 && !isAnswer(i)) empties.push(i);
   for (let k = empties.length - 1; k > 0; k--) { const j = Math.floor(Math.random() * (k + 1)); [empties[k], empties[j]] = [empties[j], empties[k]]; }
-  const misses = Math.min(empties.length, Math.floor(Math.random() * 5));   // 先踩空 0–4 格，第 5 格之内一定踩到猫
-  const target = targets[Math.floor(Math.random() * targets.length)];
-  const path = empties.slice(0, misses).concat([target]);
-  G.busy = true;
-  const el = document.createElement("div");
-  el.className = "runner"; el.innerHTML = '<svg viewBox="0 0 32 32" aria-hidden="true"><use href="#mouse"/></svg>';
-  const br = $("board").getBoundingClientRect();
-  let x0 = br.left - 30;
-  el.style.left = x0 + "px"; el.style.top = (br.bottom - 10) + "px";
-  document.body.appendChild(el);
-  const batch = [];
-  let step = 0;
-  const hop = () => {
-    if (!G) { el.remove(); return; }
-    const i = path[step], [x, y] = cellCenter(i);
-    el.classList.toggle("flip", x < x0); x0 = x;
-    el.style.left = x + "px"; el.style.top = y + "px";
-    tone([1300 + Math.random() * 500], 0.04, "triangle", 0.03);
-    setTimeout(() => {
-      if (!G) return;
-      if (i !== target) {                       // 没有猫：擦掉这一格
-        batch.push([i, G.st[i], G.auto[i]]); G.st[i] = 1; G.auto[i] = true; drawCell(i, "flash");
-        burst(x, y, { count: 6, speed: 2.5, colors: ["#FFFFFF", "#E6DED6"], kind: "paper", size: [3, 6], life: 25 });
-        step++; setTimeout(hop, 260);
-      } else {                                  // 找到了：翻出这只爆米花
-        if (batch.length) G.undo.push(batch);
-        G.busy = false;
-        if (G.st[target] === 1) G.st[target] = 0;
-        tryPlace(target);
-        toast(target, step ? `踩空${step}格，第${step + 1}格找到啦！` : "一下就找到一只爆米花！");
-        el.classList.add("bye", "flip"); el.style.left = (innerWidth + 40) + "px";
-        setTimeout(() => el.remove(), 600);
-      }
-    }, 200);
+  const total = 3 + Math.floor(Math.random() * 3);
+  const seq = empties.slice(0, total - 1);
+  seq.splice(Math.floor(Math.random() * (seq.length + 1)), 0, left[Math.floor(Math.random() * left.length)]);
+  G.busy = true; $("board").classList.add("whacking");
+  G.whack = { cur: -1, hits: 0, cat: false, batch: [] };
+  tone([660, 880], 0.08, "triangle", 0.06);
+  let k = 0;
+  const next = () => {
+    if (!G || G.over) return;
+    if (k >= seq.length) return endWhack();
+    const i = seq[k++], el = cellEl(i);
+    G.whack.cur = i;
+    el.style.setProperty("--wt", WHACK_MS + "ms");
+    el.classList.remove("whackout"); el.classList.add("whack");
+    tone([520 + k * 90], 0.06, "square", 0.04);
+    G.whack.timer = setTimeout(() => { hideWhack(i); setTimeout(next, WHACK_GAP); }, WHACK_MS);
+    G.whack.next = next;
   };
-  setTimeout(hop, 60);
+  setTimeout(next, 250);
+}
+function hideWhack(i) {
+  const el = cellEl(i); el.classList.remove("whack"); el.classList.add("whackout");
+  setTimeout(() => el.classList.remove("whackout"), 200);
+  if (G && G.whack && G.whack.cur === i) G.whack.cur = -1;
+}
+function hitWhack(i) {
+  const w = G.whack; if (!w || w.cur !== i) return;
+  clearTimeout(w.timer); hideWhack(i); w.hits++;
+  const [x, y] = cellCenter(i);
+  if (isAnswer(i)) {
+    w.cat = true;
+    G.busy = false; tryPlace(i); G.busy = true;
+    burst(x, y, { count: 16, speed: 5, kind: "star", colors: ["#FFD966", "#FFFFFF"], size: [5, 9] });
+  } else {
+    w.batch.push([i, G.st[i], G.auto[i]]); G.st[i] = 1; G.auto[i] = true; drawCell(i, "flash"); fx.mark();
+    burst(x, y, { count: 6, speed: 2.5, colors: ["#FFFFFF", "#E6DED6"], kind: "paper", size: [3, 6], life: 25 });
+  }
+  setTimeout(w.next, WHACK_GAP);
+}
+function endWhack() {
+  const w = G.whack; G.whack = null; G.busy = false; $("board").classList.remove("whacking");
+  if (w.batch.length) G.undo.push(w.batch);
+  if (!G.over) flashTip(w.cat ? `<b>逗猫棒</b>　点中了 ${w.hits} 个格子，抓到一只爆米花！` : `<b>逗猫棒</b>　点中了 ${w.hits} 个格子，可惜爆米花溜走了，下次手快一点～`);
 }
 /* ---------- 猫猫头：直接随机请出一只坐对位置的爆米花 ---------- */
 function renderPaw() { const b = $("pawBadge"); b.textContent = save.paws > 0 ? save.paws : "广告"; b.classList.toggle("ad", save.paws <= 0); }
@@ -1695,7 +1711,7 @@ $("pawBtn").onclick = () => {
 $("mouseBtn").onclick = () => {
   if (!G || G.over || G.busy) return;
   if (save.mice > 0) { save.mice--; persist(); renderMouse(); return runMouse(); }
-  watchAd("看完广告，放出一只小老鼠帮你找爆米花", runMouse);
+  watchAd("看完广告，挥一下逗猫棒", runMouse);
 };
 
 /* 原型里“看广告”直接生效；微信版换成激励视频广告，看完才给奖励 */
@@ -1872,6 +1888,7 @@ $("tabTime").onclick = () => { rankTab = "time"; renderRank(); };
     return c && b.contains(c) ? +c.dataset.i : -1;
   };
   b.addEventListener("pointerdown", e => {
+    if (G && G.whack) { const i = idxAt(e.clientX, e.clientY); e.preventDefault(); if (i >= 0) hitWhack(i); return; }
     if (!G || G.over || G.busy) return;
     if (!TIPS[G.id]) hideTip();
     const i = idxAt(e.clientX, e.clientY); if (i < 0) return;
