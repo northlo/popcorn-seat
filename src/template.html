@@ -237,6 +237,22 @@ body.th-halloween .lv.hard { background: #F6DCE6; }
 .why li { margin: 2px 0; }
 .cell.focus::before { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 3px rgba(255,255,255,.95); animation: fade 2.2s forwards; pointer-events: none; z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .deco .bat, .deco .spider { animation: none; } .runner { transition: none; } }
+/* 头像和头像框：外圈是框的颜色，竞速框头顶有皇冠，下方小牌子写名字 */
+.avabtn { padding: 0; background: none; border: 0; margin-right: 2px; }
+.ava { position: relative; width: var(--s); height: var(--s); border-radius: 50%; padding: calc(var(--s) * .08); background: var(--ring, #fff); box-shadow: 0 0 0 1px var(--line); flex: none; display: inline-block; vertical-align: middle; }
+.ava .in { width: 100%; height: 100%; border-radius: 50%; background: #FBF7F3; display: grid; place-items: center; overflow: hidden; }
+.ava .in img { width: 96%; height: 96%; }
+.ava .bd { position: absolute; left: 50%; bottom: calc(var(--s) * -.16); transform: translateX(-50%); font-size: max(9px, calc(var(--s) * .2)); font-weight: 800; line-height: 1.35; color: #fff; background: var(--bdc, var(--accent)); border-radius: 6px; padding: 0 5px; white-space: nowrap; box-shadow: 0 0 0 1.5px #fff; }
+.ava .crown { position: absolute; left: 50%; top: calc(var(--s) * -.36); width: calc(var(--s) * .56); height: calc(var(--s) * .42); transform: translateX(-50%); }
+.f-lv100 { --ring: conic-gradient(#E8914E, #EBCB6A, #71BEAF, #6191CD, #E8914E); --bdc: #E8914E; }
+.f-lv200 { --ring: conic-gradient(#8D66BF, #D477B7, #DA7180, #8D66BF); --bdc: #8D66BF; }
+.f-r1 { --ring: conic-gradient(#FFE27A, #E0A21E, #FFF3B0, #C98B16, #FFE27A); --bdc: #D99A12; box-shadow: 0 0 10px rgba(240, 180, 40, .55); }
+.f-r23 { --ring: conic-gradient(#F4F6F9, #A9B1BD, #FFFFFF, #8C95A3, #F4F6F9); --bdc: #8C95A3; box-shadow: 0 0 8px rgba(150, 160, 175, .5); }
+.framelist { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.framelist button { background: var(--bg); border-radius: 14px; padding: 18px 4px 8px; display: flex; flex-direction: column; align-items: center; gap: 12px; font-size: 12px; color: var(--ink-soft); line-height: 1.3; }
+.framelist button.on { box-shadow: inset 0 0 0 2px var(--accent); color: var(--ink); font-weight: 700; }
+.framelist button:disabled { opacity: .45; }
+.rank td .ava { margin-right: 6px; }
 /* 开场动画 */
 #splash { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: grid; place-items: center; transition: opacity .45s ease, visibility .45s; overflow: hidden; }
 #splash.out { opacity: 0; visibility: hidden; }
@@ -334,9 +350,10 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
   <div class="brand">
     <img id="brandImg" alt="">
     <h1 class="logo" id="logo" aria-label="爆米花找座位"></h1>
-    <p>原型 v2.1 · 逗猫棒、商人爆米花</p>
+    <p>原型 v2.2 · 头像框、断线续玩</p>
   </div>
   <div class="homebar">
+    <button class="avabtn" id="avaBtn" aria-label="我的头像框"></button>
     <button class="pill" id="cansPill" title="商店"><svg viewBox="0 0 24 24" aria-hidden="true"><use class="curuse" href="#can"/></svg><b id="homeCans">0</b></button>
     <span class="pill">连胜 <b id="homeStreak">0</b></span>
     <span class="grow"></span>
@@ -381,7 +398,7 @@ body.goldmode .boardcard { box-shadow: 0 0 0 3px #F2C14E, 0 0 22px rgba(242, 180
   <div class="tools">
     <button class="tool" id="undoBtn" aria-label="撤回标×"><span class="ic" style="--tc:var(--t0)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6.5 L4.5 11 L9 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 11 H14 a5 5 0 0 1 0 10 H11" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span>撤回</button>
     <button class="tool" id="hintBtn" aria-label="提示"><span class="ic" style="--tc:var(--t1)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8 a6.4 6.4 0 0 1 3.7 11.6 V16.6 H8.3 V14.4 A6.4 6.4 0 0 1 12 2.8 Z" fill="#fff"/><path d="M9.2 19.4 H14.8 M10.4 22 H13.6" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></span>提示<span class="badge" id="hintBadge">3</span></button>
-    <button class="tool" id="pawBtn" aria-label="猫猫头"><span class="ic" style="--tc:var(--t4)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#cathead"/></svg></span>猫猫头<span class="badge" id="pawBadge">0</span></button>
+    <button class="tool" id="pawBtn" aria-label="召唤爆米花"><span class="ic" style="--tc:var(--t4)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#cathead"/></svg></span>召唤<span class="badge" id="pawBadge">0</span></button>
     <button class="tool" id="mouseBtn" aria-label="逗猫棒"><span class="ic" style="--tc:var(--t2)"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#mouseW"/></svg></span>逗猫棒<span class="badge" id="mouseBadge">0</span></button>
     <button class="tool" id="restartBtn" aria-label="重新开始本关"><span class="ic" style="--tc:var(--t3)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12 a7.5 7.5 0 1 1 -2.2 -5.3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M18 3 V7.5 H13.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>重来</button>
   </div>
@@ -675,12 +692,13 @@ const isGold = id => typeof id === "number" && id > 10 && !LEVELS[id - 1].hard &
 const goldOpen = id => isGold(id) && !save.best[id] && !save.goldLost[id];
 /* 爆米花积分：第一次通关 = 星数 × 棋盘分；困难 ×1.5，金罐头 ×2，连胜每关 +10%（最多翻倍）；重玩只给三分之一 */
 const SIZE_PTS = { 7: 2, 8: 3, 9: 4, 10: 5, 11: 6 };          // 每关 1 次免费提示，之后用提示卡，没卡了看广告
-const BASE_CANS = { 7: 10, 8: 12, 9: 15, 10: 18, 11: 24 };
-const DAILY_CANS = { 8: 25, 9: 30, 10: 40 };
-const PRICE = { hint1: 50, hint3: 135, revive: 80, mouse: 30, paw: 60 };
+/* 经济：罐头少拿一点、道具贵一点，道具才稀罕。稀有度：天使之心 > 逗猫棒 > 召唤爆米花 > 提示卡 */
+const BASE_CANS = { 7: 5, 8: 6, 9: 7, 10: 9, 11: 12 };
+const DAILY_CANS = { 8: 12, 9: 15, 10: 20 };
+const PRICE = { hint1: 100, paw: 150, mouse: 220, revive: 400 };
 const AD_HINTS_PER_DAY = 3;
 /* 7 天签到：断签不清零，接着往下领；第 7 天是大礼包，领完从第 1 天重新开始 */
-const SIGN_REWARDS = [{ cans: 20 }, { hint: 1 }, { cans: 30 }, { revive: 1 }, { cans: 40 }, { mouse: 2 }, { cans: 80, hint: 2, revive: 1 }];
+const SIGN_REWARDS = [{ cans: 10 }, { hint: 1 }, { cans: 15 }, { paw: 1 }, { cans: 20 }, { mouse: 1 }, { cans: 40, hint: 1, revive: 1 }];
 
 /* 存档：只存在这个浏览器里，读不到也能正常玩 */
 const SAVE_KEY = "popcorn-proto-v4";
@@ -692,7 +710,8 @@ let save = { best: {}, cans: 0, streak: 0, bestStreak: 0, autoX: false, sound: t
   skin: "normal", skins: ["normal"], lv: 2,
   goldLost: {},                                     // 放弃或挑战失败的金罐头关
   pop: 0, race: { start: 0, pts: 0 }, raceLog: [],   // 爆米花积分、24小时竞速
-  paws: 1 };                                         // 猫猫头道具
+  paws: 1,                                           // 召唤爆米花
+  frames: [], raceFrame: null, frame: "" };            // 头像框：已拥有的永久框、限时竞速框、当前戴的框
 try { const s = JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); if (s) {
   // 关卡在 v2 重新编排过：旧的通关记录对不上新关卡，清掉一次；图案改成线条后默认打开
   if (s.lv !== 2) { s.best = {}; s.patterns = true; s.lv = 2; }
@@ -907,11 +926,12 @@ function renderHome() {
   $("blocks").innerHTML = html.join("");
   renderDailyCard();
   renderRaceCard();
+  $("avaBtn").innerHTML = avatar(40);
   const today = todayKey(), canSign = save.sign.last !== today;
   $("signDot").classList.toggle("hidden", !canSign);
   $("signSub").textContent = canSign ? `第${save.sign.count % 7 + 1}天的礼物可以领` : "今天已领，明天再来";
   const newSkin = SKINS.find(k => !save.skins.includes(k.id));
-  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 逗猫棒 ${save.mice} · 猫猫头 ${save.paws}`;
+  $("bagSub").textContent = newSkin ? `新皮肤：${newSkin.name}` : `提示卡 ${save.hintCards} · 逗猫棒 ${save.mice} · 召唤 ${save.paws}`;
   $("shopDot").classList.toggle("hidden", !newSkin);
 }
 $("blocks").addEventListener("click", e => { const b = e.target.closest(".lv"); if (b) startLevel(+b.dataset.id); });
@@ -1157,7 +1177,7 @@ function rewardFor() {
 }
 function checkWin() {
   if (G.st.filter(v => v === 2).length < G.n) return;
-  G.over = true; clearInterval(timerId); tick();
+  G.over = true; clearInterval(timerId); tick(); clearRun();
   if (G.daily) return dailyWin();
   save.streak++;
   save.bestStreak = Math.max(save.bestStreak, save.streak);
@@ -1168,6 +1188,7 @@ function checkWin() {
   const record = prev && G.elapsed < prev;   // 重玩打破自己的最快纪录
   if (!prev || G.elapsed < prev) save.best[G.id] = Math.max(1, G.elapsed);
   persist();
+  const newFrame = checkFrames();
   $("gameCans").textContent = save.cans;
   const notes = [];
   if (!rw.first) notes.push("重玩只给两成");
@@ -1190,6 +1211,7 @@ function checkWin() {
       <h3>${record ? "比上次还快！" : "都找到座位啦！"}</h3>
       <div class="stats"><div>用时<b>${fmt(G.elapsed)}</b></div><div>最快<b>${fmt(save.best[G.id])}</b></div><div>连胜<b>${save.streak}</b></div></div>
       <div class="reward">${curSvg()}<div>${CUR.name} <b id="canCount">+0</b><small>${notes.join(" · ") || "继续连胜有加成"}</small></div></div>
+      ${newFrame ? `<div class="reward" style="padding-top:12px">${avatar(40, newFrame)}<div>新头像框：${FRAMES[newFrame].name}<small>通关满${FRAMES[newFrame].need}关，已经戴上</small></div></div>` : ""}
       <div class="reward"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#popbox"/></svg><div>爆米花 <b>+${rw.pop}</b><small>${starsOf(G.mistakes)}星 × ${SIZE_PTS[G.n] || 3}${G.hard ? " × 困难1.5" : ""}${G.gold ? " × 金罐头2" : ""}${save.streak > 1 ? ` × 连胜${Math.min(2, 1 + (save.streak - 2) * 0.1).toFixed(1)}` : ""}${rw.first ? "" : " · 重玩三分之一"} · 本场竞速 ${save.race.pts}</small></div></div>
       ${next ? '<button class="btn" id="dNext">下一关</button>' : "<p>已经是最后一关了，厉害！</p>"}
       <div class="row2"><button class="btn alt" id="dShare">分享成绩</button><button class="btn alt" id="dHome">回到选关</button></div>`);
@@ -1223,8 +1245,8 @@ function dailyWin() {
       D.last = key; D.best = Math.max(D.best || 0, D.streak);
     }
     gift.cans = Math.round(DAILY_CANS[G.n] * (G.mistakes === 0 ? 1.2 : 1));
-    if (D.last === key && D.streak % 7 === 0) { gift.hint = 1; gift.revive = 1; }   // 连续打卡满 7 天的倍数，加送道具
-    save.cans += gift.cans; save.hintCards += gift.hint; save.revives += gift.revive;
+    if (D.last === key && D.streak % 7 === 0) { gift.hint = 1; gift.paw = 1; }   // 连续打卡满 7 天的倍数，加送道具
+    save.cans += gift.cans; save.hintCards += gift.hint; save.revives += gift.revive; save.paws += gift.paw || 0;
     gift.pop = Math.round(starsOf(G.mistakes) * (SIZE_PTS[G.n] || 3) * 1.5); addPop(gift.pop);
     persist();
     $("gameCans").textContent = save.cans;
@@ -1238,7 +1260,7 @@ function starRow(stars) {
 function showDailyResult(key, gift) {
   const rec = save.daily.done[key], [, m, d] = key.split("-").map(Number);
   const streak = save.daily.last === key || key === todayKey() ? dailyStreakNow() : 0;
-  const giftTxt = gift && gift.cans ? `<div class="reward">${curSvg()}<div>${CUR.name} <b>+${gift.cans}</b><small>${gift.pop ? `爆米花 +${gift.pop} · ` : ""}${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、天使之心+1` : ""}</small></div></div>` : "";
+  const giftTxt = gift && gift.cans ? `<div class="reward">${curSvg()}<div>${CUR.name} <b>+${gift.cans}</b><small>${gift.pop ? `爆米花 +${gift.pop} · ` : ""}${rec.m === 0 ? "零失误 +20%" : "每日挑战奖励"}${gift.hint ? ` · 连续打卡${streak}天，再送提示卡+1、召唤爆米花+1` : ""}</small></div></div>` : "";
   showDialog(`${starRow(starsOf(rec.m))}
     <div class="hero"><img src="${F(rec.m === 0 ? "smugBig" : "happyBig")}" alt=""><svg viewBox="0 0 120 110" aria-hidden="true"><use href="#trophy"/></svg></div>
     <h3>${m}月${d}日 每日挑战完成</h3>
@@ -1334,7 +1356,7 @@ function giftText(g, mul = 1) {
   if (g.hint) t.push(`提示卡×${g.hint * mul}`);
   if (g.revive) t.push(`天使之心×${g.revive * mul}`);
   if (g.mouse) t.push(`逗猫棒×${g.mouse * mul}`);
-  if (g.paw) t.push(`猫猫头×${g.paw * mul}`);
+  if (g.paw) t.push(`召唤爆米花×${g.paw * mul}`);
   return t.join(" ");
 }
 function openSign() {
@@ -1391,20 +1413,18 @@ function openShop(msg) {
     <p class="sec">道具</p>
     <div class="shoplist">
       ${row("i-bulb", "提示卡", "爆米花凑到你耳边，悄悄说出一个座位，还告诉你为什么", buyBtn("bH1", PRICE.hint1))}
-      ${row("i-bulb", "提示卡 · 三张装", "多囤几张，卡关的时候心里不慌", buyBtn("bH3", PRICE.hint3))}
-      ${row("i-revive", "天使之心", "心碎了也别怕，天使会把它捡回来，接着玩", buyBtn("bRv", PRICE.revive))}
-      <div class="shoprow"><img src="${F("happy")}" style="width:30px;height:30px;flex:none" alt=""><div>猫猫头<small>喊一声，一只爆米花自己跳到座位上坐好</small></div>${buyBtn("bPw", PRICE.paw)}</div>
+      <div class="shoprow"><img src="${F("happy")}" style="width:30px;height:30px;flex:none" alt=""><div>召唤爆米花<small>喊一声，一只爆米花自己跳到座位上坐好</small></div>${buyBtn("bPw", PRICE.paw)}</div>
       ${row("mouse", "逗猫棒", "挥一挥，棋盘上蹦出3到5个格子，眼疾手快点中它们，里面一定藏着一只爆米花", buyBtn("bMs", PRICE.mouse))}
+      ${row("i-revive", "天使之心", "最稀有的宝贝：心碎了也能捡回来，逆天改命，接着玩", buyBtn("bRv", PRICE.revive))}
       ${row("i-bulb", "广告赞助的提示卡", `看段小广告换一张，今天还剩 ${adLeft} 次`, `<button class="buy ad" id="bAd" ${adLeft <= 0 ? "disabled" : ""}>看广告</button>`)}
     </div>
     <p style="font-size:12px">皮肤和道具只能用${CUR.short}、签到、看广告获得，不花钱。</p>
     <button class="btn alt" id="dClose">关闭</button>`);
   const buy = (price, apply, label) => () => { if (save.cans < price) return; save.cans -= price; apply(); persist(); fx.good(); openShop(`买到了：${label}`); };
   $("bH1").onclick = buy(PRICE.hint1, () => save.hintCards += 1, "提示卡×1");
-  $("bH3").onclick = buy(PRICE.hint3, () => save.hintCards += 3, "提示卡×3");
   $("bRv").onclick = buy(PRICE.revive, () => save.revives += 1, "天使之心×1");
   $("bMs").onclick = buy(PRICE.mouse, () => save.mice += 1, "逗猫棒×1");
-  $("bPw").onclick = buy(PRICE.paw, () => save.paws += 1, "猫猫头×1");
+  $("bPw").onclick = buy(PRICE.paw, () => save.paws += 1, "召唤爆米花×1");
   const wear = id => { save.skin = id; persist(); applyTheme(); renderHome(); fx.win(); confettiRain(); openShop(`换上了：${skinOf(id).name}`); };
   document.querySelectorAll("[data-wear]").forEach(b => b.onclick = () => wear(b.dataset.wear));
   document.querySelectorAll("[data-buy]").forEach(b => b.onclick = () => {
@@ -1419,7 +1439,7 @@ $("cansPill").onclick = () => openShop();
 
 function breakStreak() { if (save.streak) { save.streak = 0; persist(); } }
 function fail() {
-  G.over = true; clearInterval(timerId);
+  G.over = true; clearInterval(timerId); clearRun();
   if (G.gold) {
     save.goldLost[G.id] = 1; persist();
     return setTimeout(() => {
@@ -1448,7 +1468,7 @@ function fail() {
   }, 400);
 }
 function goHome() {
-  clearInterval(timerId); G = null; document.body.classList.remove("goldmode");
+  clearInterval(timerId); G = null; clearRun(); document.body.classList.remove("goldmode");
   renderHome(); show("home");
 }
 /* 没通关就离开或重来，连胜清零（先问一下） */
@@ -1490,7 +1510,15 @@ function nextStep() {
   const cells = f => { const o = []; for (let i = 0; i < N; i++) if (f(i)) o.push(i); return o; };
   // 0) 有×标在了真正的座位上：先擦掉
   const wrongX = cells(i => G.st[i] === 1 && !G.bad[i] && isAnswer(i));
-  if (wrongX.length) return { lit: wrongX, clear: wrongX, text: "这里的×标错了：这一格其实还有可能坐猫，先把它擦掉。" };
+  if (wrongX.length) {
+    // 先假装擦掉打错的×，接着推下一步，一次讲完
+    wrongX.forEach(i => G.st[i] = 0);
+    const rest = nextStep();
+    wrongX.forEach(i => G.st[i] = 1);
+    const pos = wrongX.slice(0, 2).map(i => `第${R(i) + 1}行第${C(i) + 1}列`).join("、") + (wrongX.length > 2 ? "等" : "");
+    return { lit: wrongX.concat(rest.lit || []), clear: wrongX, mark: rest.mark, place: rest.place,
+      text: `${pos}的×打错了，这里其实还能坐猫，先帮你擦掉。<br>然后：${rest.text}` };
+  }
   // 1) 坐好的猫“管”着的格子还没标×
   const cats = cells(i => G.st[i] === 2);
   // 坐好的猫“管”着、但还没标×的格子：顺手一起标上，不单独占一次提示
@@ -1691,7 +1719,7 @@ function endWhack() {
   if (w.batch.length) G.undo.push(w.batch);
   if (!G.over) flashTip(w.cat ? `<b>逗猫棒</b>　点中了 ${w.hits} 个格子，抓到一只爆米花！` : `<b>逗猫棒</b>　点中了 ${w.hits} 个格子，可惜爆米花溜走了，下次手快一点～`);
 }
-/* ---------- 猫猫头：直接随机请出一只坐对位置的爆米花 ---------- */
+/* ---------- 召唤爆米花：直接随机请出一只坐对位置的爆米花 ---------- */
 function renderPaw() { const b = $("pawBadge"); b.textContent = save.paws > 0 ? save.paws : "广告"; b.classList.toggle("ad", save.paws <= 0); }
 function usePaw() {
   if (!G || G.over) return;
@@ -1746,7 +1774,7 @@ function openSettings() {
   $("sReset").onclick = () => {
     showDialog(`<h3>清空进度？</h3><p>通关记录、猫罐头、连胜、道具、签到和每日挑战记录都会清零。</p>
       <button class="btn" id="dYes">清空</button><button class="btn alt" id="dNo">取消</button>`);
-    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0, hintCards: 3, revives: 1, sign: { last: "", count: 0 }, daily: { done: {}, streak: 0, last: "", best: 0 }, adHint: { day: "", n: 0 }, skin: "normal", skins: ["normal"], mice: 2, paws: 1, pop: 0, race: { start: 0, pts: 0 }, raceLog: [], goldLost: {} }); applyTheme(); persist(); hideDialog(); goHome(); };
+    $("dYes").onclick = () => { Object.assign(save, { best: {}, cans: 0, streak: 0, bestStreak: 0, hintCards: 3, revives: 1, sign: { last: "", count: 0 }, daily: { done: {}, streak: 0, last: "", best: 0 }, adHint: { day: "", n: 0 }, skin: "normal", skins: ["normal"], mice: 2, paws: 1, pop: 0, race: { start: 0, pts: 0 }, raceLog: [], goldLost: {}, frames: [], raceFrame: null, frame: "" }); clearRun(); applyTheme(); persist(); hideDialog(); goHome(); };
     $("dNo").onclick = openSettings;
   };
   $("sClose").onclick = hideDialog;
@@ -1775,14 +1803,81 @@ $("shareHome").onclick = () => share(`我在玩《爆米花找座位》，帮猫
 $("rankShare").onclick = () => share(`我在《爆米花找座位》攒了${save.cans}个猫罐头，最高连胜${save.bestStreak}关，来比比？`);
 
 /* ---------- 排行榜（现在只有本机成绩） ---------- */
+/* ---------- 断线续玩：每秒把正在玩的这一局存一份；掉线、切后台被杀、手机重启，再打开直接回到这一局 ---------- */
+const RUN_KEY = "popcorn-run-v1";
+function saveRun() {
+  if (!G || G.over || G.whack) return;
+  try { localStorage.setItem(RUN_KEY, JSON.stringify({ id: G.id, daily: G.daily, gold: G.gold, st: G.st, auto: G.auto, bad: G.bad,
+    hearts: G.hearts, mistakes: G.mistakes, hints: G.hints, elapsed: Math.floor((Date.now() - G.startT) / 1000) })); } catch (e) {}
+}
+function clearRun() { try { localStorage.removeItem(RUN_KEY); } catch (e) {} }
+setInterval(saveRun, 1000);
+addEventListener("pagehide", saveRun);
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveRun(); });
+function resumeRun() {
+  let run; try { run = JSON.parse(localStorage.getItem(RUN_KEY) || "null"); } catch (e) {}
+  if (!run) return false;
+  if (run.daily ? run.daily !== todayKey() : !LEVELS[run.id - 1]) { clearRun(); return false; }
+  if (run.daily) startDaily(run.daily, { elapsed: run.elapsed, mistakes: run.mistakes });
+  else startLevel(run.id, run.gold ? "gold" : "normal");
+  if (!G || G.n * G.n !== run.st.length) { clearRun(); return false; }
+  Object.assign(G, { st: run.st, auto: run.auto, bad: run.bad, hearts: run.hearts, mistakes: run.mistakes, hints: run.hints });
+  G.startT = Date.now() - run.elapsed * 1000;
+  for (let i = 0; i < G.n * G.n; i++) drawCell(i);
+  renderHearts(); renderHint(); renderChips();
+  setTimeout(() => flashTip("<b>欢迎回来</b>　接着上次的进度继续玩"), 400);
+  return true;
+}
+
+/* ---------- 头像框 ----------
+   永久框：通关满 100 / 200 关各送一个；限时框：24小时竞速第 1 名“冠军框”、第 2–3 名“前三框”，只能戴 24 小时 */
+const FRAMES = {
+  "": { name: "不戴框", how: "默认" },
+  lv100: { name: "百关纪念", badge: "100关", how: "通关100关", need: 100 },
+  lv200: { name: "两百关纪念", badge: "200关", how: "通关200关", need: 200 },
+  r1: { name: "竞速冠军", badge: "冠军", how: "24小时竞速第1名，限时24小时", crown: "#F2B632", race: true },
+  r23: { name: "竞速前三", badge: "前三", how: "24小时竞速第2–3名，限时24小时", crown: "#A9B1BD", race: true },
+};
+const CROWN = c => `<svg class="crown" viewBox="0 0 28 20" aria-hidden="true"><path d="M2 18 L4 5 L10 11 L14 2 L18 11 L24 5 L26 18 Z" fill="${c}" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/><circle cx="14" cy="2.5" r="2" fill="#E5647A"/></svg>`;
+function raceFrameLive() { return save.raceFrame && save.raceFrame.until > Date.now() ? save.raceFrame : null; }
+function frameOwned(id) { if (!id) return true; if (FRAMES[id].race) { const r = raceFrameLive(); return !!r && r.id === id; } return save.frames.includes(id); }
+function curFrame() { return frameOwned(save.frame) ? save.frame : ""; }
+function avatar(size, id = curFrame()) {
+  const f = FRAMES[id] || FRAMES[""];
+  return `<span class="ava${id ? " f-" + id : ""}" style="--s:${size}px"><span class="in"><img src="${F("head")}" alt=""></span>${f.crown ? CROWN(f.crown) : ""}${f.badge ? `<span class="bd">${f.badge}</span>` : ""}</span>`;
+}
+function clearedCount() { return Object.keys(save.best).filter(k => /^\d+$/.test(k)).length; }
+/* 通关后检查有没有拿到新的永久框；拿到就自动戴上，返回框的 id */
+function checkFrames() {
+  const n = clearedCount();
+  for (const id of ["lv100", "lv200"]) if (n >= FRAMES[id].need && !save.frames.includes(id)) { save.frames.push(id); if (!raceFrameLive()) save.frame = id; persist(); return id; }
+  return null;
+}
+function frameLeft() { const r = raceFrameLive(); if (!r) return ""; const m = Math.floor((r.until - Date.now()) / 60000); return `还剩${Math.floor(m / 60)}小时${m % 60}分`; }
+function openFrames() {
+  const n = clearedCount();
+  const btn = id => {
+    const f = FRAMES[id], own = frameOwned(id), on = curFrame() === id;
+    const note = own ? (f.race ? frameLeft() : on ? "戴着" : "点一下戴上") : f.need ? `还差${f.need - n}关` : f.how;
+    return `<button data-frame="${id}" class="${on ? "on" : ""}" ${own ? "" : "disabled"}>${avatar(56, id)}<span>${f.name}<br>${note}</span></button>`;
+  };
+  showDialog(`<h3>头像框</h3>
+    <div class="framelist">${Object.keys(FRAMES).map(btn).join("")}</div>
+    <p style="font-size:12px">每通关100关送一个纪念框，永久保留；24小时竞速拿到前三名，送限时24小时的竞速框。</p>
+    <button class="btn alt" id="dClose">关闭</button>`);
+  document.querySelectorAll("[data-frame]").forEach(b => b.onclick = () => { save.frame = b.dataset.frame; persist(); renderHome(); openFrames(); });
+  $("dClose").onclick = hideDialog;
+}
+$("avaBtn").onclick = openFrames;
+
 /* ---------- 24小时竞速：从你这一场拿到第一颗爆米花开始计时，24 小时内和同时开赛的 29 个人比 ----------
    原型里没有服务器，对手是按开赛时间生成的模拟玩家（成绩随这 24 小时慢慢涨）；微信版换成同时开赛的真人 */
 const RACE_SIZE = 30, RACE_MS = 24 * 3600 * 1000;
 const RACE_PRIZES = [
-  { to: 1, label: "第1名", gift: { hint: 3, mouse: 2, paw: 1, revive: 1 } },
-  { to: 3, label: "第2–3名", gift: { hint: 2, mouse: 1, revive: 1 } },
-  { to: 10, label: "第4–10名", gift: { hint: 1, mouse: 1 } },
-  { to: 30, label: "其他", gift: { cans: 30 } }];
+  { to: 1, label: "第1名", gift: { hint: 3, mouse: 1, paw: 1, revive: 1 }, frame: "r1" },
+  { to: 3, label: "第2–3名", gift: { hint: 2, paw: 1 }, frame: "r23" },
+  { to: 10, label: "第4–10名", gift: { hint: 1 } },
+  { to: 30, label: "其他", gift: { cans: 15 } }];
 const BOT_NAMES = ["橘座大人", "奶茶猫", "芝麻汤圆", "布丁妈", "小鱼干收集者", "猫薄荷上头", "三花喵", "煤球", "年糕", "豆包爸爸", "雪球", "可乐", "糯米", "土豆", "饭团", "毛毛", "咪咪", "阿福", "团子", "栗子", "包子", "麻薯", "花卷", "大黄", "小白", "奥利奥", "椰子", "芋圆", "麦芽糖", "棉花糖", "黑豆", "咖啡", "果冻", "馒头", "饼干"];
 function rngOf(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 function raceBots(start) {
@@ -1812,6 +1907,7 @@ function rollRace() {
   const rows = raceBoard(save.race.start, save.race.pts, save.race.start + RACE_MS), rank = rows.findIndex(x => x.me) + 1, pz = prizeFor(rank);
   const g = pz.gift;
   save.cans += g.cans || 0; save.hintCards += g.hint || 0; save.mice += g.mouse || 0; save.revives += g.revive || 0; save.paws += g.paw || 0;
+  if (pz.frame) { save.raceFrame = { id: pz.frame, until: Date.now() + RACE_MS }; save.frame = pz.frame; }
   const res = { start: save.race.start, rank, pts: save.race.pts, prize: pz };
   save.raceLog = [res].concat(save.raceLog || []).slice(0, 14);
   save.race = { start: 0, pts: 0 };
@@ -1824,6 +1920,7 @@ function showRaceResult(res, then) {
     <h3>竞速结算</h3><p>${d.getMonth() + 1}月${d.getDate()}日 ${pad2(d.getHours())}:${pad2(d.getMinutes())} 开赛的那一场</p>
     <div class="stats"><div>名次<b>第${res.rank}名</b></div><div>爆米花<b>${res.pts}</b></div></div>
     <div class="reward">${giftIcons(res.prize.gift, 28)}<div>${res.prize.label}奖励<small>${giftText(res.prize.gift)}，已经放进背包</small></div></div>
+    ${res.prize.frame ? `<div class="reward" style="padding-top:14px">${avatar(40, res.prize.frame)}<div>限时头像框：${FRAMES[res.prize.frame].name}<small>已经戴上，24小时后过期</small></div></div>` : ""}
     <button class="btn" id="dOk">好的</button>`);
   $("dialog").classList.add("win");
   $("dOk").onclick = () => { hideDialog(); renderHome(); if (then) then(); };
@@ -1846,8 +1943,8 @@ function renderRank() {
   if (rankTab === "race") {
     rollRace();
     const rows = raceBoard(save.race.start, save.race.pts);
-    $("rankBody").innerHTML = `<div class="prizes">${RACE_PRIZES.map(p => `<div><b>${p.label}</b>${giftText(p.gift).replace(/ /g, "<br>")}</div>`).join("")}</div>
-      <table class="rank"><tbody>${rows.map((x, k) => `<tr class="${x.me ? "me" : ""}"><td class="no">${k + 1}</td><td>${x.name}</td><td>${x.pts}</td></tr>`).join("")}</tbody></table>
+    $("rankBody").innerHTML = `<div class="prizes">${RACE_PRIZES.map(p => `<div><b>${p.label}</b>${giftText(p.gift).replace(/ /g, "<br>")}${p.frame ? `<br>+${FRAMES[p.frame].name}框` : ""}</div>`).join("")}</div>
+      <table class="rank"><tbody>${rows.map((x, k) => `<tr class="${x.me ? "me" : ""}"><td class="no">${k + 1}</td><td>${x.me ? avatar(26) : ""}${x.name}</td><td>${x.pts}</td></tr>`).join("")}</tbody></table>
       <p class="note" style="margin-top:8px">${save.race.start ? `这一场还剩${raceLeft()}结算。` : "还没开赛，通关一关就开始计时。"}满24小时结算，打开游戏时发奖励，然后等你下一颗爆米花开新的一场。通关得爆米花：星数×棋盘分，困难×1.5、金罐头×2、连胜最多翻倍；每日挑战也算。原型里的对手是模拟的，微信版换成真人。</p>`;
   } else if (rankTab === "cans") {
     $("rankBody").innerHTML = `<table class="rank"><tbody>
@@ -1948,6 +2045,7 @@ document.addEventListener("touchend", e => {
 applyTheme();
 const PENDING_RACE = rollRace();   // 先结算昨天的竞速，再画首页
 renderHome();
+const RESUMED = resumeRun();       // 上次没玩完（掉线、被系统关掉）：直接回到那一局
 /* 开场动画：大约 2 秒，点一下可以跳过 */
 (function splash() {
   const sp = $("splash");
@@ -1966,8 +2064,8 @@ renderHome();
 // 每天第一次打开：玩过的人自动弹签到（第一次来的新玩家先玩，不打扰）；等开场动画放完
 const wantSign = save.sign.last !== todayKey() && (save.sign.count > 0 || Object.keys(save.best).length > 0);
 const raceRes = PENDING_RACE;
-if (raceRes) setTimeout(() => showRaceResult(raceRes, wantSign ? openSign : null), 2700);
-else if (wantSign) setTimeout(openSign, 2700);
+if (raceRes) setTimeout(() => showRaceResult(raceRes, wantSign && !RESUMED ? openSign : null), 2700);
+else if (wantSign && !RESUMED) setTimeout(openSign, 2700);
 </script>
 </body>
 </html>
